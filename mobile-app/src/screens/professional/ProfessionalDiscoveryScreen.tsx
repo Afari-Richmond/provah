@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
-import { spacing } from "@/theme/spacing";
-import { TagChip } from "@/components/TagChip";
+import { radii, spacing } from "@/theme/spacing";
+import { FilterChip } from "@/components/FilterChip";
 import { ProjectCard } from "@/components/ProjectCard";
 import { listProjects } from "@/lib/api/projects";
 import type { Project } from "@/lib/types/project";
@@ -39,16 +40,19 @@ export function ProfessionalDiscoveryScreen({ navigation }: Props) {
         ListHeaderComponent={
           <View>
             <Text style={styles.title}>Discover Projects</Text>
-            <TextInput
-              style={styles.search}
-              placeholder="Search by keyword, field, or university"
-              placeholderTextColor={colors.placeholder}
-              value={query}
-              onChangeText={setQuery}
-            />
+            <View style={styles.searchRow}>
+              <Ionicons name="search-outline" size={18} color={colors.placeholder} />
+              <TextInput
+                style={styles.search}
+                placeholder="Search by keyword, field, or university"
+                placeholderTextColor={colors.placeholder}
+                value={query}
+                onChangeText={setQuery}
+              />
+            </View>
             <View style={styles.chipRow}>
               {CATEGORIES.map((item) => (
-                <TagChip
+                <FilterChip
                   key={item}
                   label={item}
                   selected={category === item}
@@ -94,20 +98,26 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "800",
     color: colors.textPrimary,
+    letterSpacing: -0.3,
+    marginBottom: spacing.sm,
+  },
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radii.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
     marginBottom: spacing.sm,
   },
   search: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    flex: 1,
     fontSize: 14,
     color: colors.textPrimary,
-    marginBottom: spacing.sm,
   },
   chipRow: {
     flexDirection: "row",
@@ -119,7 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "700",
     color: colors.textPrimary,
     marginBottom: spacing.sm,

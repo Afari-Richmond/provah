@@ -24,13 +24,14 @@ export function SplashScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
   wordmark: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "800",
     color: colors.primary,
+    letterSpacing: -0.5,
   },
 });

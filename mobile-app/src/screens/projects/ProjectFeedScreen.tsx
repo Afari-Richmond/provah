@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
-import { spacing } from "@/theme/spacing";
+import { radii, spacing } from "@/theme/spacing";
 import { ProjectCard } from "@/components/ProjectCard";
+import { FilterChip } from "@/components/FilterChip";
 import { listProjects } from "@/lib/api/projects";
 import type { Project } from "@/lib/types/project";
 import type { HomeStackParamList } from "@/navigation/types";
 
 type Props = NativeStackScreenProps<HomeStackParamList, "ProjectFeed">;
 
+const CATEGORIES = ["All", "Engineering", "Tech", "Health", "Social"];
+
 export function ProjectFeedScreen({ navigation }: Props) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
   const { width } = useWindowDimensions();
   const cardWidth = (width - spacing.lg * 2 - spacing.md) / 2;
 
@@ -21,21 +26,36 @@ export function ProjectFeedScreen({ navigation }: Props) {
     listProjects().then((response) => setProjects(response.data ?? []));
   }, []);
 
-  const filtered = projects.filter((project) =>
-    project.title.toLowerCase().includes(query.toLowerCase())
-  );
+  const filtered = projects.filter((project) => {
+    const matchesQuery = project.title.toLowerCase().includes(query.toLowerCase());
+    const matchesCategory = category === "All" || project.field === category;
+    return matchesQuery && matchesCategory;
+  });
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
         <Text style={styles.title}>Discover Projects</Text>
-        <TextInput
-          style={styles.search}
-          placeholder="Search by keyword, field, or university"
-          placeholderTextColor={colors.placeholder}
-          value={query}
-          onChangeText={setQuery}
-        />
+        <View style={styles.searchRow}>
+          <Ionicons name="search-outline" size={18} color={colors.placeholder} />
+          <TextInput
+            style={styles.search}
+            placeholder="Search by keyword, field, or university"
+            placeholderTextColor={colors.placeholder}
+            value={query}
+            onChangeText={setQuery}
+          />
+        </View>
+        <View style={styles.chipRow}>
+          {CATEGORIES.map((item) => (
+            <FilterChip
+              key={item}
+              label={item}
+              selected={category === item}
+              onPress={() => setCategory(item)}
+            />
+          ))}
+        </View>
       </View>
       <FlatList
         data={filtered}
@@ -64,22 +84,34 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
-    gap: spacing.sm,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "800",
     color: colors.textPrimary,
+    letterSpacing: -0.3,
+    marginBottom: spacing.sm,
+  },
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radii.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    marginBottom: spacing.sm,
   },
   search: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    flex: 1,
     fontSize: 14,
     color: colors.textPrimary,
-    marginBottom: spacing.sm,
+  },
+  chipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   listContent: {
     paddingHorizontal: spacing.lg,

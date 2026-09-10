@@ -1,6 +1,8 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
+import { cardShadow } from "@/theme/shadow";
 import type { Project } from "@/lib/types/project";
 
 export function ProjectCard({ project, onPress }: { project: Project; onPress: () => void }) {
@@ -15,8 +17,14 @@ export function ProjectCard({ project, onPress }: { project: Project; onPress: (
           {project.university}
         </Text>
         <View style={styles.statsRow}>
-          <Text style={styles.stat}>{project.stats.views} views</Text>
-          <Text style={styles.stat}>{project.stats.likes} likes</Text>
+          <View style={styles.stat}>
+            <Ionicons name="eye-outline" size={13} color={colors.textSecondary} />
+            <Text style={styles.statText}>{project.stats.views}</Text>
+          </View>
+          <View style={styles.stat}>
+            <Ionicons name="heart-outline" size={13} color={colors.textSecondary} />
+            <Text style={styles.statText}>{project.stats.likes}</Text>
+          </View>
         </View>
       </View>
     </Pressable>
@@ -27,10 +35,9 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: colors.background,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: radii.xl,
     overflow: "hidden",
+    ...cardShadow,
   },
   image: {
     width: "100%",
@@ -39,7 +46,7 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: spacing.md,
-    gap: spacing.xs,
+    gap: 4,
   },
   title: {
     color: colors.textPrimary,
@@ -48,7 +55,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: colors.textSecondary,
-    fontSize: 13,
+    fontSize: 12,
   },
   statsRow: {
     flexDirection: "row",
@@ -56,7 +63,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   stat: {
-    color: colors.placeholder,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  statText: {
+    color: colors.textSecondary,
     fontSize: 12,
+    fontWeight: "600",
   },
 });

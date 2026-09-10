@@ -1,12 +1,23 @@
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
+import { cardShadow } from "@/theme/shadow";
 import { TagChip } from "@/components/TagChip";
 import { fetchStudentProfile } from "@/lib/api/profile";
 import { mockProjects } from "@/lib/mocks/projects";
 import type { StudentProfile } from "@/lib/types/user";
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 export function StudentProfileScreen() {
   const [profile, setProfile] = useState<StudentProfile | undefined>(undefined);
@@ -31,21 +42,25 @@ export function StudentProfileScreen() {
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <View style={styles.header}>
-            <View style={styles.avatar} />
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{getInitials(profile.name)}</Text>
+            </View>
             <Text style={styles.name}>{profile.name}</Text>
             <Text style={styles.subtitle}>
               {profile.university} · {profile.fieldOfStudy}
             </Text>
 
-            <View style={styles.statsRow}>
+            <View style={styles.statsCard}>
               <View style={styles.statBlock}>
                 <Text style={styles.statValue}>{profile.stats.projectCount}</Text>
                 <Text style={styles.statLabel}>Projects</Text>
               </View>
+              <View style={styles.statDivider} />
               <View style={styles.statBlock}>
                 <Text style={styles.statValue}>{profile.stats.totalViews}</Text>
                 <Text style={styles.statLabel}>Total Views</Text>
               </View>
+              <View style={styles.statDivider} />
               <View style={styles.statBlock}>
                 <Text style={styles.statValue}>{profile.stats.connections}</Text>
                 <Text style={styles.statLabel}>Connections</Text>
@@ -53,8 +68,8 @@ export function StudentProfileScreen() {
             </View>
 
             <View style={styles.badgeRow}>
-              {profile.badges.map((badge) => (
-                <TagChip key={badge} label={badge} />
+              {profile.badges.map((badge, index) => (
+                <TagChip key={badge} label={badge} tone={index % 2 === 0 ? "primary" : "accent"} />
               ))}
             </View>
 
@@ -63,6 +78,7 @@ export function StudentProfileScreen() {
         }
         renderItem={({ item }) => (
           <View style={styles.projectRow}>
+            <Ionicons name="folder-outline" size={18} color={colors.primary} />
             <Text style={styles.projectTitle}>{item.title}</Text>
           </View>
         )}
@@ -88,14 +104,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: colors.surface,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: colors.primaryMuted,
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: spacing.sm,
   },
+  avatarText: {
+    color: colors.primary,
+    fontWeight: "700",
+    fontSize: 22,
+  },
   name: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "800",
     color: colors.textPrimary,
   },
@@ -104,22 +127,34 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
-  statsRow: {
+  statsCard: {
     flexDirection: "row",
-    gap: spacing.xl,
+    alignItems: "center",
+    backgroundColor: colors.background,
+    borderRadius: radii.xl,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
     marginTop: spacing.lg,
+    ...cardShadow,
   },
   statBlock: {
+    flex: 1,
     alignItems: "center",
   },
+  statDivider: {
+    width: 1,
+    height: 28,
+    backgroundColor: colors.border,
+  },
   statValue: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "800",
     color: colors.textPrimary,
   },
   statLabel: {
     fontSize: 11,
     color: colors.textSecondary,
+    marginTop: 2,
   },
   badgeRow: {
     flexDirection: "row",
@@ -130,20 +165,25 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     alignSelf: "flex-start",
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "700",
     color: colors.textPrimary,
     marginTop: spacing.xl,
   },
   projectRow: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    backgroundColor: colors.background,
+    borderRadius: radii.lg,
     padding: spacing.md,
     marginTop: spacing.sm,
+    ...cardShadow,
   },
   projectTitle: {
+    flex: 1,
     fontSize: 14,
+    fontWeight: "600",
     color: colors.textPrimary,
   },
 });

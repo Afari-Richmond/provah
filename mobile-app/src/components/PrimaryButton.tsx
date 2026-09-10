@@ -28,7 +28,7 @@ export function PrimaryButton({ label, onPress, variant = "primary", disabled }:
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     paddingVertical: spacing.md,
     alignItems: "center",
     justifyContent: "center",

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
+import { cardShadow } from "@/theme/shadow";
 import { TagChip } from "@/components/TagChip";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { fetchProjectById } from "@/lib/api/projects";
@@ -43,38 +45,58 @@ export function ProjectDetailScreen({ route }: Props) {
           <Text style={styles.byline}>{project.university}</Text>
 
           <View style={styles.statsRow}>
-            <Text style={styles.stat}>{project.stats.views} views</Text>
-            <Text style={styles.stat}>{project.stats.likes} likes</Text>
-            <Text style={styles.stat}>{project.stats.comments} comments</Text>
+            <View style={styles.stat}>
+              <Ionicons name="eye-outline" size={13} color={colors.textSecondary} />
+              <Text style={styles.statText}>{project.stats.views} views</Text>
+            </View>
+            <View style={styles.stat}>
+              <Ionicons name="heart-outline" size={13} color={colors.textSecondary} />
+              <Text style={styles.statText}>{project.stats.likes} likes</Text>
+            </View>
+            <View style={styles.stat}>
+              <Ionicons name="chatbubble-outline" size={13} color={colors.textSecondary} />
+              <Text style={styles.statText}>{project.stats.comments} comments</Text>
+            </View>
           </View>
 
           <View style={styles.tabs}>
-            <Text
-              style={[styles.tabLabel, tab === "problem" && styles.tabLabelActive]}
+            <Pressable
+              style={[styles.tabPill, tab === "problem" && styles.tabPillActive]}
               onPress={() => setTab("problem")}
             >
-              The Problem
-            </Text>
-            <Text
-              style={[styles.tabLabel, tab === "solution" && styles.tabLabelActive]}
+              <Text style={[styles.tabPillLabel, tab === "problem" && styles.tabPillLabelActive]}>
+                The Problem
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.tabPill, tab === "solution" && styles.tabPillActive]}
               onPress={() => setTab("solution")}
             >
-              The Solution
-            </Text>
+              <Text
+                style={[styles.tabPillLabel, tab === "solution" && styles.tabPillLabelActive]}
+              >
+                The Solution
+              </Text>
+            </Pressable>
           </View>
           <Text style={styles.body}>{tab === "problem" ? project.problem : project.solution}</Text>
 
           <Text style={styles.sectionLabel}>Tech Stack</Text>
           <View style={styles.chipRow}>
-            {project.techStack.map((tech) => (
-              <TagChip key={tech} label={tech} />
+            {project.techStack.map((tech, index) => (
+              <TagChip key={tech} label={tech} tone={index % 2 === 0 ? "primary" : "accent"} />
             ))}
           </View>
 
           <Text style={styles.sectionLabel}>Team</Text>
-          <View style={styles.chipRow}>
+          <View style={styles.teamRow}>
             {project.team.map((member) => (
-              <TagChip key={member.id} label={member.name} />
+              <View key={member.id} style={styles.teamMember}>
+                <View style={styles.teamAvatar}>
+                  <Text style={styles.teamAvatarText}>{member.name[0]}</Text>
+                </View>
+                <Text style={styles.teamName}>{member.name}</Text>
+              </View>
             ))}
           </View>
 
@@ -83,6 +105,11 @@ export function ProjectDetailScreen({ route }: Props) {
               <Text style={styles.sectionLabel}>Documents</Text>
               {project.documents.map((doc) => (
                 <View key={doc.id} style={styles.documentRow}>
+                  <Ionicons
+                    name={doc.kind === "video" ? "videocam-outline" : "document-text-outline"}
+                    size={18}
+                    color={colors.primary}
+                  />
                   <Text style={styles.documentLabel}>{doc.label}</Text>
                   {doc.sizeLabel && <Text style={styles.documentMeta}>{doc.sizeLabel}</Text>}
                 </View>
@@ -95,8 +122,12 @@ export function ProjectDetailScreen({ route }: Props) {
                 context/progress-tracker.md Open Questions. Flagged here rather
                 than silently wiring fake behavior, same pattern as Laundria's
                 chrome-only Account menu rows. */}
-            <PrimaryButton label="Message Student" variant="secondary" onPress={() => {}} />
-            <PrimaryButton label="Express Interest" onPress={() => {}} />
+            <View style={styles.ctaButton}>
+              <PrimaryButton label="Message" variant="secondary" onPress={() => {}} />
+            </View>
+            <View style={styles.ctaButton}>
+              <PrimaryButton label="Express Interest" onPress={() => {}} />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -122,9 +153,10 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "800",
     color: colors.textPrimary,
+    letterSpacing: -0.3,
   },
   byline: {
     fontSize: 13,
@@ -137,26 +169,40 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   stat: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  statText: {
     fontSize: 12,
-    color: colors.placeholder,
+    color: colors.textSecondary,
+    fontWeight: "600",
   },
   tabs: {
     flexDirection: "row",
-    gap: spacing.lg,
+    gap: spacing.sm,
     marginTop: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    backgroundColor: colors.surface,
+    borderRadius: radii.pill,
+    padding: 4,
   },
-  tabLabel: {
-    fontSize: 14,
-    fontWeight: "600",
+  tabPill: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: spacing.sm,
+    borderRadius: radii.pill,
+  },
+  tabPillActive: {
+    backgroundColor: colors.background,
+    ...cardShadow,
+  },
+  tabPillLabel: {
+    fontSize: 13,
+    fontWeight: "700",
     color: colors.textSecondary,
-    paddingBottom: spacing.sm,
   },
-  tabLabelActive: {
+  tabPillLabelActive: {
     color: colors.primary,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
   },
   body: {
     fontSize: 14,
@@ -165,7 +211,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   sectionLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "700",
     color: colors.textPrimary,
     marginTop: spacing.lg,
@@ -176,25 +222,60 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: spacing.sm,
   },
+  teamRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.md,
+  },
+  teamMember: {
+    alignItems: "center",
+    gap: 4,
+    width: 64,
+  },
+  teamAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.primaryMuted,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  teamAvatarText: {
+    color: colors.primary,
+    fontWeight: "700",
+    fontSize: 15,
+  },
+  teamName: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    textAlign: "center",
+  },
   documentRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+    gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
   },
   documentLabel: {
+    flex: 1,
     fontSize: 13,
     color: colors.textPrimary,
+    fontWeight: "600",
   },
   documentMeta: {
     fontSize: 12,
     color: colors.placeholder,
   },
   ctaRow: {
+    flexDirection: "row",
     gap: spacing.sm,
     marginTop: spacing.xl,
+  },
+  ctaButton: {
+    flex: 1,
   },
 });

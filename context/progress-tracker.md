@@ -45,9 +45,7 @@ Update this file after every meaningful implementation change.
   All 10 FlutterFlow screens have a corresponding built screen; `ProjectDetailScreen`'s
   "Message Student" / "Express Interest" buttons are present but intentionally
   non-functional (their behavior is an unresolved Open Question below), same
-  chrome-only-until-decided pattern as Laundria's early Account tab. No component library
-  or brand color tokens yet (`ui-context.md` still flags these as unpulled from
-  FlutterFlow) — plain `StyleSheet` with a neutral placeholder palette only. Verified:
+  chrome-only-until-decided pattern as Laundria's early Account tab. Verified:
   `tsc --noEmit` clean, `eslint .` clean (`eslint-config-expo`, installed via
   `expo lint`'s first-run setup; note the `expo lint` wrapper itself fails in this
   environment with a "Cannot find module 'eslint'" resolution error even though eslint is
@@ -57,9 +55,24 @@ Update this file after every meaningful implementation change.
   Continue button); the Student tab bar, nested Home stack, and mock-data-backed Project
   Feed were also confirmed rendering correctly. Full continuous tap-through (Onboarding →
   Auth → Home → Feed → Detail) wasn't scripted end-to-end in this session — this
-  environment has no Accessibility permission for System Events and no `cliclick`
-  installed, so simulator taps can't be automated; the dev server was left running for
-  the user to tap through manually if desired.
+  environment has no Accessibility permission for System Events, so simulator taps can't
+  be automated (installing `cliclick` doesn't help without it — window coordinates still
+  require System Events access); the dev server was left running for the user to tap
+  through manually if desired.
+- Full visual restyle (2026-09-10) to match a Pinterest reference the user provided
+  ("E-Study Online Learning Mobile App - Minimal EdTech UI") across every screen — see
+  `ui-context.md` Visual Direction for the complete token/component breakdown (purple
+  `#6C4CE0` / orange `#FF7A30` palette, soft-shadow cards, icon badges, two chip styles,
+  progress bar, filled-circle active tab icons). New shared components: `IconBadge`,
+  `FilterChip`, `ProgressBar`; `TagChip` changed from a border-pill to a tinted-fill pill;
+  `PrimaryButton` and `ProjectCard` restyled to the new radius/shadow system. Installed
+  `@expo/vector-icons` for Ionicons (used throughout — search icons, stat icons, document
+  icons, tab icons). Verified: `tsc --noEmit` clean, `eslint .` clean, `expo export
+  --platform ios` bundles (1074 modules). Visually confirmed against the pin in the iOS
+  Simulator on the Onboarding screen (icon badges, card shadow, pill button, headline
+  weight all match); other screens share the same theme/components so are structurally
+  consistent but weren't each individually screenshotted against the pin — same
+  Accessibility-permission tap-automation limitation as above.
 
 ## In Progress
 
@@ -70,8 +83,10 @@ Update this file after every meaningful implementation change.
 - Scaffold `server/` (Go module, Gin); not yet created.
 - Wire `mobile-app/src/lib/api/*` from mock data to real `fetch` calls once `server/`
   exists.
-- Pull exact color/type/spacing tokens from the FlutterFlow project into
-  `mobile-app/src/theme/` (see `ui-context.md` What needs to be decided).
+- Visually confirm the remaining screens (Auth, Student Home, Discovery, Project Detail,
+  Upload, both Profiles) against the Pinterest reference — only Onboarding was actually
+  screenshotted and compared this session (see `ui-context.md`).
+- A real font family, to replace the current system-default-bold-only typography.
 - Decompose Phase 0 into buildable units and save the result as
   `context/specs/00-build-plan.md`.
 

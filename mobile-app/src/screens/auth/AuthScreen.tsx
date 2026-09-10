@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
@@ -59,7 +60,20 @@ export function AuthScreen({ route, navigation }: Props) {
           />
         </View>
 
-        <PrimaryButton label="Sign In" onPress={handleSignIn} />
+        <View style={styles.buttonWrap}>
+          <PrimaryButton label="Sign In" onPress={handleSignIn} />
+        </View>
+
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <View style={styles.googleButton}>
+          <Ionicons name="logo-google" size={18} color={colors.textPrimary} />
+          <Text style={styles.googleLabel}>Continue with Google</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -72,23 +86,24 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
-    gap: spacing.sm,
   },
   wordmark: {
     fontSize: 20,
     fontWeight: "800",
     color: colors.primary,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "800",
     color: colors.textPrimary,
+    letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 14,
     color: colors.textSecondary,
-    marginBottom: spacing.lg,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xl,
   },
   field: {
     marginBottom: spacing.md,
@@ -102,10 +117,44 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    borderRadius: radii.lg,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + 2,
     fontSize: 15,
+    color: colors.textPrimary,
+  },
+  buttonWrap: {
+    marginTop: spacing.sm,
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginVertical: spacing.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  dividerText: {
+    fontSize: 12,
+    color: colors.placeholder,
+  },
+  googleButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    paddingVertical: spacing.md,
+  },
+  googleLabel: {
+    fontSize: 15,
+    fontWeight: "700",
     color: colors.textPrimary,
   },
 });

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { ProgressBar } from "@/components/ProgressBar";
+import { IconBadge } from "@/components/IconBadge";
 
 const STEPS = ["Project Visuals", "Documentation", "External Links", "Review & Submit"] as const;
 
@@ -18,15 +21,17 @@ export function ProjectUploadScreen() {
   const [submitted, setSubmitted] = useState(false);
 
   const isLastStep = step === STEPS.length - 1;
-  const percentComplete = Math.round(((step + 1) / STEPS.length) * 100);
+  const progress = (step + 1) / STEPS.length;
+  const percentComplete = Math.round(progress * 100);
 
   if (submitted) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.successContent}>
+          <IconBadge name="checkmark-circle-outline" color={colors.primary} />
           <Text style={styles.stepTitle}>Project submitted</Text>
           <Text style={styles.reviewText}>
-            Your project is now visible in Discovery. (Mock-backed — nothing was actually
+            Your project is now visible in Discovery. (Mock-backed, nothing was actually
             uploaded yet.)
           </Text>
           <PrimaryButton
@@ -50,8 +55,8 @@ export function ProjectUploadScreen() {
         </Text>
         <Text style={styles.percent}>{percentComplete}% Complete</Text>
       </View>
-      <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${percentComplete}%` }]} />
+      <View style={styles.progressWrap}>
+        <ProgressBar progress={progress} />
       </View>
 
       <View style={styles.content}>
@@ -59,12 +64,14 @@ export function ProjectUploadScreen() {
 
         {step === 0 && (
           <View style={styles.placeholderBox}>
+            <Ionicons name="image-outline" size={28} color={colors.primary} />
             <Text style={styles.placeholderText}>Cover image / demo video upload</Text>
           </View>
         )}
 
         {step === 1 && (
           <View style={styles.placeholderBox}>
+            <Ionicons name="document-text-outline" size={28} color={colors.primary} />
             <Text style={styles.placeholderText}>Technical documentation (PDF) upload</Text>
           </View>
         )}
@@ -106,18 +113,22 @@ export function ProjectUploadScreen() {
 
       <View style={styles.footer}>
         {step > 0 && (
-          <PrimaryButton label="Back" variant="secondary" onPress={() => setStep(step - 1)} />
+          <View style={styles.footerButton}>
+            <PrimaryButton label="Back" variant="secondary" onPress={() => setStep(step - 1)} />
+          </View>
         )}
-        <PrimaryButton
-          label={isLastStep ? "Submit Project" : "Continue"}
-          onPress={() => {
-            if (isLastStep) {
-              setSubmitted(true);
-            } else {
-              setStep(step + 1);
-            }
-          }}
-        />
+        <View style={styles.footerButton}>
+          <PrimaryButton
+            label={isLastStep ? "Submit Project" : "Continue"}
+            onPress={() => {
+              if (isLastStep) {
+                setSubmitted(true);
+              } else {
+                setStep(step + 1);
+              }
+            }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -143,17 +154,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.placeholder,
   },
-  progressTrack: {
-    height: 4,
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.lg,
+  progressWrap: {
+    paddingHorizontal: spacing.lg,
     marginTop: spacing.sm,
-    borderRadius: radii.pill,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: colors.primary,
   },
   content: {
     flex: 1,
@@ -162,27 +165,32 @@ const styles = StyleSheet.create({
   successContent: {
     flex: 1,
     padding: spacing.lg,
+    alignItems: "center",
     justifyContent: "center",
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   stepTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "800",
     color: colors.textPrimary,
+    letterSpacing: -0.2,
     marginBottom: spacing.lg,
   },
   placeholderBox: {
     borderWidth: 1,
     borderColor: colors.border,
     borderStyle: "dashed",
-    borderRadius: radii.lg,
+    backgroundColor: colors.surface,
+    borderRadius: radii.xl,
     padding: spacing.xl,
     alignItems: "center",
     justifyContent: "center",
+    gap: spacing.sm,
   },
   placeholderText: {
     color: colors.textSecondary,
     fontSize: 13,
+    textAlign: "center",
   },
   fieldGroup: {
     gap: spacing.md,
@@ -198,9 +206,10 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    borderRadius: radii.lg,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + 2,
     fontSize: 15,
     color: colors.textPrimary,
   },
@@ -208,10 +217,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     lineHeight: 20,
+    textAlign: "center",
   },
   footer: {
     flexDirection: "row",
     gap: spacing.sm,
     padding: spacing.lg,
+  },
+  footerButton: {
+    flex: 1,
   },
 });

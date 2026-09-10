@@ -4,15 +4,35 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
+import { cardShadow } from "@/theme/shadow";
+import { IconBadge } from "@/components/IconBadge";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import type { RootStackParamList } from "@/navigation/types";
 import type { UserRole } from "@/lib/types/user";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
 
-const ROLE_OPTIONS: { role: UserRole; title: string; subtitle: string }[] = [
-  { role: "student", title: "Student", subtitle: "I want to showcase my project" },
-  { role: "professional", title: "Industry Professional", subtitle: "I'm looking for innovative ideas" },
+const ROLE_OPTIONS: {
+  role: UserRole;
+  title: string;
+  subtitle: string;
+  icon: "school-outline" | "briefcase-outline";
+  color: string;
+}[] = [
+  {
+    role: "student",
+    title: "Student",
+    subtitle: "I want to showcase my project",
+    icon: "school-outline",
+    color: colors.primary,
+  },
+  {
+    role: "professional",
+    title: "Industry Professional",
+    subtitle: "I'm looking for innovative ideas",
+    icon: "briefcase-outline",
+    color: colors.accent,
+  },
 ];
 
 export function OnboardingScreen({ navigation }: Props) {
@@ -36,8 +56,11 @@ export function OnboardingScreen({ navigation }: Props) {
                 style={[styles.optionCard, isSelected && styles.optionCardSelected]}
                 onPress={() => setSelected(option.role)}
               >
-                <Text style={styles.optionTitle}>{option.title}</Text>
-                <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
+                <IconBadge name={option.icon} color={option.color} />
+                <View style={styles.optionTextGroup}>
+                  <Text style={styles.optionTitle}>{option.title}</Text>
+                  <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
+                </View>
               </Pressable>
             );
           })}
@@ -67,17 +90,19 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
-    gap: spacing.sm,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "800",
     color: colors.textPrimary,
+    letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 14,
     color: colors.textSecondary,
-    marginBottom: spacing.lg,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xl,
+    lineHeight: 20,
   },
   sectionLabel: {
     fontSize: 13,
@@ -89,14 +114,22 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   optionCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    backgroundColor: colors.background,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radii.lg,
+    borderRadius: radii.xl,
     padding: spacing.md,
+    ...cardShadow,
   },
   optionCardSelected: {
     borderColor: colors.primary,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primaryMuted,
+  },
+  optionTextGroup: {
+    flex: 1,
   },
   optionTitle: {
     fontSize: 16,
@@ -106,7 +139,7 @@ const styles = StyleSheet.create({
   optionSubtitle: {
     fontSize: 13,
     color: colors.textSecondary,
-    marginTop: spacing.xs,
+    marginTop: 2,
   },
   footer: {
     padding: spacing.lg,

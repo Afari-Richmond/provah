@@ -49,34 +49,66 @@ observational, not measured.
     Interest" tag chips, and a "Saved Projects" grid. No verification/trust badge exists
     for this role; flagged as a gap in `project-overview.md`.
 
-## Visual Direction (observed, not yet formalized into tokens)
+## Visual Direction: implemented (2026-09-10)
 
-- Primary brand color reads as a purple/violet (buttons, active states, wordmark).
-  **Exact hex not yet pulled from the FlutterFlow source; do not guess it from
-  screenshots.**
-- Cards use a rounded, moderate-radius style (not full pill) with light hairline borders,
-  closer to the "oread-erp card mechanics" precedent (neutral gray scale + one brand
-  color + semantic status colors) than to Laundria's full-pill/Nunito direction, but this
-  has not been discussed with the user for Provah specifically and should not be assumed.
-- Tag/chip components (tech stack, categories, badges) are used heavily throughout;
-  worth building as one shared, reusable component early rather than per-screen.
+The user provided a Pinterest reference
+([pin 827325394087592648](https://www.pinterest.com/pin/827325394087592648/), "E-Study
+Online Learning Mobile App - Minimal EdTech UI") and asked for the whole app to be
+restyled to match it, explicitly approving the change ahead of time. This **supersedes**
+the earlier "not yet pulled from FlutterFlow" placeholder tokens below and is now the
+active, implemented style system across every screen in `mobile-app/`. Adapted for
+Provah's own content (projects, not courses); no text or assets were copied from the
+reference, only the visual language.
 
-## What needs to be decided
+- **Colors** (`mobile-app/src/theme/colors.ts`): primary purple `#6C4CE0` (buttons, active
+  tab badges, active icon badges, headline accents), accent orange `#FF7A30` (notification
+  badge, alternating icon badges/tags), tinted `primaryMuted`/`accentMuted` backgrounds for
+  tag chips, near-white `surface` (`#F6F4FC`) for search bars/input fields, `chipActiveBg`
+  (near-black) for active filter-chip fill. Both purple and orange came directly from the
+  pin, not inferred.
+- **Cards**: white background, large radius (`radii.xl` = 26), soft drop shadow
+  (`theme/shadow.ts` `cardShadow`, not a border) — matches the pin's card mechanic exactly.
+- **Icon badges** (`components/IconBadge.tsx`): rounded-square colored background (purple
+  or orange, alternating) with a white Ionicon, used on Onboarding role cards, Student
+  Home quick-access cards, and document/activity rows — the pin's dominant recurring motif.
+- **Two distinct chip styles**, matching the pin's two chip patterns:
+  `components/FilterChip.tsx` (category filters — solid dark fill when active, plain text
+  when not) and `components/TagChip.tsx` (tech stack / badges / areas of interest — tinted
+  pill, purple or orange).
+- **Progress bar** (`components/ProgressBar.tsx`): light gray track, colored fill,
+  full-pill radius — reused directly for the Project Upload flow's step progress, which
+  maps naturally onto the pin's lesson-completion progress bar.
+- **Tab bar**: white bar, active tab = filled purple circle behind the icon, inactive =
+  plain gray icon, no labels — matches the pin's bottom nav exactly.
+- **Typography**: bold system-default weights only (`theme/fonts.ts`), large tight-tracked
+  headlines (e.g. Student Home's "Let's Get Your Work Seen"). No custom font family
+  installed yet — the pin's font hasn't been identified/licensed, so this is a weight-only
+  match, not a full typographic match.
+- Verified: `tsc --noEmit` clean, `eslint .` clean, `expo export --platform ios` bundles
+  (1074 modules). Visually confirmed against the pin in the iOS Simulator: Onboarding
+  matches closely (icon badges, card shadows, pill button, headline weight). Other screens
+  share the same theme/components so are structurally consistent, but weren't each
+  individually screenshotted against the pin in this pass — full tap-through wasn't
+  scriptable in this environment (see `progress-tracker.md`).
 
-- Exact color tokens, typography, and spacing scale: pull from the FlutterFlow project
-  directly (export or inspector), then formalize into `mobile-app/src/theme/`.
-- Whether to build screens 1:1 from the FlutterFlow layouts or use them as a direction
-  and adapt for React Native idioms/performance (e.g. list virtualization on
-  Discovery/Feed); not yet discussed with the user.
+## What's still undecided
+
+- Whether to build screens 1:1 from the FlutterFlow layouts' *content/structure* now that
+  the *visual* direction has switched to the Pinterest reference — currently treating
+  FlutterFlow as the screen-inventory/content spec and the Pinterest pin as the visual
+  spec, layered together; not explicitly confirmed with the user as the intended split.
 - Light/dark mode: not yet discussed for this project (Laundria treats both as required
-  by default; not assumed to carry over here without asking).
+  by default; not assumed to carry over here without asking). Current implementation is
+  light-only.
 - A verification/trust visual treatment for the Professional role, to match the
   Student side's "Verified Student" badge (see Screen 10 above).
+- Real font family (the pin's headline font hasn't been identified/licensed).
 
 ## Component Library
 
-- Not yet chosen. Default to plain `StyleSheet` (React Native) until a decision is made,
-  per `code-standards.md`.
+- No third-party component library. Plain `StyleSheet` + a small set of shared components
+  (`IconBadge`, `TagChip`, `FilterChip`, `ProgressBar`, `PrimaryButton`, `ProjectCard`) in
+  `mobile-app/src/components/`, per `code-standards.md`.
 
 ## Modes
 

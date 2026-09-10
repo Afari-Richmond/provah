@@ -1,16 +1,32 @@
 /**
- * Placeholder neutral palette only. `context/ui-context.md` flags the real
- * FlutterFlow color tokens (brand purple, etc.) as not yet pulled from source.
- * Do not treat these values as final; swap once tokens are confirmed.
+ * Visual direction from the user's Pinterest reference
+ * (https://www.pinterest.com/pin/827325394087592648/, "E-Study Online
+ * Learning Mobile App - Minimal EdTech UI"): purple/orange on white, bold
+ * rounded headlines, icon-badge cards with soft shadows, pill category
+ * chips (dark filled active / plain inactive). Adapted for Provah's own
+ * content, not copied verbatim. Formalizes what `context/ui-context.md`
+ * previously flagged as "not yet pulled from FlutterFlow" — this Pinterest
+ * pin is now the active style reference, per explicit user direction.
  */
 export const colors = {
   background: "#FFFFFF",
-  surface: "#F5F5F6",
-  border: "#E2E2E4",
-  textPrimary: "#18181B",
-  textSecondary: "#6B6B70",
-  placeholder: "#9A9AA0",
-  primary: "#3A3A3C",
-  accent: "#3A3A3C",
+  surface: "#F6F4FC",
+  surfaceMuted: "#F1F1F4",
+  border: "#ECEAF5",
+  textPrimary: "#161221",
+  textSecondary: "#75717E",
+  placeholder: "#A6A2AF",
+
+  primary: "#6C4CE0",
+  primaryMuted: "#EFE9FD",
+  accent: "#FF7A30",
+  accentMuted: "#FFEBDC",
+
+  chipActiveBg: "#161221",
+  chipActiveText: "#FFFFFF",
+
+  progressTrack: "#EFEDF5",
   danger: "#D64545",
 };
+
+export const badgeColors = [colors.primary, colors.accent];
