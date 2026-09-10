@@ -5,7 +5,11 @@ A platform that gives African university final-year capstone projects visibility
 ## Layout
 
 - `mobile-app/`: React Native (Expo, TypeScript) app, single codebase for both roles
-  (Student, Industry Professional) branching at onboarding. **Not yet scaffolded.**
+  (Student, Industry Professional) branching at onboarding. Boilerplate scaffolded; built
+  frontend-first against mock data ahead of the backend (see
+  `context/ai-workflow-rules.md`). `src/lib/{types,mocks,api}/` per domain, `src/screens/`
+  organized by flow, `src/navigation/` (role-branching stacks/tabs), `@/*` path alias to
+  `src/`.
 - `server/`: Go backend module (own `go.mod`), shared by both roles. **Not yet scaffolded.**
   - `server/cmd/api/`: Go API entrypoint (Gin).
   - `server/internal/platform/`: shared backend infrastructure (DB, auth, file-upload issuance).
@@ -17,13 +21,18 @@ A platform that gives African university final-year capstone projects visibility
 
 Pre-build. Planning complete; context system scaffolded (mirroring `~/laundria`'s
 structure). UI designed in FlutterFlow (see `context/ui-context.md` for the share link and
-screen inventory). `mobile-app/` and `server/` not yet started; see
-`context/progress-tracker.md` for current phase and next steps.
+screen inventory). `mobile-app/` boilerplate scaffolded (frontend-first, mock-backed);
+`server/` not yet started; see `context/progress-tracker.md` for current phase and next
+steps.
 
 ## Development
 
-Neither `mobile-app/` nor `server/` is runnable yet; not yet scaffolded. See
-`context/progress-tracker.md` Next Up.
+```bash
+# Mobile app (Expo)
+cd mobile-app && npm start
+```
+
+`server/` isn't runnable yet; not yet scaffolded. See `context/progress-tracker.md` Next Up.
 
 ## Commit messages
 

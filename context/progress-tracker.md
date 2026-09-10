@@ -8,9 +8,9 @@ Update this file after every meaningful implementation change.
 
 ## Current Goal
 
-- Scaffold `mobile-app/` (React Native/Expo, TypeScript) and `server/` (Go, Gin) boilerplate,
-  then begin real Phase 0 feature work: auth/user models for both roles, onboarding role
-  picker, and basic profile setup (see `project-overview.md`).
+- Scaffold `server/` (Go, Gin) boilerplate, then begin real Phase 0 feature work: auth/user
+  models for both roles, wiring the mobile app's mock-backed `lib/api/` calls to real
+  endpoints, and basic profile setup (see `project-overview.md`).
 
 ## Completed
 
@@ -29,6 +29,37 @@ Update this file after every meaningful implementation change.
   `ui-context.md`).
 - Repo published to GitHub as a public repo at `github.com/Afari-Richmond/provah`, with a
   description and the landing page URL (`https://provah.richmondafari.me`) set.
+- `mobile-app/` scaffolded (2026-09-10): `create-expo-app` (blank-typescript template) +
+  React Navigation (native-stack + bottom-tabs) + `@/*` → `src/*` path alias
+  (`babel-plugin-module-resolver`, installed as a top-level devDependency alongside
+  `babel-preset-expo` for the same reason noted in Laundria's own build history: Expo's
+  nested copy isn't visible to Node's babel config resolution otherwise). Frontend-first,
+  mock-backed, mirroring Laundria's pattern: `src/lib/{types,mocks,api}/` per domain
+  (`user`, `project`), `src/lib/api/envelope.ts` mirroring the Go backend's `APIResponse`
+  shape from `code-standards.md`. Navigation: root `AppNavigator` (Splash → Onboarding →
+  Auth → role branch), `StudentTabNavigator` (HomeTab nested-stack with Home/ProjectFeed/
+  ProjectDetail, UploadTab, ProfileTab) and `ProfessionalTabNavigator` (DiscoveryTab
+  nested-stack with Discovery/ProjectDetail, ProfileTab) per `architecture.md` Roles and
+  App Branching. `useAuth` context tracks the onboarding-selected role for the session
+  only (no real auth yet, matching the Open Architecture Question in `architecture.md`).
+  All 10 FlutterFlow screens have a corresponding built screen; `ProjectDetailScreen`'s
+  "Message Student" / "Express Interest" buttons are present but intentionally
+  non-functional (their behavior is an unresolved Open Question below), same
+  chrome-only-until-decided pattern as Laundria's early Account tab. No component library
+  or brand color tokens yet (`ui-context.md` still flags these as unpulled from
+  FlutterFlow) — plain `StyleSheet` with a neutral placeholder palette only. Verified:
+  `tsc --noEmit` clean, `eslint .` clean (`eslint-config-expo`, installed via
+  `expo lint`'s first-run setup; note the `expo lint` wrapper itself fails in this
+  environment with a "Cannot find module 'eslint'" resolution error even though eslint is
+  correctly installed — run `eslint .` directly instead), `expo export --platform ios`
+  bundles successfully (995 modules). Visually checked in the iOS Simulator (booted
+  `iPhone 17`): a fresh cold launch renders Onboarding correctly (role cards, disabled
+  Continue button); the Student tab bar, nested Home stack, and mock-data-backed Project
+  Feed were also confirmed rendering correctly. Full continuous tap-through (Onboarding →
+  Auth → Home → Feed → Detail) wasn't scripted end-to-end in this session — this
+  environment has no Accessibility permission for System Events and no `cliclick`
+  installed, so simulator taps can't be automated; the dev server was left running for
+  the user to tap through manually if desired.
 
 ## In Progress
 
@@ -36,8 +67,9 @@ Update this file after every meaningful implementation change.
 
 ## Next Up
 
-- Scaffold `mobile-app/` (Expo, TypeScript, React Navigation); not yet created.
 - Scaffold `server/` (Go module, Gin); not yet created.
+- Wire `mobile-app/src/lib/api/*` from mock data to real `fetch` calls once `server/`
+  exists.
 - Pull exact color/type/spacing tokens from the FlutterFlow project into
   `mobile-app/src/theme/` (see `ui-context.md` What needs to be decided).
 - Decompose Phase 0 into buildable units and save the result as
