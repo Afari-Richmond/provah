@@ -98,6 +98,26 @@ reference, only the visual language.
   with `paddingVertical: spacing.md + 4` and `paddingHorizontal: spacing.lg`. Applied
   app-wide since it's one shared component, not scoped to Auth alone — see
   `progress-tracker.md` for the judgment-call note.
+- **Feedback modal** (2026-09-10, third pass): a Pinterest reference
+  ([pin 716916834477537954](https://www.pinterest.com/pin/716916834477537954/), "Minimal
+  Success Confirmation UI") for "success toasts" turned out to be a bottom-sheet
+  confirmation modal, not a small transient toast — built as that instead (a real toast
+  would lose the reference's badge/title/subtitle/button layout). New
+  `components/FeedbackSheet.tsx`: dimmed backdrop, white sheet with rounded top corners,
+  a scalloped `MaterialCommunityIcons` "check-decagram" / "alert-decagram" badge on a
+  tinted circle (green `colors.success` / red `colors.danger`), bold title, subtitle, and
+  a full-width `PrimaryButton` to dismiss. The user asked to "replicate for errors" — one
+  component with a `variant` prop covers both rather than a separate error design, since
+  the reference's mechanics (badge + title + subtitle + button) are identical, only the
+  icon/color change. Wired into two real spots: `ProjectUploadScreen`'s submit success
+  (replacing its old inline success view) and `AuthScreen`'s empty-field validation error
+  (the only client-side error condition that exists without a real backend yet — see
+  Open Architecture Questions in `architecture.md`, no fake network-error state was
+  invented). Verified: `tsc --noEmit` clean, `eslint .` clean. Visually confirmed both
+  variants directly in the iOS Simulator via a temporary debug shortcut (forced
+  `AppNavigator`'s `initialRouteName` to `"Auth"` and `showError` to `true`, screenshotted
+  both variants, then fully reverted before committing — `git diff` confirmed zero residue)
+  since simulator taps still aren't automatable in this environment.
 
 ## What's still undecided
 

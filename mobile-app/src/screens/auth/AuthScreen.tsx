@@ -6,6 +6,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { FeedbackSheet } from "@/components/FeedbackSheet";
 import { useAuth } from "@/hooks/useAuth";
 import type { RootStackParamList } from "@/navigation/types";
 
@@ -14,13 +15,20 @@ type Props = NativeStackScreenProps<RootStackParamList, "Auth">;
 // No real auth yet (see context/architecture.md Open Architecture Questions:
 // student email verification mechanism is undecided). "Sign In" below is
 // mock-backed and navigation-only, same pattern as Laundria's early scaffold.
+// The only real validation here is "did the user type anything" — there's no
+// backend yet to return a real auth error against.
 export function AuthScreen({ route, navigation }: Props) {
   const { role } = route.params;
   const { setRole } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showError, setShowError] = useState(false);
 
   function handleSignIn() {
+    if (!email.trim() || !password.trim()) {
+      setShowError(true);
+      return;
+    }
     setRole(role);
     navigation.reset({
       index: 0,
@@ -75,6 +83,15 @@ export function AuthScreen({ route, navigation }: Props) {
           <Text style={styles.googleLabel}>Continue with Google</Text>
         </View>
       </View>
+
+      <FeedbackSheet
+        visible={showError}
+        variant="error"
+        title="Missing information"
+        message="Enter your email and password to sign in."
+        buttonLabel="Try Again"
+        onDismiss={() => setShowError(false)}
+      />
     </SafeAreaView>
   );
 }

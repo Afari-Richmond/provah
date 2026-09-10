@@ -6,12 +6,12 @@ import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { ProgressBar } from "@/components/ProgressBar";
-import { IconBadge } from "@/components/IconBadge";
+import { FeedbackSheet } from "@/components/FeedbackSheet";
 
 const STEPS = ["Project Visuals", "Documentation", "External Links", "Review & Submit"] as const;
 
 // Frontend-first, mock-backed: submitting doesn't persist anywhere yet, just
-// shows an in-place success state. TODO: wire to POST /api/v1/projects and
+// shows the success FeedbackSheet. TODO: wire to POST /api/v1/projects and
 // presigned-upload endpoints once `server/` exists (see
 // context/architecture.md Storage Model).
 export function ProjectUploadScreen() {
@@ -23,29 +23,6 @@ export function ProjectUploadScreen() {
   const isLastStep = step === STEPS.length - 1;
   const progress = (step + 1) / STEPS.length;
   const percentComplete = Math.round(progress * 100);
-
-  if (submitted) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.successContent}>
-          <IconBadge name="checkmark-circle-outline" color={colors.primary} />
-          <Text style={styles.stepTitle}>Project submitted</Text>
-          <Text style={styles.reviewText}>
-            Your project is now visible in Discovery. (Mock-backed, nothing was actually
-            uploaded yet.)
-          </Text>
-          <PrimaryButton
-            label="Upload Another"
-            variant="secondary"
-            onPress={() => {
-              setStep(0);
-              setSubmitted(false);
-            }}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -130,6 +107,18 @@ export function ProjectUploadScreen() {
           />
         </View>
       </View>
+
+      <FeedbackSheet
+        visible={submitted}
+        variant="success"
+        title="Project submitted"
+        message="Your project is now visible in Discovery. (Mock-backed — nothing was actually uploaded yet.)"
+        buttonLabel="Done"
+        onDismiss={() => {
+          setSubmitted(false);
+          setStep(0);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -161,13 +150,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: spacing.lg,
-  },
-  successContent: {
-    flex: 1,
-    padding: spacing.lg,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.sm,
   },
   stepTitle: {
     fontSize: 19,

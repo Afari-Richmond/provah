@@ -26,7 +26,11 @@ export const colors = {
   chipActiveText: "#FFFFFF",
 
   progressTrack: "#EFEDF5",
+  success: "#1E9E5A",
+  successMuted: "#E3F6EB",
   danger: "#D64545",
+  dangerMuted: "#FCE9E9",
+  overlay: "rgba(22, 18, 33, 0.45)",
 };
 
 export const badgeColors = [colors.primary, colors.accent];

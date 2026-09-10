@@ -87,6 +87,25 @@ Update this file after every meaningful implementation change.
   and `screencapture`), so the Auth screen's actual buttons weren't directly
   screenshotted — confidence here rests on `PrimaryButton` being the single shared
   component already confirmed elsewhere, not a screenshot of this specific screen.
+- New `FeedbackSheet` component (2026-09-10) for success/error confirmation, per a third
+  Pinterest reference ("Minimal Success Confirmation UI") — see `ui-context.md` Visual
+  Direction for the full breakdown. Wired into `ProjectUploadScreen` (success, replacing
+  its old inline success view) and `AuthScreen` (error, on empty email/password). Verified:
+  `tsc --noEmit` clean, `eslint .` clean, `expo export --platform ios` bundles. **Found a
+  working way to visually verify screens that aren't the app's initial route**, worth
+  reusing in future sessions: temporarily set `initialRouteName` (and `initialParams` where
+  a route needs them) on the target screen in `AppNavigator.tsx`, force-quit and reopen
+  Expo Go via `xcrun simctl terminate booted host.exp.Exponent` +
+  `xcrun simctl openurl booted "exp://<metro-lan-ip>:8081"` (a plain `expo start --ios`
+  restart or app-switcher relaunch is not enough — Expo Go silently resumes the old JS
+  bundle/nav state instead of reloading), screenshot, then fully revert the temporary nav
+  change and confirm via `git diff` before committing. Used this to directly confirm both
+  `FeedbackSheet` variants render correctly (scalloped check/alert decagram badge, tinted
+  circle, title, subtitle, full-pill button, dimmed backdrop) — first real screenshot
+  evidence of a non-initial screen this project has had, superseding the "simulator taps
+  aren't automatable so downstream screens can't be verified" caveat on earlier entries
+  above (taps are still unavailable, but full-screen review via this route-swap technique
+  is not blocked by that).
 
 ## In Progress
 
