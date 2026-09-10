@@ -119,6 +119,17 @@ Update this file after every meaningful implementation change.
   slide in the iOS Simulator; the Skip link and the persisted-session skip-to-app path
   were not independently visually confirmed this pass (see `ui-context.md` for why and
   what would be needed).
+- Full-bleed colored "hero" header added to both home surfaces (2026-09-10), per a
+  Pinterest reference ("Purple Accents" — construction/material-tracking app) — see
+  `ui-context.md` Visual Direction for the full breakdown. New `components/HeroHeader.tsx`
+  and three "frosted glass" color tokens; `IconBadge` gained an `iconColor` prop. Applied
+  to `StudentHomeScreen` and `ProfessionalDiscoveryScreen`, not just the one the user
+  pointed at — a judgment call for cross-role consistency, same reasoning as the earlier
+  button-radius decision. Verified: `tsc --noEmit` clean, `eslint .` clean, `expo export
+  --platform ios` bundles. Visually confirmed **both** screens in the iOS Simulator via the
+  `initialRouteName` debug-shortcut technique (fully reverted, `git diff` confirmed clean
+  before committing) — first time this session two non-initial screens were both directly
+  screenshotted and compared against a reference in the same pass.
 
 ## In Progress
 
@@ -129,9 +140,9 @@ Update this file after every meaningful implementation change.
 - Scaffold `server/` (Go module, Gin); not yet created.
 - Wire `mobile-app/src/lib/api/*` from mock data to real `fetch` calls once `server/`
   exists.
-- Visually confirm the remaining screens (Auth, Student Home, Discovery, Project Detail,
-  Upload, both Profiles) against the Pinterest reference — only Onboarding was actually
-  screenshotted and compared this session (see `ui-context.md`).
+- Visually confirm the remaining screens (Auth, Project Detail, Upload, both Profiles)
+  against their Pinterest references — Onboarding, Student Home, and Professional
+  Discovery have now been screenshotted and compared (see `ui-context.md`).
 - A real font family, to replace the current system-default-bold-only typography.
 - Some way to clear the persisted role (a "Log Out" action) — doesn't exist anywhere yet,
   so once a mock sign-in happens on a given simulator/device, the onboarding carousel and

@@ -6,10 +6,11 @@ import { radii } from "@/theme/spacing";
 type Props = {
   name: keyof typeof Ionicons.glyphMap;
   color?: string;
+  iconColor?: string;
   size?: "sm" | "md";
 };
 
-export function IconBadge({ name, color = colors.primary, size = "md" }: Props) {
+export function IconBadge({ name, color = colors.primary, iconColor = colors.background, size = "md" }: Props) {
   const boxSize = size === "sm" ? 32 : 44;
   return (
     <View
@@ -18,7 +19,7 @@ export function IconBadge({ name, color = colors.primary, size = "md" }: Props) 
         { backgroundColor: color, width: boxSize, height: boxSize, borderRadius: radii.md },
       ]}
     >
-      <Ionicons name={name} size={size === "sm" ? 16 : 20} color={colors.background} />
+      <Ionicons name={name} size={size === "sm" ? 16 : 20} color={iconColor} />
     </View>
   );
 }

@@ -31,6 +31,13 @@ export const colors = {
   danger: "#D64545",
   dangerMuted: "#FCE9E9",
   overlay: "rgba(22, 18, 33, 0.45)",
+
+  // "Frosted glass" surfaces for content sitting on top of a solid colors.primary
+  // header (see HeroHeader) — matches the translucent status card in the
+  // construction-tracking-app reference (pin 1126251819341489551).
+  onPrimarySurface: "rgba(255, 255, 255, 0.16)",
+  onPrimaryBorder: "rgba(255, 255, 255, 0.24)",
+  onPrimaryTextSecondary: "rgba(255, 255, 255, 0.75)",
 };
 
 export const badgeColors = [colors.primary, colors.accent];

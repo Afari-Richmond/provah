@@ -153,6 +153,30 @@ reference, only the visual language.
   either tap automation to complete a real Sign In first, or another temporary debug
   shortcut to seed `AsyncStorage` directly; not done this pass, reasoned through via code
   review instead (a small, low-risk async/await + `navigation.reset` call).
+- **Colored hero header** (2026-09-10, fifth pass): a Pinterest reference
+  ([pin 1126251819341489551](https://www.pinterest.com/pin/1126251819341489551/), "Purple
+  Accents" — a construction/material-tracking app) showed a full-bleed solid-color header
+  (extends behind the status bar, rounded bottom corners) holding the greeting and a
+  translucent "frosted glass" status card, with the rest of the screen on a plain white
+  background below. The reference's purple is close enough to our existing `colors.primary`
+  that no new brand color was needed. New `components/HeroHeader.tsx`: a `View` that pads
+  for the safe-area top inset itself (`useSafeAreaInsets`), solid `colors.primary`
+  background, large rounded bottom corners. New "frosted glass" tokens in
+  `theme/colors.ts`: `onPrimarySurface`, `onPrimaryBorder`, `onPrimaryTextSecondary`
+  (translucent whites for content sitting on the purple header). `IconBadge` gained an
+  `iconColor` prop (previously hardcoded to white) so a badge can use a translucent
+  background with a white icon on top. The user asked about "the homepage"; applied to
+  **both** role's home surfaces — `StudentHomeScreen` (greeting + frosted stat card in the
+  header, quick-access cards + activity below) and `ProfessionalDiscoveryScreen` (title +
+  subtitle + an opaque white search bar in the header, category chips + project grid
+  below) — for cross-role consistency rather than scoping to one screen, a judgment call
+  flagged per `ai-workflow-rules.md` (same pattern as the earlier button-radius decision).
+  Verified: `tsc --noEmit` clean, `eslint .` clean, `expo export --platform ios` bundles.
+  Visually confirmed **both** screens directly in the iOS Simulator via the
+  `initialRouteName` debug-shortcut technique (see `progress-tracker.md`) — full-bleed
+  purple header with rounded bottom corners, frosted stat card, and opaque white search
+  bar all render correctly and match the reference's mechanics closely; shortcut fully
+  reverted and confirmed via `git diff` before committing.
 
 ## What's still undecided
 

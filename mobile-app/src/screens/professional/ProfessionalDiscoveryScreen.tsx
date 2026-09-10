@@ -5,8 +5,10 @@ import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
+import { cardShadow } from "@/theme/shadow";
 import { FilterChip } from "@/components/FilterChip";
 import { ProjectCard } from "@/components/ProjectCard";
+import { HeroHeader } from "@/components/HeroHeader";
 import { listProjects } from "@/lib/api/projects";
 import type { Project } from "@/lib/types/project";
 import type { DiscoveryStackParamList } from "@/navigation/types";
@@ -32,24 +34,28 @@ export function ProfessionalDiscoveryScreen({ navigation }: Props) {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <HeroHeader>
+        <Text style={styles.title}>Discover Projects</Text>
+        <Text style={styles.subtitle}>Find student talent worth backing</Text>
+        <View style={styles.searchRow}>
+          <Ionicons name="search-outline" size={18} color={colors.placeholder} />
+          <TextInput
+            style={styles.search}
+            placeholder="Search by keyword, field, or university"
+            placeholderTextColor={colors.placeholder}
+            value={query}
+            onChangeText={setQuery}
+          />
+        </View>
+      </HeroHeader>
+
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <View>
-            <Text style={styles.title}>Discover Projects</Text>
-            <View style={styles.searchRow}>
-              <Ionicons name="search-outline" size={18} color={colors.placeholder} />
-              <TextInput
-                style={styles.search}
-                placeholder="Search by keyword, field, or university"
-                placeholderTextColor={colors.placeholder}
-                value={query}
-                onChangeText={setQuery}
-              />
-            </View>
             <View style={styles.chipRow}>
               {CATEGORIES.map((item) => (
                 <FilterChip
@@ -94,30 +100,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  listContent: {
-    padding: spacing.lg,
-  },
   title: {
     fontSize: 24,
     fontWeight: "800",
-    color: colors.textPrimary,
+    color: colors.background,
     letterSpacing: -0.3,
-    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: colors.onPrimaryTextSecondary,
+    marginTop: 2,
+    marginBottom: spacing.md,
   },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
     borderRadius: radii.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
-    marginBottom: spacing.sm,
+    ...cardShadow,
   },
   search: {
     flex: 1,
     fontSize: 14,
     color: colors.textPrimary,
+  },
+  listContent: {
+    padding: spacing.lg,
   },
   chipRow: {
     flexDirection: "row",

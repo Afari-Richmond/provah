@@ -7,6 +7,7 @@ import { colors } from "@/theme/colors";
 import { radii, spacing } from "@/theme/spacing";
 import { cardShadow } from "@/theme/shadow";
 import { IconBadge } from "@/components/IconBadge";
+import { HeroHeader } from "@/components/HeroHeader";
 import { fetchStudentProfile } from "@/lib/api/profile";
 import type { StudentProfile } from "@/lib/types/user";
 import type { HomeStackParamList } from "@/navigation/types";
@@ -30,8 +31,8 @@ export function StudentHomeScreen({ navigation }: Props) {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <HeroHeader>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <View style={styles.avatar}>
@@ -47,15 +48,22 @@ export function StudentHomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        <Text style={styles.headline}>Let&rsquo;s Get Your Work Seen</Text>
-
         <View style={styles.statCard}>
-          <IconBadge name="stats-chart-outline" color={colors.primary} />
+          <IconBadge
+            name="stats-chart-outline"
+            color={colors.onPrimarySurface}
+            iconColor={colors.background}
+            size="sm"
+          />
           <View style={styles.statTextGroup}>
             <Text style={styles.statTitle}>{profile?.stats.totalViews ?? 0} views this week</Text>
             <Text style={styles.statSubtitle}>Across all your projects</Text>
           </View>
         </View>
+      </HeroHeader>
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.headline}>Let&rsquo;s Get Your Work Seen</Text>
 
         <View style={styles.quickAccessRow}>
           <Pressable
@@ -105,29 +113,29 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.primaryMuted,
+    backgroundColor: colors.onPrimarySurface,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    color: colors.primary,
+    color: colors.background,
     fontWeight: "700",
     fontSize: 15,
   },
   greetingMeta: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.onPrimaryTextSecondary,
   },
   greetingName: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.textPrimary,
+    color: colors.background,
   },
   bellBadge: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.onPrimarySurface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -136,17 +144,17 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.textPrimary,
     letterSpacing: -0.3,
-    marginTop: spacing.md,
   },
   statCard: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
-    backgroundColor: colors.background,
+    backgroundColor: colors.onPrimarySurface,
+    borderWidth: 1,
+    borderColor: colors.onPrimaryBorder,
     borderRadius: radii.xl,
     padding: spacing.md,
-    marginTop: spacing.sm,
-    ...cardShadow,
+    marginTop: spacing.lg,
   },
   statTextGroup: {
     flex: 1,
@@ -154,11 +162,11 @@ const styles = StyleSheet.create({
   statTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: colors.textPrimary,
+    color: colors.background,
   },
   statSubtitle: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.onPrimaryTextSecondary,
     marginTop: 2,
   },
   quickAccessRow: {
