@@ -18,7 +18,9 @@ observational, not measured.
 2. **Onboarding**: "Showcase Your Best Work" value prop, then an "I am a..." role picker:
    **Student** ("I want to showcase my project") vs **Industry Professional** ("I'm looking
    for innovative ideas"). This is the role-branch point for the whole app; see
-   `architecture.md` Roles and App Branching.
+   `architecture.md` Roles and App Branching. **Split into two screens 2026-09-10** — see
+   Visual Direction below (Onboarding carousel + persisted session) for what changed and
+   why; the role picker itself is unchanged, just moved to its own `RoleSelect` screen.
 3. **Auth**: "Welcome back" / "Welcome Back" login card: email address (placeholder
    `name@university.edu`, implies a university-affiliated email is expected from students,
    mechanism undecided, see `progress-tracker.md`), password, "Sign In" primary button,
@@ -118,6 +120,39 @@ reference, only the visual language.
   `AppNavigator`'s `initialRouteName` to `"Auth"` and `showError` to `true`, screenshotted
   both variants, then fully reverted before committing — `git diff` confirmed zero residue)
   since simulator taps still aren't automatable in this environment.
+- **Onboarding carousel + persisted session** (2026-09-10, fourth pass): a Pinterest
+  reference ([pin 37154765671383298](https://www.pinterest.com/pin/37154765671383298/),
+  "Zevoa Travel & Logistics App Onboarding UI Design") showed a splash screen (centered
+  wordmark on plain white, no tint) followed by a swipeable welcome-carousel screen
+  (illustration, headline, subtitle, dot pagination). The user asked for 3 such slides
+  before Auth/home, "in case the person is logged in" — read as also wanting persisted
+  session skip, not just the carousel. This **restructures navigation**: what was one
+  `Onboarding` screen (value-prop text + role picker together) is now two —
+  `Onboarding` (new 3-slide carousel, original copy, not copied from the reference: capstone
+  showcase → industry discovery → direct connection, each with a large Ionicon inside a
+  tinted circle standing in for the reference's illustration artwork, since no real
+  illustration asset exists or was sourced) and `RoleSelect` (the original "I am a..." role
+  picker, moved verbatim, unstyled otherwise). `SplashScreen` now checks
+  `lib/session.ts`'s `getPersistedRole()` (installed `@react-native-async-storage/
+  async-storage`) before deciding where to go: found → `navigation.reset` straight into
+  `StudentApp`/`ProfessionalApp`, skipping onboarding/role-select/auth entirely; not found
+  → the carousel. `AuthScreen`'s mock "Sign In" now calls `persistRole()` on success. This
+  is still not real auth (see `architecture.md` Open Architecture Questions) — just a
+  remembered role flag across app restarts, clearly commented as such in `session.ts`.
+  Splash's background changed from the tinted `colors.surface` to plain `colors.background`
+  to match the reference. No logout UI exists yet to clear the persisted role for
+  re-testing/demoing the first-run flow — flagged as a gap, see `progress-tracker.md`.
+  Verified: `tsc --noEmit` clean, `eslint .` clean, `expo export --platform ios` bundles.
+  Visually confirmed the carousel's first slide directly in the iOS Simulator (illustration
+  circle, headline, subtitle, 3-dot pagination with active pill dot, full-pill "Next"
+  button — matches the reference's mechanics closely); the top-right "Skip" link exists in
+  code but was occluded in the screenshot by the Console Ninja VS Code extension's debug
+  overlay (confirmed unrelated to app code, same false-positive Laundria's session history
+  already flagged), so it wasn't independently visually confirmed. The persisted-session
+  skip path (Splash → straight into the app) also wasn't visually confirmed — would need
+  either tap automation to complete a real Sign In first, or another temporary debug
+  shortcut to seed `AsyncStorage` directly; not done this pass, reasoned through via code
+  review instead (a small, low-risk async/await + `navigation.reset` call).
 
 ## What's still undecided
 

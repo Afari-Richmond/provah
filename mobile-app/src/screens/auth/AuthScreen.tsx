@@ -8,6 +8,7 @@ import { radii, spacing } from "@/theme/spacing";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { FeedbackSheet } from "@/components/FeedbackSheet";
 import { useAuth } from "@/hooks/useAuth";
+import { persistRole } from "@/lib/session";
 import type { RootStackParamList } from "@/navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Auth">;
@@ -30,6 +31,7 @@ export function AuthScreen({ route, navigation }: Props) {
       return;
     }
     setRole(role);
+    persistRole(role);
     navigation.reset({
       index: 0,
       routes: [{ name: role === "student" ? "StudentApp" : "ProfessionalApp" }],

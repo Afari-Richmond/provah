@@ -106,6 +106,19 @@ Update this file after every meaningful implementation change.
   aren't automatable so downstream screens can't be verified" caveat on earlier entries
   above (taps are still unavailable, but full-screen review via this route-swap technique
   is not blocked by that).
+- Onboarding restructured into a 3-slide carousel + separate role-select screen, plus a
+  persisted "remembered role" session check at Splash, per a fourth Pinterest reference
+  ("Zevoa Travel & Logistics App Onboarding UI Design") and the user's explicit ask for "3
+  before it moves to auth or homepage, in case the person is logged in" — full breakdown
+  in `ui-context.md` Visual Direction. New: `RoleSelectScreen.tsx` (moved role picker),
+  `lib/session.ts` (`@react-native-async-storage/async-storage`-backed, mock-session-only,
+  not real auth). `RootStackParamList` gained a `RoleSelect` route. `SplashScreen` now
+  branches on persisted role before its old fixed `Onboarding` redirect. `AuthScreen`
+  persists the role on mock sign-in success. Verified: `tsc --noEmit` clean, `eslint .`
+  clean, `expo export --platform ios` bundles. Visually confirmed the carousel's first
+  slide in the iOS Simulator; the Skip link and the persisted-session skip-to-app path
+  were not independently visually confirmed this pass (see `ui-context.md` for why and
+  what would be needed).
 
 ## In Progress
 
@@ -120,6 +133,11 @@ Update this file after every meaningful implementation change.
   Upload, both Profiles) against the Pinterest reference — only Onboarding was actually
   screenshotted and compared this session (see `ui-context.md`).
 - A real font family, to replace the current system-default-bold-only typography.
+- Some way to clear the persisted role (a "Log Out" action) — doesn't exist anywhere yet,
+  so once a mock sign-in happens on a given simulator/device, the onboarding carousel and
+  role-select/auth flow can't be seen again without manually clearing `AsyncStorage`.
+- Visually confirm the onboarding carousel's Skip link and the persisted-session
+  skip-straight-to-app path on Splash — neither was independently confirmed this pass.
 - Decompose Phase 0 into buildable units and save the result as
   `context/specs/00-build-plan.md`.
 

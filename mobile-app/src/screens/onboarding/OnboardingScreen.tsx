@@ -1,82 +1,111 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useRef, useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type NativeSyntheticEvent,
+  type NativeScrollEvent,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { colors } from "@/theme/colors";
-import { radii, spacing } from "@/theme/spacing";
-import { cardShadow } from "@/theme/shadow";
-import { IconBadge } from "@/components/IconBadge";
+import { spacing } from "@/theme/spacing";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import type { RootStackParamList } from "@/navigation/types";
-import type { UserRole } from "@/lib/types/user";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
 
-const ROLE_OPTIONS: {
-  role: UserRole;
+const SLIDES: {
+  icon: keyof typeof Ionicons.glyphMap;
+  tint: string;
+  tintMuted: string;
   title: string;
   subtitle: string;
-  icon: "school-outline" | "briefcase-outline";
-  color: string;
 }[] = [
   {
-    role: "student",
-    title: "Student",
-    subtitle: "I want to showcase my project",
-    icon: "school-outline",
-    color: colors.primary,
+    icon: "flag-outline",
+    tint: colors.primary,
+    tintMuted: colors.primaryMuted,
+    title: "Showcase Your Capstone Project",
+    subtitle: "Give your final-year project a life beyond the grading panel.",
   },
   {
-    role: "professional",
-    title: "Industry Professional",
-    subtitle: "I'm looking for innovative ideas",
-    icon: "briefcase-outline",
-    color: colors.accent,
+    icon: "search-outline",
+    tint: colors.accent,
+    tintMuted: colors.accentMuted,
+    title: "Get Discovered by Industry",
+    subtitle: "Professionals browse real student work looking for talent worth backing.",
+  },
+  {
+    icon: "chatbubbles-outline",
+    tint: colors.primary,
+    tintMuted: colors.primaryMuted,
+    title: "Connect Directly",
+    subtitle: "Message interested professionals and turn a grade into a real opportunity.",
   },
 ];
 
 export function OnboardingScreen({ navigation }: Props) {
-  const [selected, setSelected] = useState<UserRole | null>(null);
+  const { width } = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const listRef = useRef<FlatList>(null);
+  const isLastSlide = index === SLIDES.length - 1;
+
+  function goToRoleSelect() {
+    navigation.replace("RoleSelect");
+  }
+
+  function handleNext() {
+    if (isLastSlide) {
+      goToRoleSelect();
+      return;
+    }
+    listRef.current?.scrollToIndex({ index: index + 1, animated: true });
+  }
+
+  function handleScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const nextIndex = Math.round(event.nativeEvent.contentOffset.x / width);
+    setIndex(nextIndex);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Showcase Your Best Work</Text>
-        <Text style={styles.subtitle}>
-          Upload your capstone project and get discovered by industry leaders.
-        </Text>
-
-        <Text style={styles.sectionLabel}>I am a...</Text>
-        <View style={styles.optionsList}>
-          {ROLE_OPTIONS.map((option) => {
-            const isSelected = selected === option.role;
-            return (
-              <Pressable
-                key={option.role}
-                style={[styles.optionCard, isSelected && styles.optionCardSelected]}
-                onPress={() => setSelected(option.role)}
-              >
-                <IconBadge name={option.icon} color={option.color} />
-                <View style={styles.optionTextGroup}>
-                  <Text style={styles.optionTitle}>{option.title}</Text>
-                  <Text style={styles.optionSubtitle}>{option.subtitle}</Text>
-                </View>
-              </Pressable>
-            );
-          })}
-        </View>
+      <View style={styles.skipRow}>
+        <Pressable onPress={goToRoleSelect} hitSlop={8}>
+          <Text style={styles.skipLabel}>Skip</Text>
+        </Pressable>
       </View>
 
+      <FlatList
+        ref={listRef}
+        data={SLIDES}
+        keyExtractor={(_, i) => String(i)}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleScrollEnd}
+        renderItem={({ item }) => (
+          <View style={[styles.slide, { width }]}>
+            <View style={[styles.illustration, { backgroundColor: item.tintMuted }]}>
+              <Ionicons name={item.icon} size={72} color={item.tint} />
+            </View>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.subtitle}>{item.subtitle}</Text>
+          </View>
+        )}
+      />
+
       <View style={styles.footer}>
-        <PrimaryButton
-          label="Continue"
-          disabled={!selected}
-          onPress={() => {
-            if (selected) {
-              navigation.navigate("Auth", { role: selected });
-            }
-          }}
-        />
+        <View style={styles.dots}>
+          {SLIDES.map((_, i) => (
+            <View key={i} style={[styles.dot, i === index && styles.dotActive]} />
+          ))}
+        </View>
+        <PrimaryButton label={isLastSlide ? "Get Started" : "Next"} onPress={handleNext} />
       </View>
     </SafeAreaView>
   );
@@ -86,62 +115,63 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    justifyContent: "space-between",
   },
-  content: {
-    padding: spacing.lg,
+  skipRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+  },
+  skipLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.textSecondary,
+  },
+  slide: {
+    alignItems: "center",
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+  },
+  illustration: {
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.xl,
   },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: "800",
     color: colors.textPrimary,
+    textAlign: "center",
     letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 14,
     color: colors.textSecondary,
-    marginTop: spacing.xs,
-    marginBottom: spacing.xl,
+    textAlign: "center",
+    marginTop: spacing.sm,
     lineHeight: 20,
-  },
-  sectionLabel: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  optionsList: {
-    gap: spacing.md,
-  },
-  optionCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.xl,
-    padding: spacing.md,
-    ...cardShadow,
-  },
-  optionCardSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryMuted,
-  },
-  optionTextGroup: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.textPrimary,
-  },
-  optionSubtitle: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 2,
   },
   footer: {
     padding: spacing.lg,
+    gap: spacing.lg,
+  },
+  dots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.border,
+  },
+  dotActive: {
+    width: 24,
+    backgroundColor: colors.primary,
   },
 });

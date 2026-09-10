@@ -3,6 +3,7 @@ import type { UserRole } from "@/lib/types/user";
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
+  RoleSelect: undefined;
   Auth: { role: UserRole };
   StudentApp: undefined;
   ProfessionalApp: undefined;
