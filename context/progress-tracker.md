@@ -73,6 +73,20 @@ Update this file after every meaningful implementation change.
   weight all match); other screens share the same theme/components so are structurally
   consistent but weren't each individually screenshotted against the pin — same
   Accessibility-permission tap-automation limitation as above.
+- Buttons restyled to full pill radius with generous padding (2026-09-10), per a second
+  Pinterest reference the user provided ("Minimal Login Screen UI – Axis App Design",
+  targeted at the Auth screen specifically). `PrimaryButton` (`radii.pill`, `paddingVertical:
+  spacing.md + 4`, `paddingHorizontal: spacing.lg`) is shared app-wide, so this cascades
+  consistently everywhere rather than being Auth-only — a judgment call, flagged here per
+  `ai-workflow-rules.md` rather than silently scoping it to one screen. `AuthScreen`'s
+  "Continue with Google" button (styled inline, not via `PrimaryButton`) was updated to
+  match by hand. Verified: `tsc --noEmit` clean, `eslint .` clean. Visually confirmed on
+  Onboarding's "Continue" button (full pill, matches the reference); this environment has
+  no screen-recording or Accessibility permission at all (confirmed via three different
+  approaches this session: `cliclick` install, native Simulator AppleScript dictionary,
+  and `screencapture`), so the Auth screen's actual buttons weren't directly
+  screenshotted — confidence here rests on `PrimaryButton` being the single shared
+  component already confirmed elsewhere, not a screenshot of this specific screen.
 
 ## In Progress
 

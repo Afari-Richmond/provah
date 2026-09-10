@@ -149,8 +149,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radii.lg,
-    paddingVertical: spacing.md,
+    borderRadius: radii.pill,
+    paddingVertical: spacing.md + 4,
+    paddingHorizontal: spacing.lg,
   },
   googleLabel: {
     fontSize: 15,

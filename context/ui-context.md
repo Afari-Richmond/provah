@@ -90,6 +90,14 @@ reference, only the visual language.
   share the same theme/components so are structurally consistent, but weren't each
   individually screenshotted against the pin in this pass — full tap-through wasn't
   scriptable in this environment (see `progress-tracker.md`).
+- **Buttons** (2026-09-10, second pass): a further Pinterest reference
+  ([pin 1125055550685477475](https://www.pinterest.com/pin/1125055550685477475/), "Minimal
+  Login Screen UI – Axis App Design"), aimed at the Auth screen, called for fuller-pill
+  button radius and more generous padding than the first pass had. `PrimaryButton`
+  (`mobile-app/src/components/PrimaryButton.tsx`) now uses `radii.pill` (was `radii.lg`)
+  with `paddingVertical: spacing.md + 4` and `paddingHorizontal: spacing.lg`. Applied
+  app-wide since it's one shared component, not scoped to Auth alone — see
+  `progress-tracker.md` for the judgment-call note.
 
 ## What's still undecided
 
