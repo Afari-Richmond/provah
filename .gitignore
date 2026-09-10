@@ -1,0 +1,27 @@
+# Claude Code local settings
+.claude/settings.local.json
+
+# Root-level Node tooling (commitlint/husky only — app code is in mobile-app/)
+/node_modules/
+
+# mobile-app/ will have its own .gitignore for Node/build artifacts
+# (nested .gitignore files apply automatically)
+
+# Go — server/.gitignore will hold the full set once scaffolded (nested .gitignore files
+# apply automatically; this covers the root-level view only)
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
