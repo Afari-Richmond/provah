@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #161616;
+
+  /* Provah brand tokens — pulled directly from marketing-site/index.html's
+     live CSS, not re-guessed, so the app matches the landing page exactly. */
+  --color-primary: #6c4ce0;
+  --color-primary-muted: #efe9fd;
+  --color-accent: #ff7a30;
+  --color-accent-muted: #ffebdc;
+  --color-ink: #161616;
+  --color-surface: #f6f4fc;
+  --color-surface-muted: #f1f1f4;
+  --color-border: #eceaf5;
+  --color-success: #1e9e5a;
+  --color-danger: #d64545;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-heading: var(--font-unbounded);
+  --font-mono: var(--font-space-mono);
+  --font-sans: var(--font-space-grotesk);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-space-grotesk), "Space Grotesk Placeholder", sans-serif;
+}
+
+/* Signature neo-brutalist primitives shared across the marketing site and
+   this app: 3px solid black border + a hard, un-blurred offset shadow. */
+.pv-border {
+  border: 3px solid var(--color-ink);
+}
+
+.pv-shadow {
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.pv-shadow-sm {
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.pv-shadow-white {
+  box-shadow: 7px 7px 0 #ffffff;
+}

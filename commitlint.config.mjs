@@ -10,6 +10,7 @@ export default {
       "always",
       [
         "mobile-app",
+        "web-app",
         "server",
         "auth",
         "students",
