@@ -3,7 +3,15 @@
 import { useRef, useState } from "react";
 import { Avatar } from "./Avatar";
 
-export function AvatarUpload({ name, size = 64 }: { name: string; size?: number }) {
+export function AvatarUpload({
+  name,
+  seed,
+  size = 64,
+}: {
+  name: string;
+  seed?: string;
+  size?: number;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -25,7 +33,7 @@ export function AvatarUpload({ name, size = 64 }: { name: string; size?: number 
           style={{ width: size, height: size }}
         />
       ) : (
-        <Avatar name={name} size={size} />
+        <Avatar name={name} seed={seed} size={size} />
       )}
       <button
         type="button"

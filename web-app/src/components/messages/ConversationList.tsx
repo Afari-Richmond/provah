@@ -21,7 +21,7 @@ export function ConversationList() {
               active ? "bg-[var(--color-surface)]" : "hover:bg-[var(--color-surface)]/60"
             }`}
           >
-            <Avatar name={c.counterpartName} size={44} />
+            <Avatar name={c.counterpartName} seed={c.counterpartId} size={44} />
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">

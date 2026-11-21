@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Project } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
+import { ProjectThumbnail } from "@/components/project/ProjectThumbnail";
 
 const fieldDot: Record<Project["field"], string> = {
   Engineering: "bg-[var(--color-accent)]",
@@ -12,6 +13,8 @@ export function DiscoverProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/projects/${project.id}`}>
       <Card className="flex h-full flex-col gap-4 p-5 transition-transform hover:-translate-y-1" shadow="dark">
+        <ProjectThumbnail projectId={project.id} imageUrl={project.imageUrl} title={project.title} />
+
         <div className="flex items-center gap-2">
           <span className={`h-2.5 w-2.5 rounded-full ${fieldDot[project.field]}`} />
           <span className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-black/50">

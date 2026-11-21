@@ -41,7 +41,7 @@ export function ProfessionalProfileView() {
       <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_260px]">
         <Card className="flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
           <div className="flex items-center gap-4">
-            <AvatarUpload name={name} size={64} />
+            <AvatarUpload name={name} seed={currentProfessional.id} size={64} />
             <div>
               <p className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]">
                 Professional {currentProfessional.verified && "· Verified"}

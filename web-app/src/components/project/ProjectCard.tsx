@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Project } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/Badge";
+import { ProjectThumbnail } from "@/components/project/ProjectThumbnail";
 
 const fieldDot: Record<Project["field"], string> = {
   Engineering: "bg-[var(--color-accent)]",
@@ -12,6 +13,8 @@ const fieldDot: Record<Project["field"], string> = {
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <Card className="flex flex-col gap-4 p-5" shadow="dark">
+      <ProjectThumbnail projectId={project.id} imageUrl={project.imageUrl} title={project.title} />
+
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className={`h-2.5 w-2.5 rounded-full ${fieldDot[project.field]}`} />

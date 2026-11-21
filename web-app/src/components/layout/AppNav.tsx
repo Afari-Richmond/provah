@@ -4,8 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { TopDecor } from "./TopDecor";
 import { Logo } from "./Logo";
-import { mockNotifications } from "@/lib/mockData";
+import { mockNotifications, currentStudent, currentProfessional } from "@/lib/mockData";
 import { useRole } from "@/lib/role";
+import { Avatar } from "@/components/ui/Avatar";
 
 const studentLinks = [
   { href: "/dashboard", label: "Dashboard" },
@@ -86,12 +87,12 @@ export function AppNav({ active }: { active?: string }) {
               </span>
             )}
           </Link>
-          <Link
-            href="/profile"
-            className="pv-border flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary-muted)] font-(family-name:--font-space-mono) text-xs font-bold text-[var(--color-primary)]"
-            aria-label="Profile"
-          >
-            {role === "student" ? "AO" : "DM"}
+          <Link href="/profile" aria-label="Profile">
+            <Avatar
+              name={role === "student" ? currentStudent.name : currentProfessional.name}
+              seed={role === "student" ? currentStudent.id : currentProfessional.id}
+              size={40}
+            />
           </Link>
           {role === "student" && (
             <Link

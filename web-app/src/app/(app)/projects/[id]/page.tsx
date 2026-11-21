@@ -93,7 +93,7 @@ export default function ProjectDetailPage({
         </div>
 
         <div className="mt-5 flex items-center gap-3">
-          <Avatar name={project.studentName} />
+          <Avatar name={project.studentName} seed={project.studentId} />
           <div>
             <div className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
               {project.studentName}
@@ -132,7 +132,7 @@ export default function ProjectDetailPage({
                 <div className="mt-3 flex flex-wrap gap-3">
                   {project.team.map((m) => (
                     <div key={m.id} className="flex items-center gap-2">
-                      <Avatar name={m.name} size={32} />
+                      <Avatar name={m.name} seed={m.id} size={32} />
                       <span className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)]">
                         {m.name}
                       </span>

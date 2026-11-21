@@ -35,6 +35,7 @@ export type Project = {
   messages: number;
   createdAt: string;
   university: string;
+  studentId: string;
   studentName: string;
   studentAvatar?: string;
   rejectionReason?: string;
@@ -67,6 +68,7 @@ export type Conversation = {
   id: string;
   projectId: string;
   projectTitle: string;
+  counterpartId: string;
   counterpartName: string;
   counterpartRole: "student" | "professional";
   counterpartAvatar?: string;

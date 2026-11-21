@@ -54,7 +54,7 @@ export default function ConversationPage({
             <Link href="/messages" className="sm:hidden">
               ←
             </Link>
-            <Avatar name={conversation.counterpartName} size={40} />
+            <Avatar name={conversation.counterpartName} seed={conversation.counterpartId} size={40} />
             <div>
               <p className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
                 {conversation.counterpartName}

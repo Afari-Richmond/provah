@@ -27,6 +27,7 @@ export const mockProjects: Project[] = [
     messages: 2,
     createdAt: "2025-11-02",
     university: "KNUST",
+    studentId: "student-kwame-asante",
     studentName: "Kwame Asante",
   },
   {
@@ -47,6 +48,7 @@ export const mockProjects: Project[] = [
     messages: 0,
     createdAt: "2025-11-15",
     university: "University of Ghana",
+    studentId: "student-ama-owusu",
     studentName: "Ama Owusu",
   },
   {
@@ -65,6 +67,7 @@ export const mockProjects: Project[] = [
     messages: 0,
     createdAt: "2025-11-18",
     university: "University of Ghana",
+    studentId: "student-ama-owusu",
     studentName: "Ama Owusu",
   },
   {
@@ -84,6 +87,7 @@ export const mockProjects: Project[] = [
     messages: 0,
     createdAt: "2025-11-05",
     university: "University of Ghana",
+    studentId: "student-ama-owusu",
     studentName: "Ama Owusu",
     rejectionReason:
       "Please add more detail on your technical approach and include test results from the campus pilot.",
@@ -105,6 +109,7 @@ export const mockProjects: Project[] = [
     messages: 1,
     createdAt: "2025-10-28",
     university: "University of Lagos",
+    studentId: "student-tunde-okafor",
     studentName: "Tunde Okafor",
   },
   {
@@ -124,6 +129,7 @@ export const mockProjects: Project[] = [
     messages: 3,
     createdAt: "2025-10-20",
     university: "KNUST",
+    studentId: "student-ama-darko",
     studentName: "Ama Darko",
   },
   {
@@ -143,6 +149,7 @@ export const mockProjects: Project[] = [
     messages: 0,
     createdAt: "2025-10-12",
     university: "Ashesi University",
+    studentId: "student-zainab-mohammed",
     studentName: "Zainab Mohammed",
   },
 ];
@@ -173,6 +180,7 @@ export const mockConversations: Conversation[] = [
     id: "c1",
     projectId: "1",
     projectTitle: "Solar-Powered Irrigation Controller",
+    counterpartId: "p1",
     counterpartName: "David Mensah",
     counterpartRole: "professional",
     lastMessage: "This is really impressive — do you have a few minutes to chat this week?",
@@ -183,6 +191,7 @@ export const mockConversations: Conversation[] = [
     id: "c2",
     projectId: "5",
     projectTitle: "Low-Cost Pulse Oximeter",
+    counterpartId: "pp1",
     counterpartName: "Grace Appiah",
     counterpartRole: "professional",
     lastMessage: "Thanks for sharing the calibration data!",

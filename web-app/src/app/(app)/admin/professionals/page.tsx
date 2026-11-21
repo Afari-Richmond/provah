@@ -40,7 +40,7 @@ export default function AdminProfessionalsPage() {
           {queue.map((p) => (
             <Card key={p.id} className="flex items-center justify-between gap-4 p-5" shadow="dark">
               <div className="flex items-center gap-4">
-                <Avatar name={p.name} size={48} />
+                <Avatar name={p.name} seed={p.id} size={48} />
                 <div>
                   <p className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
                     {p.name}

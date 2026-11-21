@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
           {visible.map((u) => (
             <Card key={u.id} className="flex items-center justify-between gap-4 p-5" shadow="dark">
               <div className="flex items-center gap-4">
-                <Avatar name={u.name} size={44} />
+                <Avatar name={u.name} seed={u.id} size={44} />
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
