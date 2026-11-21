@@ -5,6 +5,8 @@ import { Logo } from "./Logo";
 const links = [
   { href: "/admin/review-queue", label: "Review queue" },
   { href: "/admin/professionals", label: "Professionals" },
+  { href: "/admin/users", label: "Users" },
+  { href: "/admin/analytics", label: "Analytics" },
 ];
 
 export function AdminNav({ active }: { active?: string }) {

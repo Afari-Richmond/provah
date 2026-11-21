@@ -17,6 +17,7 @@ export const mockProjects: Project[] = [
     solution:
       "An embedded-systems capstone project — soil-moisture sensing, solar power management, and a mobile dashboard, built and field-tested on a campus farm.",
     techStack: ["Arduino", "C++", "React Native"],
+    tags: ["IoT", "Agritech", "Renewable Energy"],
     team: [{ id: "t1", name: "Kwame A." }],
     githubUrl: "https://github.com",
     demoUrl: "",
@@ -38,6 +39,7 @@ export const mockProjects: Project[] = [
     solution:
       "A fintech capstone project automating reconciliation across providers with a simple merchant dashboard.",
     techStack: ["Next.js", "PostgreSQL"],
+    tags: ["Fintech", "Mobile Money", "SMB Tools"],
     team: [{ id: "t2", name: "Ama D." }, { id: "t3", name: "Zainab M." }],
     documents: [],
     views: 0,
@@ -55,6 +57,7 @@ export const mockProjects: Project[] = [
     problem: "Rural clinics with unreliable power struggle to monitor maternal vitals continuously.",
     solution: "",
     techStack: ["Raspberry Pi", "Python"],
+    tags: ["MedTech", "Maternal Health"],
     team: [],
     documents: [],
     views: 0,
@@ -73,6 +76,7 @@ export const mockProjects: Project[] = [
     solution:
       "An embedded-systems capstone using sensors to reduce intersection wait times.",
     techStack: ["Arduino", "Python"],
+    tags: ["IoT", "Smart Cities"],
     team: [],
     documents: [],
     views: 0,
@@ -93,6 +97,7 @@ export const mockProjects: Project[] = [
     solution:
       "A full-stack ride-sharing web app built and deployed for coordinating rides between two university campuses.",
     techStack: ["Next.js", "Supabase", "Tailwind"],
+    tags: ["Mobility", "Campus Life"],
     team: [{ id: "t4", name: "Tunde O." }],
     documents: [],
     views: 98,
@@ -111,6 +116,7 @@ export const mockProjects: Project[] = [
     solution:
       "A biomedical engineering capstone — a low-cost pulse oximeter calibrated against clinical-grade equipment.",
     techStack: ["Embedded C", "KiCad"],
+    tags: ["MedTech", "Hardware"],
     team: [{ id: "t5", name: "Ama D." }],
     documents: [],
     views: 76,
@@ -129,6 +135,7 @@ export const mockProjects: Project[] = [
     solution:
       "A machine-learning model predicting micro-loan default risk using alternative data sources.",
     techStack: ["Python", "scikit-learn", "FastAPI"],
+    tags: ["Fintech", "Machine Learning", "Credit Scoring"],
     team: [{ id: "t6", name: "Zainab M." }],
     documents: [],
     views: 54,
@@ -158,7 +165,7 @@ export const currentProfessional: ProfessionalProfile = {
   location: "Accra, Ghana",
   bio: "Looking for engineering and fintech talent building real solutions for African markets.",
   areasOfInterest: ["Engineering", "Finance & Technology"],
-  verified: true,
+  verified: false,
 };
 
 export const mockConversations: Conversation[] = [

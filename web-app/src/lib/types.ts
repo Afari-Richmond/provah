@@ -24,6 +24,7 @@ export type Project = {
   problem: string;
   solution: string;
   techStack: string[];
+  tags: string[];
   team: TeamMember[];
   githubUrl?: string;
   demoUrl?: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppNav } from "@/components/layout/AppNav";
 import { StepIndicator } from "@/components/project/StepIndicator";
@@ -32,13 +32,54 @@ const initialForm: FormState = {
   demoUrl: "",
 };
 
+const DRAFT_KEY = "provah:draft:new-project";
+
 export default function NewProjectPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormState>(initialForm);
+  const [restoreAvailable, setRestoreAvailable] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const hasInteracted = useRef(false);
+
+  // offer to restore a previously-autosaved draft, if one exists —
+  // reading localStorage on mount, not available during SSR
+  useEffect(() => {
+    const saved = window.localStorage.getItem(DRAFT_KEY);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved) setRestoreAvailable(true);
+  }, []);
+
+  // debounced autosave to localStorage on any change, once the user has
+  // actually touched the form (avoids overwriting a restorable draft with
+  // the untouched initial state on first render)
+  useEffect(() => {
+    if (!hasInteracted.current) return;
+    const timeout = setTimeout(() => {
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+      setLastSavedAt(new Date());
+    }, 600);
+    return () => clearTimeout(timeout);
+  }, [form]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
+    hasInteracted.current = true;
+    setRestoreAvailable(false);
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function restoreDraft() {
+    const saved = window.localStorage.getItem(DRAFT_KEY);
+    if (saved) {
+      hasInteracted.current = true;
+      setForm(JSON.parse(saved));
+    }
+    setRestoreAvailable(false);
+  }
+
+  function discardDraft() {
+    window.localStorage.removeItem(DRAFT_KEY);
+    setRestoreAvailable(false);
   }
 
   function next() {
@@ -51,6 +92,7 @@ export default function NewProjectPage() {
   function submit(asDraft: boolean) {
     // UI-only for now — no backend yet.
     console.log(asDraft ? "saved as draft" : "submitted for review", form);
+    window.localStorage.removeItem(DRAFT_KEY);
     router.push("/dashboard");
   }
 
@@ -66,6 +108,30 @@ export default function NewProjectPage() {
         <p className="mt-2 font-(family-name:--font-space-grotesk) text-[15px] leading-7 text-black/60">
           Takes about five minutes. You can save a draft and come back anytime.
         </p>
+
+        {restoreAvailable && (
+          <div className="pv-border mt-6 flex flex-col gap-2 rounded-2xl bg-[var(--color-primary-muted)] p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)]">
+              You have an unfinished draft from earlier. Resume it?
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={discardDraft}
+                className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-black/40"
+              >
+                Discard
+              </button>
+              <button
+                type="button"
+                onClick={restoreDraft}
+                className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]"
+              >
+                Resume draft →
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 overflow-x-auto pb-2">
           <StepIndicator current={step} />
@@ -208,6 +274,12 @@ export default function NewProjectPage() {
             </div>
           )}
         </Card>
+
+        {lastSavedAt && (
+          <p className="mt-3 text-right font-(family-name:--font-space-mono) text-[10px] uppercase tracking-[0.03em] text-black/30">
+            Draft autosaved {lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </p>
+        )}
 
         <div className="mt-6 flex items-center justify-between">
           <Button variant="secondary" onClick={back} disabled={step === 1}>

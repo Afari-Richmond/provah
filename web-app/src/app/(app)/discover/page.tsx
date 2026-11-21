@@ -12,21 +12,33 @@ const fields: ProjectField[] = ["Engineering", "Health & Medicine", "Finance & T
 export default function DiscoverPage() {
   const [query, setQuery] = useState("");
   const [activeField, setActiveField] = useState<ProjectField | null>(null);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   const published = mockProjects.filter((p) => p.status === "published");
+
+  const popularTags = useMemo(() => {
+    const counts = new Map<string, number>();
+    published.forEach((p) => p.tags.forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1)));
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([tag]) => tag);
+  }, [published]);
 
   const filtered = useMemo(() => {
     return published.filter((p) => {
       const matchesField = !activeField || p.field === activeField;
+      const matchesTag = !activeTag || p.tags.includes(activeTag);
       const q = query.trim().toLowerCase();
       const matchesQuery =
         !q ||
         p.title.toLowerCase().includes(q) ||
         p.university.toLowerCase().includes(q) ||
-        p.techStack.some((t) => t.toLowerCase().includes(q));
-      return matchesField && matchesQuery;
+        p.techStack.some((t) => t.toLowerCase().includes(q)) ||
+        p.tags.some((t) => t.toLowerCase().includes(q));
+      return matchesField && matchesTag && matchesQuery;
     });
-  }, [published, query, activeField]);
+  }, [published, query, activeField, activeTag]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -45,7 +57,7 @@ export default function DiscoverPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by title, university, or tech..."
+            placeholder="Search by title, university, tech, or tag..."
             className="w-full max-w-md rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-5 py-3 font-(family-name:--font-space-grotesk) text-[15px] text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
           />
           <div className="flex flex-wrap gap-2">
@@ -58,6 +70,26 @@ export default function DiscoverPage() {
               </Chip>
             ))}
           </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="font-(family-name:--font-space-mono) text-[10px] font-bold uppercase tracking-[0.05em] text-black/30">
+            Popular tags
+          </span>
+          {popularTags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => setActiveTag((t) => (t === tag ? null : tag))}
+              className={`rounded-full px-3 py-1 font-(family-name:--font-space-grotesk) text-xs transition-colors ${
+                activeTag === tag
+                  ? "bg-[var(--color-ink)] text-white"
+                  : "bg-[var(--color-surface)] text-black/60 hover:bg-[var(--color-surface-muted)]"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
         </div>
 
         <p className="mt-6 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-black/40">
@@ -76,7 +108,7 @@ export default function DiscoverPage() {
               No projects match yet
             </p>
             <p className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-black/50">
-              Try a different search term or clear the field filter.
+              Try a different search term or clear the field/tag filter.
             </p>
           </div>
         )}
