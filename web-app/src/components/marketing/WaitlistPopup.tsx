@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { joinMobileWaitlist, type WaitlistState } from "@/lib/actions/waitlist";
 
 const DISMISSED_KEY = "provah:mobile-waitlist-dismissed";
 
+const initialState: WaitlistState = { status: "idle" };
+
 export function WaitlistPopup() {
   const [visible, setVisible] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [email, setEmail] = useState("");
   const shown = useRef(false);
+  const [state, formAction, pending] = useActionState(joinMobileWaitlist, initialState);
 
   useEffect(() => {
     if (window.sessionStorage.getItem(DISMISSED_KEY)) {
@@ -35,58 +37,131 @@ export function WaitlistPopup() {
     window.sessionStorage.setItem(DISMISSED_KEY, "1");
   }
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitted(true);
-  }
-
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center p-4 sm:bottom-6 sm:px-6">
+    <div
+      style={{
+        position: "fixed",
+        insetInline: 0,
+        bottom: 0,
+        zIndex: 50,
+        display: "flex",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
       <div
-        className="w-full max-w-md rounded-[20px] border-[3px] border-[#161616] bg-white p-6 shadow-[6px_6px_0_#161616]"
-        style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
+        style={{
+          position: "relative",
+          width: "100%",
+          maxWidth: 420,
+          borderRadius: 20,
+          border: "3px solid #161616",
+          background: "#fff",
+          padding: 24,
+          boxShadow: "6px 6px 0 #161616",
+          fontFamily: "'Space Grotesk', sans-serif",
+        }}
       >
         <button
           type="button"
           onClick={close}
           aria-label="Dismiss"
-          className="absolute right-4 top-4 -mt-2 -mr-2 text-black/30 hover:text-black"
-          style={{ position: "relative", float: "right" }}
+          style={{
+            position: "absolute",
+            top: 14,
+            right: 14,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            border: "none",
+            background: "transparent",
+            color: "rgba(22,22,22,0.4)",
+            fontSize: 16,
+            cursor: "pointer",
+          }}
         >
           ✕
         </button>
-        {submitted ? (
-          <p className="text-[15px] leading-6 text-[#161616]">
+        {state.status === "success" ? (
+          <p style={{ fontSize: 15, lineHeight: "24px", color: "#161616", paddingRight: 24 }}>
             You&apos;re on the list. We&apos;ll email you the moment the mobile app
             is ready.
           </p>
         ) : (
           <>
-            <p className="font-bold text-[#161616]" style={{ fontSize: 18 }}>
+            <p
+              style={{
+                fontFamily: "'Unbounded', sans-serif",
+                fontWeight: 700,
+                fontSize: 17,
+                color: "#161616",
+                paddingRight: 24,
+                margin: 0,
+              }}
+            >
               Provah is going mobile
             </p>
-            <p className="mt-2 text-sm leading-6 text-black/60">
+            <p
+              style={{
+                marginTop: 8,
+                fontSize: 14,
+                lineHeight: "22px",
+                color: "rgba(22,22,22,0.6)",
+              }}
+            >
               The web app is live right now. Want early access to the mobile
               app when it launches? Leave your email.
             </p>
-            <form onSubmit={submit} className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <form
+              action={formAction}
+              style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}
+            >
               <input
                 type="email"
+                name="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@email.com"
-                className="w-full rounded-full border-2 border-[#161616]/15 px-4 py-2.5 text-sm outline-none focus:border-[#6C4CE0]"
+                style={{
+                  flex: 1,
+                  minWidth: 160,
+                  borderRadius: 999,
+                  border: "2px solid rgba(22,22,22,0.15)",
+                  padding: "10px 16px",
+                  fontSize: 14,
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  outline: "none",
+                }}
               />
               <button
                 type="submit"
-                className="shrink-0 rounded-full border-[3px] border-[#161616] bg-[#FF7A30] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.03em] text-[#161616]"
+                disabled={pending}
+                style={{
+                  flexShrink: 0,
+                  borderRadius: 999,
+                  border: "3px solid #161616",
+                  background: "#FF7A30",
+                  padding: "10px 20px",
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: "0.03em",
+                  textTransform: "uppercase",
+                  color: "#161616",
+                  cursor: pending ? "default" : "pointer",
+                  opacity: pending ? 0.6 : 1,
+                }}
               >
-                Notify me
+                {pending ? "Sending..." : "Notify me"}
               </button>
             </form>
+            {state.status === "error" && (
+              <p style={{ marginTop: 8, fontSize: 13, color: "#D64545" }}>{state.message}</p>
+            )}
           </>
         )}
       </div>
