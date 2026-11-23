@@ -78,7 +78,7 @@ export function MarketingNav() {
           <img
             src="/images/provah-logo.png"
             alt="Provah"
-            width={126}
+            width={152}
             height={36}
             style={{ height: 36, width: "auto" }}
           />

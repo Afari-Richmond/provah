@@ -7,7 +7,7 @@ export function Logo({ href = "/dashboard" }: { href?: string }) {
       <Image
         src="/images/provah-logo.png"
         alt="Provah"
-        width={1153}
+        width={1390}
         height={329}
         priority
         className="h-7 w-auto"
