@@ -32,7 +32,7 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isMarketingRoute =
     pathname === "/" ||
-    ["/about", "/categories", "/showcase", "/how-it-works"].some(
+    ["/about", "/categories", "/showcase", "/how-it-works", "/terms", "/privacy"].some(
       (p) => pathname === p || pathname.startsWith(`${p}/`),
     );
 

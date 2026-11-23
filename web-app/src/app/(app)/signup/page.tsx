@@ -103,7 +103,15 @@ export default function SignupPage() {
           {pending ? "Creating account..." : "Create account"}
         </Button>
         <p className="text-center font-(family-name:--font-space-grotesk) text-xs leading-5 text-black/40">
-          By signing up, you agree to our Terms and Privacy Policy.
+          By signing up, you agree to our{" "}
+          <Link href="/terms" className="font-semibold text-[var(--color-primary)]">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="font-semibold text-[var(--color-primary)]">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </form>
     </AuthShell>
