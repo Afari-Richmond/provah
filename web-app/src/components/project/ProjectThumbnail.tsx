@@ -1,26 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { getAvatarUrl } from "@/lib/avatar";
+
+const PLACEHOLDER = "/images/project-placeholder.svg";
 
 /**
  * Every project gets a thumbnail — a real uploaded image if the student
- * provided one, otherwise a deterministic placeholder seeded by the
- * project's own id (same default-image approach used for profile avatars,
- * so an unfilled image slot always looks the same whether it's a person
- * or a project).
+ * provided one, otherwise a generic branded "Provah" placeholder (not a
+ * person avatar, since a project isn't a person).
  */
 export function ProjectThumbnail({
-  projectId,
   imageUrl,
   title,
 }: {
-  projectId: string;
+  projectId?: string;
   imageUrl?: string;
   title: string;
 }) {
   const [errored, setErrored] = useState(false);
-  const src = !errored && imageUrl ? imageUrl : getAvatarUrl(projectId, 480);
+  const src = !errored && imageUrl ? imageUrl : PLACEHOLDER;
 
   return (
     <div className="pv-border -m-5 mb-0 aspect-video overflow-hidden rounded-t-[17px] bg-[var(--color-surface)]">
