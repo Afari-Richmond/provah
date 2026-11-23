@@ -76,10 +76,11 @@ export function MarketingNav() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/framerusercontent.com/images/uEgjnddvWQGc9SUY2vmryoDhXp0.svg?width=90&height=35"
+            src="/images/provah-logo.png"
             alt="Provah"
-            width={90}
-            height={35}
+            width={126}
+            height={36}
+            style={{ height: 36, width: "auto" }}
           />
         </Link>
         <nav

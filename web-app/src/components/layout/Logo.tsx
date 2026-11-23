@@ -1,13 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Logo({ href = "/dashboard" }: { href?: string }) {
   return (
-    <Link
-      href={href}
-      className="flex items-center gap-1 font-(family-name:--font-unbounded) text-xl font-extrabold text-[var(--color-ink)]"
-    >
-      Provah
-      <span className="mb-3 h-[6px] w-[6px] rounded-full bg-[var(--color-accent)]" />
+    <Link href={href} className="flex items-center">
+      <Image
+        src="/images/provah-logo.png"
+        alt="Provah"
+        width={1153}
+        height={329}
+        priority
+        className="h-7 w-auto"
+      />
     </Link>
   );
 }
