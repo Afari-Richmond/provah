@@ -57,7 +57,7 @@ export function HomeFixes() {
         letter-spacing: 0.03em;
         border-radius: 999px;
         border: 3px solid #161616;
-        background: #FFD23F;
+        background: #FFA800;
         color: #161616;
         box-shadow: 6px 6px 0 #161616;
         pointer-events: none;
@@ -66,7 +66,7 @@ export function HomeFixes() {
         display: none !important;
       }
       .framer-z7tt1d-container a.framer-W36AH {
-        background: #FFD23F !important;
+        background: #FFA800 !important;
         box-shadow: 6px 6px 0 #161616 !important;
       }
       .framer-e9ndc6 img {

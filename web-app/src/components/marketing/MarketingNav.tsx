@@ -32,7 +32,7 @@ const CTA_STYLE: React.CSSProperties = {
   padding: "15px 28px",
   borderRadius: 999,
   border: "3px solid #161616",
-  background: "#FFD23F",
+  background: "#FFA800",
   color: "#161616",
   boxShadow: "6px 6px 0 #161616",
   textDecoration: "none",
