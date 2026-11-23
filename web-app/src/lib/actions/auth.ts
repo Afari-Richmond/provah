@@ -24,14 +24,32 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
           field_of_study: String(formData.get("field")),
         };
 
+  const email = String(formData.get("email"));
+
   const { error } = await supabase.auth.signUp({
-    email: String(formData.get("email")),
+    email,
     password: String(formData.get("password")),
     options: { data },
   });
 
   if (error) return { error: error.message };
-  redirect("/dashboard");
+  redirect(`/signup/check-email?email=${encodeURIComponent(email)}`);
+}
+
+export type ResendState = { sent: boolean; error: string | null };
+
+export async function resendConfirmation(
+  _prev: ResendState,
+  formData: FormData,
+): Promise<ResendState> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: String(formData.get("email")),
+  });
+
+  if (error) return { sent: false, error: error.message };
+  return { sent: true, error: null };
 }
 
 export async function logIn(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -42,7 +60,14 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
     password: String(formData.get("password")),
   });
 
-  if (error) return { error: "That email/password combination doesn't match an account." };
+  if (error) {
+    if (error.code === "email_not_confirmed") {
+      redirect(
+        `/signup/check-email?email=${encodeURIComponent(String(formData.get("email")))}`,
+      );
+    }
+    return { error: "That email/password combination doesn't match an account." };
+  }
   redirect("/dashboard");
 }
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Field";
@@ -10,7 +11,17 @@ import { logIn, type AuthFormState } from "@/lib/actions/auth";
 const initialState: AuthFormState = { error: null };
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [state, formAction, pending] = useActionState(logIn, initialState);
+  const searchParams = useSearchParams();
+  const confirmationFailed = searchParams.get("error") === "confirmation_failed";
 
   return (
     <AuthShell
@@ -27,6 +38,11 @@ export default function LoginPage() {
       }
     >
       <form action={formAction} className="flex flex-col gap-5">
+        {confirmationFailed && (
+          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+            That confirmation link is invalid or expired. Log in to request a new one.
+          </p>
+        )}
         <TextField
           label="Email"
           name="email"

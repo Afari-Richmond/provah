@@ -40,7 +40,10 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  const isPublicAppRoute = PUBLIC_APP_ROUTES.includes(pathname);
+  const isPublicAppRoute =
+    PUBLIC_APP_ROUTES.includes(pathname) ||
+    pathname === "/signup/check-email" ||
+    pathname.startsWith("/auth/");
 
   if (!user && !isPublicAppRoute) {
     const url = request.nextUrl.clone();
