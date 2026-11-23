@@ -77,6 +77,15 @@ export function HomeFixes() {
         background-size: cover;
         background-position: center;
       }
+      /* Mentors & Investors pricing card: checkmarks are purple-on-purple
+         (same token as the card background), so they're invisible. Force
+         them white to match the rest of that card's text. */
+      .framer-10xgs2x-container .framer-f9wb8t p,
+      .framer-10xgs2x-container .framer-1ra83wk p,
+      .framer-10xgs2x-container .framer-8a6x1k p,
+      .framer-10xgs2x-container .framer-eshmxw p {
+        color: #ffffff !important;
+      }
     `}</style>
   );
 }
