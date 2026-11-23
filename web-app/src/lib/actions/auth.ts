@@ -26,13 +26,14 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   const email = String(formData.get("email"));
 
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpData, error } = await supabase.auth.signUp({
     email,
     password: String(formData.get("password")),
     options: { data },
   });
 
   if (error) return { error: error.message };
+  if (signUpData.session) redirect("/dashboard");
   redirect(`/signup/check-email?email=${encodeURIComponent(email)}`);
 }
 
