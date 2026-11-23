@@ -2,19 +2,13 @@ import { AdminNav } from "@/components/layout/AdminNav";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Eyebrow } from "@/components/ui/Badge";
-import { mockProjects } from "@/lib/mockData";
-import { mockUsers, signupsByWeek } from "@/lib/mockAdmin";
+import { getAdminAnalytics } from "@/lib/data/admin";
 
-export default function AdminAnalyticsPage() {
-  const students = mockUsers.filter((u) => u.role === "student").length;
-  const professionals = mockUsers.filter((u) => u.role === "professional").length;
-  const published = mockProjects.filter((p) => p.status === "published").length;
-  const rejected = mockProjects.filter((p) => p.status === "rejected").length;
-  const pending = mockProjects.filter((p) => p.status === "pending_review").length;
-  const decided = published + rejected;
-  const approvalRate = decided > 0 ? Math.round((published / decided) * 100) : 0;
+export default async function AdminAnalyticsPage() {
+  const { students, professionals, approvalRate, pending, avgTurnaroundDays, signupsByWeek } =
+    await getAdminAnalytics();
 
-  const maxSignups = Math.max(...signupsByWeek.map((w) => w.students + w.professionals));
+  const maxSignups = Math.max(1, ...signupsByWeek.map((w) => w.students + w.professionals));
 
   return (
     <div className="min-h-screen bg-white">
@@ -81,7 +75,7 @@ export default function AdminAnalyticsPage() {
             Review turnaround
           </h2>
           <p className="mt-3 font-(family-name:--font-space-grotesk) text-2xl font-bold text-[var(--color-ink)]">
-            2.3 days
+            {avgTurnaroundDays.toFixed(1)} days
           </p>
           <p className="mt-1 font-(family-name:--font-space-grotesk) text-sm text-black/50">
             Average time from submission to a published/rejected decision.

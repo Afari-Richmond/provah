@@ -1,24 +1,31 @@
-import { AppNav } from "@/components/layout/AppNav";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { AppNavBar } from "@/components/layout/AppNavBar";
 import { StatCard } from "@/components/ui/StatCard";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { Eyebrow } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { mockProjects, currentStudent } from "@/lib/mockData";
-import Link from "next/link";
+import { requireProfile } from "@/lib/auth";
+import { getProjectsByStudent } from "@/lib/data/projects";
 
-export default function DashboardPage() {
-  const myProjects = mockProjects.filter((p) => p.studentName === currentStudent.name);
+export default async function DashboardPage() {
+  const profile = await requireProfile();
+  if (profile.role === "professional") redirect("/discover");
+  if (profile.role === "admin") redirect("/admin/review-queue");
+
+  const myProjects = await getProjectsByStudent(profile.id);
   const totalViews = myProjects.reduce((sum, p) => sum + p.views, 0);
   const totalMessages = myProjects.reduce((sum, p) => sum + p.messages, 0);
+  const firstName = profile.name.split(" ")[0];
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNav active="/dashboard" />
+      <AppNavBar active="/dashboard" />
 
       <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
         <Eyebrow>Welcome back</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[32px] font-bold leading-tight text-[var(--color-ink)] sm:text-[40px]">
-          Ama&apos;s projects
+          {firstName}&apos;s projects
         </h1>
         <p className="mt-2 max-w-xl font-(family-name:--font-space-grotesk) text-[15px] leading-7 text-black/60">
           Everything you&apos;ve submitted, and how professionals are finding it.
@@ -39,11 +46,22 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {myProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        {myProjects.length === 0 ? (
+          <div className="pv-border mt-6 rounded-2xl bg-[var(--color-surface)] p-10 text-center">
+            <p className="font-(family-name:--font-space-grotesk) text-sm text-black/50">
+              You haven&apos;t submitted a project yet.
+            </p>
+            <Link href="/projects/new" className="mt-4 inline-block">
+              <Button variant="primary">Submit your first project</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {myProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

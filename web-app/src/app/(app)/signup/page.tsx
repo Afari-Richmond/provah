@@ -1,22 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField, SelectField } from "@/components/ui/Field";
+import { signUp, type AuthFormState } from "@/lib/actions/auth";
 
 type Role = "student" | "professional";
 
-export default function SignupPage() {
-  const router = useRouter();
-  const [role, setRole] = useState<Role>("student");
+const initialState: AuthFormState = { error: null };
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    router.push("/dashboard");
-  }
+export default function SignupPage() {
+  const [role, setRole] = useState<Role>("student");
+  const [state, formAction, pending] = useActionState(signUp, initialState);
 
   return (
     <AuthShell
@@ -57,7 +54,8 @@ export default function SignupPage() {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-5">
+      <form action={formAction} className="mt-6 flex flex-col gap-5">
+        <input type="hidden" name="role" value={role} />
         <TextField label="Full name" name="name" placeholder="Ama Owusu" required />
         <TextField
           label="Email"
@@ -72,6 +70,7 @@ export default function SignupPage() {
           name="password"
           type="password"
           placeholder="At least 8 characters"
+          minLength={8}
           required
         />
 
@@ -82,9 +81,9 @@ export default function SignupPage() {
               <option value="" disabled>
                 Select a field
               </option>
-              <option value="engineering">Engineering &amp; Technology</option>
-              <option value="health">Health &amp; Medicine</option>
-              <option value="fintech">Finance &amp; Technology</option>
+              <option value="Engineering">Engineering &amp; Technology</option>
+              <option value="Health & Medicine">Health &amp; Medicine</option>
+              <option value="Finance & Technology">Finance &amp; Technology</option>
             </SelectField>
           </>
         ) : (
@@ -94,11 +93,17 @@ export default function SignupPage() {
           </>
         )}
 
-        <Button type="submit" variant="primary" className="mt-2 w-full">
-          Create account
+        {state.error && (
+          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+            {state.error}
+          </p>
+        )}
+
+        <Button type="submit" variant="primary" className="mt-2 w-full" disabled={pending}>
+          {pending ? "Creating account..." : "Create account"}
         </Button>
         <p className="text-center font-(family-name:--font-space-grotesk) text-xs leading-5 text-black/40">
-          By continuing you agree to Provah&apos;s Terms and Privacy Policy.
+          By signing up, you agree to our Terms and Privacy Policy.
         </p>
       </form>
     </AuthShell>

@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { TopDecor } from "./TopDecor";
 import { Logo } from "./Logo";
-import { mockNotifications, currentStudent, currentProfessional } from "@/lib/mockData";
-import { useRole } from "@/lib/role";
 import { Avatar } from "@/components/ui/Avatar";
+import { logOut } from "@/lib/actions/auth";
+import type { Profile } from "@/lib/types";
 
 const studentLinks = [
   { href: "/dashboard", label: "Dashboard" },
@@ -20,11 +20,18 @@ const professionalLinks = [
   { href: "/messages", label: "Messages" },
 ];
 
-export function AppNav({ active }: { active?: string }) {
-  const { role, setRole } = useRole();
+export function AppNav({
+  active,
+  profile,
+  unreadCount,
+}: {
+  active?: string;
+  profile: Profile;
+  unreadCount: number;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const unreadCount = mockNotifications.filter((n) => !n.read).length;
-  const links = role === "student" ? studentLinks : professionalLinks;
+  const isStudent = profile.role === "student";
+  const links = isStudent ? studentLinks : professionalLinks;
 
   return (
     <header className="sticky top-0 z-20 bg-white">
@@ -50,31 +57,6 @@ export function AppNav({ active }: { active?: string }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="pv-border hidden rounded-full bg-white p-1 sm:flex">
-            <button
-              type="button"
-              onClick={() => setRole("student")}
-              className={`rounded-full px-3 py-1.5 font-(family-name:--font-space-mono) text-[10px] font-bold uppercase tracking-[0.03em] transition-colors ${
-                role === "student"
-                  ? "bg-[var(--color-ink)] text-white"
-                  : "text-black/40"
-              }`}
-            >
-              Student
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("professional")}
-              className={`rounded-full px-3 py-1.5 font-(family-name:--font-space-mono) text-[10px] font-bold uppercase tracking-[0.03em] transition-colors ${
-                role === "professional"
-                  ? "bg-[var(--color-ink)] text-white"
-                  : "text-black/40"
-              }`}
-            >
-              Professional
-            </button>
-          </div>
-
           <Link
             href="/notifications"
             className="pv-border relative flex h-10 w-10 items-center justify-center rounded-full bg-white"
@@ -88,13 +70,9 @@ export function AppNav({ active }: { active?: string }) {
             )}
           </Link>
           <Link href="/profile" aria-label="Profile">
-            <Avatar
-              name={role === "student" ? currentStudent.name : currentProfessional.name}
-              seed={role === "student" ? currentStudent.id : currentProfessional.id}
-              size={40}
-            />
+            <Avatar name={profile.name} seed={profile.id} size={40} />
           </Link>
-          {role === "student" && (
+          {isStudent && (
             <Link
               href="/projects/new"
               className="pv-border pv-shadow-sm hidden items-center justify-center rounded-full bg-[var(--color-accent)] px-5 py-2.5 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-ink)] lg:inline-flex"
@@ -116,26 +94,6 @@ export function AppNav({ active }: { active?: string }) {
 
       {menuOpen && (
         <div className="border-b border-[var(--color-border)] bg-white px-6 py-4 md:hidden">
-          <div className="pv-border mb-4 flex rounded-full bg-white p-1">
-            <button
-              type="button"
-              onClick={() => setRole("student")}
-              className={`flex-1 rounded-full px-3 py-2 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] ${
-                role === "student" ? "bg-[var(--color-ink)] text-white" : "text-black/40"
-              }`}
-            >
-              Student
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("professional")}
-              className={`flex-1 rounded-full px-3 py-2 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] ${
-                role === "professional" ? "bg-[var(--color-ink)] text-white" : "text-black/40"
-              }`}
-            >
-              Professional
-            </button>
-          </div>
           <nav className="flex flex-col gap-1">
             {links.map((l) => (
               <Link
@@ -151,7 +109,7 @@ export function AppNav({ active }: { active?: string }) {
                 {l.label}
               </Link>
             ))}
-            {role === "student" && (
+            {isStudent && (
               <Link
                 href="/projects/new"
                 onClick={() => setMenuOpen(false)}
@@ -167,6 +125,14 @@ export function AppNav({ active }: { active?: string }) {
             >
               Settings
             </Link>
+            <form action={logOut}>
+              <button
+                type="submit"
+                className="w-full rounded-xl px-3 py-3 text-left font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-danger)]"
+              >
+                Log out
+              </button>
+            </form>
           </nav>
         </div>
       )}

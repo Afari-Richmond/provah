@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { AvatarUpload } from "@/components/ui/AvatarUpload";
@@ -8,23 +8,45 @@ import { TextField, TextAreaField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
 import { StatCard } from "@/components/ui/StatCard";
 import { DiscoverProjectCard } from "@/components/project/DiscoverProjectCard";
-import { currentProfessional, mockConversations, mockProjects } from "@/lib/mockData";
+import { updateProfessionalProfile } from "@/lib/actions/profile";
+import type { Profile, Project } from "@/lib/types";
 
-const savedIds = ["1", "5"];
+export function ProfessionalProfileView({
+  profile,
+  savedProjects,
+  conversationCount,
+}: {
+  profile: Profile;
+  savedProjects: Project[];
+  conversationCount: number;
+}) {
+  const [name, setName] = useState(profile.name);
+  const [title, setTitle] = useState(profile.title ?? "");
+  const [company, setCompany] = useState(profile.company ?? "");
+  const [location, setLocation] = useState(profile.location ?? "");
+  const [bio, setBio] = useState(profile.bio);
+  const [interests, setInterests] = useState<string[]>(profile.areasOfInterest);
+  const [isPending, startTransition] = useTransition();
+  const [saved, setSaved] = useState(false);
 
-export function ProfessionalProfileView() {
-  const [name, setName] = useState(currentProfessional.name);
-  const [title, setTitle] = useState(currentProfessional.title);
-  const [company, setCompany] = useState(currentProfessional.company);
-  const [location, setLocation] = useState(currentProfessional.location);
-  const [bio, setBio] = useState(currentProfessional.bio);
-  const [interests, setInterests] = useState<string[]>(currentProfessional.areasOfInterest);
-
-  const savedProjects = mockProjects.filter((p) => savedIds.includes(p.id));
+  function save() {
+    startTransition(async () => {
+      await updateProfessionalProfile({
+        name,
+        title,
+        company,
+        location,
+        bio,
+        areasOfInterest: interests,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    });
+  }
 
   return (
     <>
-      {!currentProfessional.verified && (
+      {!profile.verified && (
         <div className="pv-border mt-6 flex flex-col gap-1 rounded-2xl bg-[var(--color-accent-muted)] p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-accent)]">
@@ -41,10 +63,10 @@ export function ProfessionalProfileView() {
       <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_260px]">
         <Card className="flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
           <div className="flex items-center gap-4">
-            <AvatarUpload name={name} seed={currentProfessional.id} size={64} />
+            <AvatarUpload name={name} seed={profile.id} size={64} />
             <div>
               <p className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]">
-                Professional {currentProfessional.verified && "· Verified"}
+                Professional {profile.verified && "· Verified"}
               </p>
             </div>
           </div>
@@ -61,14 +83,21 @@ export function ProfessionalProfileView() {
             onChange={setInterests}
           />
 
-          <Button variant="primary" className="self-start">
-            Save changes
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="primary" className="self-start" onClick={save} disabled={isPending}>
+              {isPending ? "Saving..." : "Save changes"}
+            </Button>
+            {saved && (
+              <span className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-primary)]">
+                Saved ✓
+              </span>
+            )}
+          </div>
         </Card>
 
         <div className="flex flex-col gap-4">
           <StatCard value={savedProjects.length} label="Saved projects" />
-          <StatCard value={mockConversations.length} label="Conversations" />
+          <StatCard value={conversationCount} label="Conversations" />
         </div>
       </div>
 

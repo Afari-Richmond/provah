@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Unbounded, Space_Mono, Space_Grotesk } from "next/font/google";
 import "../globals.css";
-import { RoleProvider } from "@/lib/role";
 
 const unbounded = Unbounded({
   variable: "--font-unbounded",
@@ -31,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div
       className={`${unbounded.variable} ${spaceMono.variable} ${spaceGrotesk.variable} min-h-full flex flex-col bg-white antialiased`}
     >
-      <RoleProvider>{children}</RoleProvider>
+      {children}
     </div>
   );
 }

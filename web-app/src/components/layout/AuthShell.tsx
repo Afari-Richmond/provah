@@ -21,7 +21,7 @@ export function AuthShell({
       {/* Left: full-bleed image */}
       <div className="relative hidden lg:block">
         <Image
-          src="/images/auth-hero.png"
+          src="/images/auth-hero.jpg"
           alt="Students collaborating on a capstone project"
           fill
           priority

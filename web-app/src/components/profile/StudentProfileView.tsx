@@ -1,31 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { AvatarUpload } from "@/components/ui/AvatarUpload";
 import { TextField, TextAreaField } from "@/components/ui/Field";
 import { StatCard } from "@/components/ui/StatCard";
 import { ProjectCard } from "@/components/project/ProjectCard";
-import { currentStudent, mockProjects } from "@/lib/mockData";
+import { updateStudentProfile } from "@/lib/actions/profile";
+import type { Profile, Project } from "@/lib/types";
 
-export function StudentProfileView() {
-  const [name, setName] = useState(currentStudent.name);
-  const [university, setUniversity] = useState(currentStudent.university);
-  const [fieldOfStudy, setFieldOfStudy] = useState(currentStudent.fieldOfStudy);
-  const [bio, setBio] = useState(currentStudent.bio);
+export function StudentProfileView({
+  profile,
+  myProjects,
+}: {
+  profile: Profile;
+  myProjects: Project[];
+}) {
+  const [name, setName] = useState(profile.name);
+  const [university, setUniversity] = useState(profile.university ?? "");
+  const [fieldOfStudy, setFieldOfStudy] = useState(profile.fieldOfStudy ?? "");
+  const [bio, setBio] = useState(profile.bio);
+  const [isPending, startTransition] = useTransition();
+  const [saved, setSaved] = useState(false);
 
-  const myProjects = mockProjects.filter((p) => p.studentName === currentStudent.name);
+  function save() {
+    startTransition(async () => {
+      await updateStudentProfile({ name, university, fieldOfStudy, bio });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    });
+  }
 
   return (
     <>
       <div className="mt-8 grid gap-6 sm:grid-cols-[1fr_260px]">
         <Card className="flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
           <div className="flex items-center gap-4">
-            <AvatarUpload name={name} seed={currentStudent.id} size={64} />
+            <AvatarUpload name={name} seed={profile.id} size={64} />
             <div>
               <p className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]">
-                Student {currentStudent.verified && "· Verified"}
+                Student {profile.verified && "· Verified"}
               </p>
             </div>
           </div>
@@ -39,9 +54,16 @@ export function StudentProfileView() {
           />
           <TextAreaField label="Bio" value={bio} onChange={(e) => setBio(e.target.value)} />
 
-          <Button variant="primary" className="self-start">
-            Save changes
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="primary" className="self-start" onClick={save} disabled={isPending}>
+              {isPending ? "Saving..." : "Save changes"}
+            </Button>
+            {saved && (
+              <span className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-primary)]">
+                Saved ✓
+              </span>
+            )}
+          </div>
         </Card>
 
         <div className="flex flex-col gap-4">

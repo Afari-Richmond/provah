@@ -14,6 +14,7 @@ export type ProjectDocument = {
   id: string;
   label: string;
   kind: "pdf" | "video" | "image";
+  url: string;
 };
 
 export type Project = {
@@ -41,27 +42,23 @@ export type Project = {
   rejectionReason?: string;
 };
 
-export type StudentProfile = {
+export type Role = "student" | "professional" | "admin";
+
+export type Profile = {
   id: string;
+  role: Role;
   name: string;
-  university: string;
-  fieldOfStudy: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
   bio: string;
   verified: boolean;
   badges: string[];
-};
-
-export type ProfessionalProfile = {
-  id: string;
-  name: string;
-  title: string;
-  company: string;
-  location: string;
-  avatarUrl?: string;
-  bio: string;
+  university?: string | null;
+  fieldOfStudy?: string | null;
+  title?: string | null;
+  company?: string | null;
+  location?: string | null;
   areasOfInterest: string[];
-  verified: boolean;
+  createdAt: string;
 };
 
 export type Conversation = {

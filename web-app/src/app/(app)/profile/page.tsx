@@ -1,27 +1,33 @@
-"use client";
-
-import { AppNav } from "@/components/layout/AppNav";
+import { AppNavBar } from "@/components/layout/AppNavBar";
 import { Eyebrow } from "@/components/ui/Badge";
 import { StudentProfileView } from "@/components/profile/StudentProfileView";
 import { ProfessionalProfileView } from "@/components/profile/ProfessionalProfileView";
-import { currentStudent, currentProfessional } from "@/lib/mockData";
-import { useRole } from "@/lib/role";
+import { requireProfile } from "@/lib/auth";
+import { getProjectsByStudent, getBookmarkedProjects } from "@/lib/data/projects";
+import { getConversations } from "@/lib/data/messaging";
 
-export default function ProfilePage() {
-  const { role } = useRole();
-  const name = role === "student" ? currentStudent.name : currentProfessional.name;
+export default async function ProfilePage() {
+  const profile = await requireProfile();
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNav />
+      <AppNavBar />
 
       <main className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
         <Eyebrow>Your profile</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[32px] font-bold leading-tight text-[var(--color-ink)] sm:text-[40px]">
-          {name}
+          {profile.name}
         </h1>
 
-        {role === "student" ? <StudentProfileView /> : <ProfessionalProfileView />}
+        {profile.role === "student" ? (
+          <StudentProfileView profile={profile} myProjects={await getProjectsByStudent(profile.id)} />
+        ) : (
+          <ProfessionalProfileView
+            profile={profile}
+            savedProjects={await getBookmarkedProjects(profile.id)}
+            conversationCount={(await getConversations(profile.id)).length}
+          />
+        )}
       </main>
     </div>
   );

@@ -1,18 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import Link from "next/link";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Field";
+import { logIn, type AuthFormState } from "@/lib/actions/auth";
+
+const initialState: AuthFormState = { error: null };
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    router.push("/dashboard");
-  }
+  const [state, formAction, pending] = useActionState(logIn, initialState);
 
   return (
     <AuthShell
@@ -28,7 +26,7 @@ export default function LoginPage() {
         </p>
       }
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form action={formAction} className="flex flex-col gap-5">
         <TextField
           label="Email"
           name="email"
@@ -43,6 +41,12 @@ export default function LoginPage() {
           placeholder="Your password"
           required
         />
+
+        {state.error && (
+          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+            {state.error}
+          </p>
+        )}
 
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
@@ -60,8 +64,8 @@ export default function LoginPage() {
           </a>
         </div>
 
-        <Button type="submit" variant="primary" className="mt-2 w-full">
-          Log in
+        <Button type="submit" variant="primary" className="mt-2 w-full" disabled={pending}>
+          {pending ? "Logging in..." : "Log in"}
         </Button>
       </form>
     </AuthShell>

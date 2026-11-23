@@ -3,15 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Avatar } from "@/components/ui/Avatar";
-import { mockConversations } from "@/lib/mockData";
 import { timeAgo } from "@/lib/format";
+import type { Conversation } from "@/lib/types";
 
-export function ConversationList() {
+export function ConversationList({ conversations }: { conversations: Conversation[] }) {
   const pathname = usePathname();
+
+  if (conversations.length === 0) {
+    return (
+      <p className="px-4 py-6 font-(family-name:--font-space-grotesk) text-sm text-black/40">
+        No conversations yet.
+      </p>
+    );
+  }
 
   return (
     <div className="flex flex-col divide-y divide-[var(--color-border)]">
-      {mockConversations.map((c) => {
+      {conversations.map((c) => {
         const active = pathname === `/messages/${c.id}`;
         return (
           <Link
@@ -27,9 +35,11 @@ export function ConversationList() {
                 <span className="truncate font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
                   {c.counterpartName}
                 </span>
-                <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/40">
-                  {timeAgo(c.lastMessageAt)}
-                </span>
+                {c.lastMessageAt && (
+                  <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/40">
+                    {timeAgo(c.lastMessageAt)}
+                  </span>
+                )}
               </div>
               <p className="truncate font-(family-name:--font-space-grotesk) text-xs text-black/50">
                 {c.projectTitle}
@@ -39,7 +49,7 @@ export function ConversationList() {
                   c.unread ? "font-semibold text-[var(--color-ink)]" : "text-black/50"
                 }`}
               >
-                {c.lastMessage}
+                {c.lastMessage || "No messages yet"}
               </p>
             </div>
             {c.unread && (
