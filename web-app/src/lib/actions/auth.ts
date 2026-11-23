@@ -1,5 +1,6 @@
 "use server";
 
+import { type EmailOtpType } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -70,6 +71,18 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
     return { error: "That email/password combination doesn't match an account." };
   }
   redirect("/dashboard");
+}
+
+export async function confirmEmail(formData: FormData) {
+  const token_hash = String(formData.get("token_hash"));
+  const type = formData.get("type") as EmailOtpType;
+  const next = String(formData.get("next") || "/dashboard");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.verifyOtp({ type, token_hash });
+
+  if (error) redirect("/login?error=confirmation_failed");
+  redirect(next);
 }
 
 export async function logOut() {
