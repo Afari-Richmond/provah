@@ -113,6 +113,17 @@ export function HomeFixes() {
       .framer-e9ndc6 img {
         display: none !important;
       }
+      /* "What students are building" and "Meet a few of our students":
+         Framer's own hydration for these two sections crashes on first
+         paint, then recovers moments later showing stale placeholder
+         content (stock photos, fake project cards) from the tutoring
+         template this site was cloned from. HomeDynamicSectionsFix
+         renders the real replacement — hide the native one whenever it
+         eventually mounts, by its stable data-framer-name. */
+      [data-framer-name="Showcase"],
+      [data-framer-name="Our Teachers"] {
+        display: none !important;
+      }
       .framer-e9ndc6 [data-framer-background-image-wrapper] {
         background-image: url('/images/home-hero.jpg');
         background-size: cover;
