@@ -6,6 +6,7 @@ import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField, SelectField } from "@/components/ui/Field";
 import { signUp, type AuthFormState } from "@/lib/actions/auth";
+import { PROJECT_FIELDS } from "@/lib/fields";
 
 type Role = "student" | "professional";
 
@@ -81,9 +82,11 @@ export default function SignupPage() {
               <option value="" disabled>
                 Select a field
               </option>
-              <option value="Engineering">Engineering &amp; Technology</option>
-              <option value="Health & Medicine">Health &amp; Medicine</option>
-              <option value="Finance & Technology">Finance &amp; Technology</option>
+              {PROJECT_FIELDS.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
             </SelectField>
           </>
         ) : (
@@ -99,7 +102,7 @@ export default function SignupPage() {
           </p>
         )}
 
-        <Button type="submit" variant="primary" className="mt-2 w-full" disabled={pending}>
+        <Button type="submit" variant="primary" className="mt-2 w-full" loading={pending}>
           {pending ? "Creating account..." : "Create account"}
         </Button>
         <p className="text-center font-(family-name:--font-space-grotesk) text-xs leading-5 text-black/40">

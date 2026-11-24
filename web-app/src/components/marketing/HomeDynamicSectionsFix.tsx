@@ -213,7 +213,7 @@ export function HomeDynamicSectionsFix({ projects }: { projects: Project[] }) {
             margin: 0,
           }}
         >
-          Meet a few of our students
+          Meet a few of our student innovators
         </h2>
         <p
           style={{

@@ -55,7 +55,7 @@ export function StudentProfileView({
           <TextAreaField label="Bio" value={bio} onChange={(e) => setBio(e.target.value)} />
 
           <div className="flex items-center gap-3">
-            <Button variant="primary" className="self-start" onClick={save} disabled={isPending}>
+            <Button variant="primary" className="self-start" onClick={save} loading={isPending}>
               {isPending ? "Saving..." : "Save changes"}
             </Button>
             {saved && (

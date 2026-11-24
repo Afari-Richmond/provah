@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AppNav } from "@/components/layout/AppNav";
 import { ConversationList } from "@/components/messages/ConversationList";
 import { Avatar } from "@/components/ui/Avatar";
+import { Spinner } from "@/components/ui/Spinner";
 import { sendMessage } from "@/lib/actions/messaging";
 import type { Conversation, Message, Profile } from "@/lib/types";
 
@@ -112,7 +113,7 @@ export function MessageThread({
               className="pv-border pv-shadow-sm flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] font-bold text-[var(--color-ink)] disabled:opacity-50"
               aria-label="Send"
             >
-              →
+              {isPending ? <Spinner size={16} /> : "→"}
             </button>
           </form>
         </div>

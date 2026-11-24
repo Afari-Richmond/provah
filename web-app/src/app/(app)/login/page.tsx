@@ -80,7 +80,7 @@ function LoginForm() {
           </a>
         </div>
 
-        <Button type="submit" variant="primary" className="mt-2 w-full" disabled={pending}>
+        <Button type="submit" variant="primary" className="mt-2 w-full" loading={pending}>
           {pending ? "Logging in..." : "Log in"}
         </Button>
       </form>

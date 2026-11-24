@@ -46,7 +46,9 @@ export function AuthShell({
 
       {/* Right: form */}
       <div className="flex flex-col px-6 py-8 sm:px-12 sm:py-10 lg:px-16">
-        <Logo href="/" />
+        <div className="mx-auto w-full max-w-sm">
+          <Logo href="/" />
+        </div>
 
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">
           <Eyebrow>{eyebrow}</Eyebrow>

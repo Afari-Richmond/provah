@@ -9,6 +9,7 @@ import { TextField, TextAreaField, SelectField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
 import { createProject } from "@/lib/actions/projects";
 import type { ProjectField } from "@/lib/types";
+import { PROJECT_FIELDS } from "@/lib/fields";
 
 type FormState = {
   title: string;
@@ -162,9 +163,11 @@ export function NewProjectForm() {
               <option value="" disabled>
                 Select a field
               </option>
-              <option value="Engineering">Engineering &amp; Technology</option>
-              <option value="Health & Medicine">Health &amp; Medicine</option>
-              <option value="Finance & Technology">Finance &amp; Technology</option>
+              {PROJECT_FIELDS.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
             </SelectField>
           </div>
         )}
@@ -300,10 +303,10 @@ export function NewProjectForm() {
           </Button>
         ) : (
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={() => submit(true)} disabled={isPending}>
+            <Button variant="secondary" onClick={() => submit(true)} loading={isPending}>
               Save as draft
             </Button>
-            <Button variant="primary" onClick={() => submit(false)} disabled={isPending}>
+            <Button variant="primary" onClick={() => submit(false)} loading={isPending}>
               {isPending ? "Submitting..." : "Submit for review"}
             </Button>
           </div>

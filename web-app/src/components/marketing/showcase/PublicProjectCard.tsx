@@ -1,11 +1,6 @@
 import Link from "next/link";
 import type { Project } from "@/lib/types";
-
-const fieldColor: Record<Project["field"], string> = {
-  Engineering: "#FF7A30",
-  "Health & Medicine": "#6C4CE0",
-  "Finance & Technology": "#161216",
-};
+import { FIELD_COLORS as fieldColor } from "@/lib/fields";
 
 export function PublicProjectCard({ project }: { project: Project }) {
   return (

@@ -9,6 +9,7 @@ import { TextField, TextAreaField, SelectField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
 import { updateProject, deleteProject } from "@/lib/actions/projects";
 import type { Project, ProjectField } from "@/lib/types";
+import { PROJECT_FIELDS } from "@/lib/fields";
 
 export function EditProjectForm({ project }: { project: Project }) {
   const router = useRouter();
@@ -68,9 +69,11 @@ export function EditProjectForm({ project }: { project: Project }) {
       <Card className="mt-6 flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
         <TextField label="Project title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <SelectField label="Field" value={field} onChange={(e) => setField(e.target.value as ProjectField)}>
-          <option value="Engineering">Engineering &amp; Technology</option>
-          <option value="Health & Medicine">Health &amp; Medicine</option>
-          <option value="Finance & Technology">Finance &amp; Technology</option>
+          {PROJECT_FIELDS.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
         </SelectField>
         <TextAreaField label="The problem" value={problem} onChange={(e) => setProblem(e.target.value)} />
         <TextAreaField label="Your solution" value={solution} onChange={(e) => setSolution(e.target.value)} />
@@ -92,7 +95,7 @@ export function EditProjectForm({ project }: { project: Project }) {
           <Button variant="secondary" onClick={() => router.push("/dashboard")}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={save} disabled={isPending}>
+          <Button variant="primary" onClick={save} loading={isPending}>
             {isPending ? "Saving..." : project.status === "rejected" ? "Resubmit for review" : "Save changes"}
           </Button>
         </div>
@@ -112,7 +115,7 @@ export function EditProjectForm({ project }: { project: Project }) {
               <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
                 Cancel
               </Button>
-              <Button variant="primary" onClick={confirmDelete} className="bg-[var(--color-danger)]" disabled={isPending}>
+              <Button variant="primary" onClick={confirmDelete} className="bg-[var(--color-danger)]" loading={isPending}>
                 Delete
               </Button>
             </div>

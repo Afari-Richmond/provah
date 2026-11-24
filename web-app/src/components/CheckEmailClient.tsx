@@ -43,7 +43,7 @@ export function CheckEmailClient({ email }: { email: string }) {
           </p>
         )}
 
-        <Button type="submit" variant="secondary" className="w-full" disabled={pending || !email}>
+        <Button type="submit" variant="secondary" className="w-full" disabled={!email} loading={pending}>
           {pending ? "Resending..." : "Resend confirmation email"}
         </Button>
         <p className="text-center font-(family-name:--font-space-grotesk) text-xs leading-5 text-black/40">

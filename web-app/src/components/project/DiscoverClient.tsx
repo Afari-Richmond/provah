@@ -4,8 +4,9 @@ import { useMemo, useState } from "react";
 import { Eyebrow, Chip } from "@/components/ui/Badge";
 import { DiscoverProjectCard } from "@/components/project/DiscoverProjectCard";
 import type { Project, ProjectField } from "@/lib/types";
+import { PROJECT_FIELDS } from "@/lib/fields";
 
-const fields: ProjectField[] = ["Engineering", "Health & Medicine", "Finance & Technology"];
+const fields: ProjectField[] = PROJECT_FIELDS;
 
 export function DiscoverClient({ published }: { published: Project[] }) {
   const [query, setQuery] = useState("");

@@ -3,14 +3,10 @@
 import { useMemo, useState } from "react";
 import { PublicProjectCard } from "@/components/marketing/showcase/PublicProjectCard";
 import type { Project, ProjectField } from "@/lib/types";
+import { PROJECT_FIELDS, FIELD_COLORS } from "@/lib/fields";
 
-const FIELDS: ProjectField[] = ["Engineering", "Health & Medicine", "Finance & Technology"];
-
-const fieldColor: Record<ProjectField, string> = {
-  Engineering: "#FF7A30",
-  "Health & Medicine": "#6C4CE0",
-  "Finance & Technology": "#161216",
-};
+const FIELDS: ProjectField[] = PROJECT_FIELDS;
+const fieldColor = FIELD_COLORS;
 
 function FilterButton({
   active,

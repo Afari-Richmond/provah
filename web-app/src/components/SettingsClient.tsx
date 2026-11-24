@@ -38,7 +38,7 @@ export function SettingsClient({ email }: { email: string }) {
               Updated ✓
             </p>
           )}
-          <Button type="submit" variant="primary" className="self-start" disabled={pending}>
+          <Button type="submit" variant="primary" className="self-start" loading={pending}>
             {pending ? "Saving..." : "Update account"}
           </Button>
         </Card>

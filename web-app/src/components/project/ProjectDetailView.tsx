@@ -11,9 +11,14 @@ import { startConversation } from "@/lib/actions/messaging";
 import type { Profile, Project } from "@/lib/types";
 
 const fieldDot: Record<string, string> = {
-  Engineering: "bg-[var(--color-accent)]",
-  "Health & Medicine": "bg-[var(--color-primary)]",
-  "Finance & Technology": "bg-[var(--color-ink)]",
+  "Engineering & Technology": "bg-[#FF7A30]",
+  "Health & Medicine": "bg-[#6C4CE0]",
+  "Finance & Technology": "bg-[#161221]",
+  "Agriculture & Agritech": "bg-[#1E9E5A]",
+  "Energy & Sustainability": "bg-[#FFB380]",
+  "Education & EdTech": "bg-[#9B80EC]",
+  "Creative & Media": "bg-[#D64545]",
+  "Business & Social Impact": "bg-[#4C6FE0]",
 };
 
 export function ProjectDetailView({
@@ -210,7 +215,8 @@ export function ProjectDetailView({
                 variant="dark"
                 className="w-full"
                 onClick={handleMessage}
-                disabled={!canMessage || isPending}
+                disabled={!canMessage}
+                loading={isPending}
               >
                 {canMessage ? "Message student" : "Verification pending"}
               </Button>
@@ -218,7 +224,7 @@ export function ProjectDetailView({
           ) : null}
 
           {!isOwner && viewer.role === "professional" && (
-            <Button variant="secondary" className="w-full" onClick={handleBookmark} disabled={isPending}>
+            <Button variant="secondary" className="w-full" onClick={handleBookmark} loading={isPending}>
               {bookmarked ? "★ Saved" : "☆ Save for later"}
             </Button>
           )}

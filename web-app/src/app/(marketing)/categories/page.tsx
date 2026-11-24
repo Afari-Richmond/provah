@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getPublishedProjects } from "@/lib/data/projects";
 import type { ProjectField } from "@/lib/types";
+import { PROJECT_FIELDS, FIELD_COLORS, FIELD_BLURBS } from "@/lib/fields";
 
 export const metadata: Metadata = {
   title: "Browse Projects by Field | Provah",
@@ -13,23 +14,11 @@ const FIELDS: {
   field: ProjectField;
   color: string;
   blurb: string;
-}[] = [
-  {
-    field: "Engineering",
-    color: "#FF7A30",
-    blurb: "Embedded systems, full-stack software, hardware builds, robotics.",
-  },
-  {
-    field: "Health & Medicine",
-    color: "#6C4CE0",
-    blurb: "Health tech, diagnostics, public health tools, medical devices.",
-  },
-  {
-    field: "Finance & Technology",
-    color: "#161216",
-    blurb: "Fintech, payments, banking infrastructure, financial inclusion.",
-  },
-];
+}[] = PROJECT_FIELDS.map((field) => ({
+  field,
+  color: FIELD_COLORS[field],
+  blurb: FIELD_BLURBS[field],
+}));
 
 export default async function CategoriesPage() {
   const projects = await getPublishedProjects();
@@ -79,8 +68,8 @@ export default async function CategoriesPage() {
             color: "rgba(22,18,22,0.6)",
           }}
         >
-          Browse real capstone projects by field, engineering, health,
-          fintech, and more coming soon.
+          Browse real capstone projects by field, from engineering and
+          health to agritech, energy, and more.
         </p>
         <div
           style={{

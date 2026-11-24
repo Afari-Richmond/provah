@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ShowcaseClient } from "@/components/marketing/showcase/ShowcaseClient";
 import { getPublishedProjects } from "@/lib/data/projects";
 import type { ProjectField } from "@/lib/types";
+import { PROJECT_FIELDS } from "@/lib/fields";
 
 export const metadata: Metadata = {
   title: "Browse Projects | Provah",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
     "Browse real capstone projects from African final-year students, filter by field, and connect with the builders behind them.",
 };
 
-const VALID_FIELDS: ProjectField[] = ["Engineering", "Health & Medicine", "Finance & Technology"];
+const VALID_FIELDS: ProjectField[] = PROJECT_FIELDS;
 
 export default async function ShowcasePage({
   searchParams,

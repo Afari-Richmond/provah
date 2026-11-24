@@ -154,10 +154,27 @@ export function WaitlistPopup() {
                   color: "#161616",
                   cursor: pending ? "default" : "pointer",
                   opacity: pending ? 0.6 : 1,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
                 }}
               >
+                {pending && (
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 14,
+                      height: 14,
+                      borderRadius: "50%",
+                      border: "2px solid rgba(22,22,22,0.25)",
+                      borderTopColor: "#161616",
+                      animation: "pv-spin 0.7s linear infinite",
+                    }}
+                  />
+                )}
                 {pending ? "Sending..." : "Notify me"}
               </button>
+              <style>{`@keyframes pv-spin { to { transform: rotate(360deg); } }`}</style>
             </form>
             {state.status === "error" && (
               <p style={{ marginTop: 8, fontSize: 13, color: "#D64545" }}>{state.message}</p>

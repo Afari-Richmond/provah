@@ -15,7 +15,7 @@ const REDIRECT_ONLY_SELECTOR = ".framer-akfuzt-container";
 // link, so every card currently lands on the same unfiltered page. Route
 // each one to the real showcase, pre-filtered to its own field.
 const FIELD_CARD_TARGETS: Record<string, string> = {
-  "framer-csenny-container": "/showcase?field=Engineering",
+  "framer-csenny-container": "/showcase?field=Engineering%20%26%20Technology",
   "framer-gblpw7-container": "/showcase?field=Health%20%26%20Medicine",
   "framer-1pd932a-container": "/showcase?field=Finance%20%26%20Technology",
 };
@@ -128,6 +128,37 @@ export function HomeFixes() {
         background-image: url('/images/home-hero.jpg');
         background-size: cover;
         background-position: center;
+      }
+      /* "Why we built Provah" cards: each used a leftover stock photo of a
+         person (from the tutoring template this site was cloned from) as
+         its "image" — swap each for a plain brand-color tile with a
+         centered icon instead. */
+      .framer-13os3z3-container img,
+      .framer-1lgttf6-container img,
+      .framer-kxp0nb-container img {
+        display: none !important;
+      }
+      .framer-13os3z3-container [data-framer-background-image-wrapper],
+      .framer-1lgttf6-container [data-framer-background-image-wrapper],
+      .framer-kxp0nb-container [data-framer-background-image-wrapper] {
+        background-size: 56px !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+      }
+      .framer-13os3z3-container,
+      .framer-13os3z3-container [data-framer-background-image-wrapper] {
+        background-color: #6C4CE0 !important;
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22/%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%226%22/%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%222%22/%3E%3C/svg%3E") !important;
+      }
+      .framer-1lgttf6-container,
+      .framer-1lgttf6-container [data-framer-background-image-wrapper] {
+        background-color: #FF7A30 !important;
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20width%3D%2220%22%20height%3D%225%22%20x%3D%222%22%20y%3D%223%22%20rx%3D%221%22/%3E%3Cpath%20d%3D%22M4%208v11a2%202%200%200%200%202%202h12a2%202%200%200%200%202-2V8%22/%3E%3Cpath%20d%3D%22M10%2012h4%22/%3E%3C/svg%3E") !important;
+      }
+      .framer-kxp0nb-container,
+      .framer-kxp0nb-container [data-framer-background-image-wrapper] {
+        background-color: #161221 !important;
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22/%3E%3Cpath%20d%3D%22m16.24%207.76-1.804%205.411a2%202%200%200%201-1.265%201.265L7.76%2016.24l1.804-5.411a2%202%200%200%201%201.265-1.265z%22/%3E%3C/svg%3E") !important;
       }
       /* Mentors & Investors pricing card: checkmarks are purple-on-purple
          (same token as the card background), so they're invisible. Force

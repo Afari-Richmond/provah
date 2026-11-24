@@ -1,9 +1,14 @@
 export type ProjectStatus = "draft" | "pending_review" | "published" | "rejected";
 
 export type ProjectField =
-  | "Engineering"
+  | "Engineering & Technology"
   | "Health & Medicine"
-  | "Finance & Technology";
+  | "Finance & Technology"
+  | "Agriculture & Agritech"
+  | "Energy & Sustainability"
+  | "Education & EdTech"
+  | "Creative & Media"
+  | "Business & Social Impact";
 
 export type TeamMember = {
   id: string;

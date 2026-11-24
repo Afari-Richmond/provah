@@ -2,12 +2,7 @@ import Link from "next/link";
 import { PublicProjectCard } from "@/components/marketing/showcase/PublicProjectCard";
 import { MiniAvatar } from "@/components/marketing/showcase/MiniAvatar";
 import type { Project } from "@/lib/types";
-
-const fieldColor: Record<Project["field"], string> = {
-  Engineering: "#FF7A30",
-  "Health & Medicine": "#6C4CE0",
-  "Finance & Technology": "#161216",
-};
+import { FIELD_COLORS as fieldColor } from "@/lib/fields";
 
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (

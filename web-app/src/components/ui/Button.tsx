@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
+import { Spinner } from "./Spinner";
 
 type Variant = "primary" | "secondary" | "dark";
 
@@ -15,13 +16,21 @@ export function Button({
   variant = "primary",
   className = "",
   children,
+  loading = false,
+  disabled,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
   children: ReactNode;
+  loading?: boolean;
 }) {
   return (
-    <button className={`${base} ${variants[variant]} ${className}`} {...props}>
+    <button
+      className={`${base} ${variants[variant]} ${className}`}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {loading && <Spinner size={16} />}
       {children}
     </button>
   );
