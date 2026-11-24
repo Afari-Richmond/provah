@@ -1,5 +1,6 @@
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { WaitlistPopup } from "@/components/marketing/WaitlistPopup";
+import { FooterFixes } from "@/components/marketing/FooterFixes";
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       <MarketingNav />
       {children}
       <WaitlistPopup />
+      <FooterFixes />
     </>
   );
 }

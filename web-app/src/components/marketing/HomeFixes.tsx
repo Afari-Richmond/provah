@@ -6,11 +6,27 @@ import { useRouter } from "next/navigation";
 const BROKEN_CTA_SELECTOR =
   ".framer-24ono9-container, .framer-14hoj26-container";
 
+// Buttons that already render correctly but whose Framer "page link" target
+// needs to be swapped for a real route — no visual replacement needed, just
+// redirect the click.
+const REDIRECT_ONLY_SELECTOR = ".framer-akfuzt-container";
+
 export function HomeFixes() {
   const router = useRouter();
 
   useEffect(() => {
     function intercept(e: Event) {
+      const redirectOnlyTarget = (e.target as HTMLElement)?.closest(
+        REDIRECT_ONLY_SELECTOR,
+      );
+      if (redirectOnlyTarget) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        if (e.type === "click") router.push("/signup");
+        return;
+      }
+
       const target = (e.target as HTMLElement)?.closest(BROKEN_CTA_SELECTOR);
       if (!target) return;
       e.preventDefault();
