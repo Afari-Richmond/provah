@@ -1,7 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { supabaseCookieOptions } from "./cookie-options";
 
 const PUBLIC_APP_ROUTES = ["/login", "/signup"];
+
+const MARKETING_HOST = "provah.live";
+const APP_HOST = "app.provah.live";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -10,6 +14,7 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: supabaseCookieOptions,
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -29,12 +34,33 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
+  const hostname = request.nextUrl.hostname;
   const isMarketingRoute =
     pathname === "/" ||
     ["/about", "/categories", "/showcase", "/how-it-works", "/terms", "/privacy"].some(
       (p) => pathname === p || pathname.startsWith(`${p}/`),
     );
+
+  // app.provah.live / provah.live split — only on the real production hosts.
+  // Localhost and Vercel preview URLs have no app subdomain, so this is a
+  // no-op there and the single-domain behavior below still applies.
+  const onAppHost = hostname === APP_HOST;
+  const onMarketingHost = hostname === MARKETING_HOST || hostname === `www.${MARKETING_HOST}`;
+
+  if (onAppHost && pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (onAppHost && isMarketingRoute) {
+    return NextResponse.redirect(new URL(`https://${MARKETING_HOST}${pathname}${search}`));
+  }
+
+  if (onMarketingHost && !isMarketingRoute) {
+    return NextResponse.redirect(new URL(`https://${APP_HOST}${pathname}${search}`));
+  }
 
   if (isMarketingRoute) {
     return supabaseResponse;

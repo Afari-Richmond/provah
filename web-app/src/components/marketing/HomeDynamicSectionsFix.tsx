@@ -256,7 +256,7 @@ export function HomeDynamicSectionsFix({ projects }: { projects: Project[] }) {
           >
             Sign up, submit your capstone, and get featured here.
           </p>
-          <Link
+          <a
             href="/signup"
             style={{
               display: "inline-flex",
@@ -278,7 +278,7 @@ export function HomeDynamicSectionsFix({ projects }: { projects: Project[] }) {
             }}
           >
             Sign up free &rarr;
-          </Link>
+          </a>
         </div>
       </section>
     </>,

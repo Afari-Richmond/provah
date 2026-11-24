@@ -132,7 +132,7 @@ export function PublicProjectDetail({
         </div>
       )}
 
-      <Link
+      <a
         href={`/profile/${project.studentId}`}
         style={{
           marginTop: 20,
@@ -165,7 +165,7 @@ export function PublicProjectDetail({
             {project.university}
           </div>
         </div>
-      </Link>
+      </a>
 
       {heroImage && (
         <div style={{ marginTop: 24, borderRadius: 16, overflow: "hidden", border: "2px solid #161216" }}>
@@ -350,7 +350,7 @@ export function PublicProjectDetail({
             )}
           </div>
 
-          <Link
+          <a
             href="/signup"
             style={{
               display: "flex",
@@ -372,7 +372,7 @@ export function PublicProjectDetail({
             }}
           >
             Sign up to connect
-          </Link>
+          </a>
 
           <div
             style={{

@@ -114,25 +114,25 @@ export async function MarketingNav() {
           {profile ? (
             <>
               <LogoutLink style={NAV_LINK_STYLE} />
-              <Link
+              <a
                 href="/profile"
                 style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
                 aria-label="My profile"
               >
                 <Avatar name={profile.name} seed={profile.id} imageUrl={profile.avatarUrl ?? undefined} size={36} />
-              </Link>
-              <Link href="/dashboard" style={CTA_STYLE}>
+              </a>
+              <a href="/dashboard" style={CTA_STYLE}>
                 Dashboard
-              </Link>
+              </a>
             </>
           ) : (
             <>
-              <Link href="/login" style={NAV_LINK_STYLE}>
+              <a href="/login" style={NAV_LINK_STYLE}>
                 LOG IN
-              </Link>
-              <Link href="/signup" style={CTA_STYLE}>
+              </a>
+              <a href="/signup" style={CTA_STYLE}>
                 Sign Up Free
-              </Link>
+              </a>
             </>
           )}
         </div>
