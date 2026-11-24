@@ -1,7 +1,5 @@
-import { FramerPage, buildMarketingMetadata } from "@/components/marketing/FramerPage";
-
-export const metadata = buildMarketingMetadata("categories-engineering");
+import { redirect } from "next/navigation";
 
 export default function EngineeringCategoryPage() {
-  return <FramerPage slug="categories-engineering" />;
+  redirect("/showcase?field=Engineering");
 }
