@@ -11,6 +11,15 @@ const BROKEN_CTA_SELECTOR =
 // redirect the click.
 const REDIRECT_ONLY_SELECTOR = ".framer-akfuzt-container";
 
+// "Pick a field" cards: all three compile to the same internal Framer page
+// link, so every card currently lands on the same unfiltered page. Route
+// each one to the real showcase, pre-filtered to its own field.
+const FIELD_CARD_TARGETS: Record<string, string> = {
+  "framer-csenny-container": "/showcase?field=Engineering",
+  "framer-gblpw7-container": "/showcase?field=Health%20%26%20Medicine",
+  "framer-1pd932a-container": "/showcase?field=Finance%20%26%20Technology",
+};
+
 export function HomeFixes() {
   const router = useRouter();
 
@@ -24,6 +33,24 @@ export function HomeFixes() {
         e.stopPropagation();
         e.stopImmediatePropagation();
         if (e.type === "click") router.push("/signup");
+        return;
+      }
+
+      const fieldCardEl = (e.target as HTMLElement)?.closest(
+        Object.keys(FIELD_CARD_TARGETS)
+          .map((c) => `.${c}`)
+          .join(", "),
+      );
+      if (fieldCardEl) {
+        const matchedClass = Object.keys(FIELD_CARD_TARGETS).find((c) =>
+          fieldCardEl.classList.contains(c),
+        );
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        if (e.type === "click" && matchedClass) {
+          router.push(FIELD_CARD_TARGETS[matchedClass]);
+        }
         return;
       }
 
@@ -77,6 +104,11 @@ export function HomeFixes() {
         color: #161616;
         box-shadow: 6px 6px 0 #161616;
         pointer-events: none;
+      }
+      .framer-csenny-container,
+      .framer-gblpw7-container,
+      .framer-1pd932a-container {
+        cursor: pointer;
       }
       .framer-e9ndc6 img {
         display: none !important;
