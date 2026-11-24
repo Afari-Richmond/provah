@@ -7,6 +7,7 @@ import {
   respondToConnectionRequest,
   cancelConnection,
 } from "@/lib/actions/connections";
+import { showSuccessPopup, showErrorPopup } from "@/lib/popup";
 import type { ConnectionStatus } from "@/lib/types";
 
 export function ConnectButton({
@@ -24,24 +25,38 @@ export function ConnectButton({
 
   function connect() {
     startTransition(async () => {
-      await sendConnectionRequest(otherUserId);
-      setStatus("pending_sent");
+      try {
+        await sendConnectionRequest(otherUserId);
+        setStatus("pending_sent");
+        showSuccessPopup("Connection request sent");
+      } catch (err) {
+        showErrorPopup("Couldn't send request", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 
   function cancel() {
     startTransition(async () => {
-      await cancelConnection(otherUserId);
-      setStatus("none");
-      setConnectionId(null);
+      try {
+        await cancelConnection(otherUserId);
+        setStatus("none");
+        setConnectionId(null);
+      } catch (err) {
+        showErrorPopup("Couldn't cancel request", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 
   function respond(accept: boolean) {
     if (!connectionId) return;
     startTransition(async () => {
-      await respondToConnectionRequest(connectionId, accept);
-      setStatus(accept ? "accepted" : "declined");
+      try {
+        await respondToConnectionRequest(connectionId, accept);
+        setStatus(accept ? "accepted" : "declined");
+        if (accept) showSuccessPopup("You're connected");
+      } catch (err) {
+        showErrorPopup("Couldn't respond to request", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 

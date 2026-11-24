@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TopDecor } from "./TopDecor";
 import { Logo } from "./Logo";
 import { Avatar } from "@/components/ui/Avatar";
-import { logOut } from "@/lib/actions/auth";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 import type { Profile } from "@/lib/types";
 
 const studentLinks = [
@@ -90,16 +90,15 @@ export function AppNav({
           <Link href="/profile" aria-label="Profile">
             <Avatar name={profile.name} seed={profile.id} size={40} />
           </Link>
-          <form action={logOut} className="hidden md:block">
-            <button
-              type="submit"
+          <div className="hidden md:block">
+            <LogoutButton
               className="pv-border flex h-10 w-10 items-center justify-center rounded-full bg-white text-black/50 hover:text-[var(--color-danger)]"
               aria-label="Log out"
               title="Log out"
             >
               <LogoutIcon />
-            </button>
-          </form>
+            </LogoutButton>
+          </div>
           {isStudent && (
             <Link
               href="/projects/new"
@@ -153,14 +152,12 @@ export function AppNav({
             >
               Settings
             </Link>
-            <form action={logOut}>
-              <button
-                type="submit"
-                className="w-full rounded-xl px-3 py-3 text-left font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-danger)]"
-              >
-                Log out
-              </button>
-            </form>
+            <LogoutButton
+              onClick={() => setMenuOpen(false)}
+              className="w-full rounded-xl px-3 py-3 text-left font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-danger)]"
+            >
+              Log out
+            </LogoutButton>
           </nav>
         </div>
       )}

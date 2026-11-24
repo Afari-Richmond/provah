@@ -9,6 +9,7 @@ import { TagInput } from "@/components/ui/TagInput";
 import { StatCard } from "@/components/ui/StatCard";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { updateStudentProfile } from "@/lib/actions/profile";
+import { showErrorPopup } from "@/lib/popup";
 import type { Profile, Project } from "@/lib/types";
 
 export function StudentProfileView({
@@ -30,9 +31,13 @@ export function StudentProfileView({
 
   function save() {
     startTransition(async () => {
-      await updateStudentProfile({ name, university, fieldOfStudy, bio, skills, linkedinUrl, portfolioUrl });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      try {
+        await updateStudentProfile({ name, university, fieldOfStudy, bio, skills, linkedinUrl, portfolioUrl });
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } catch (err) {
+        showErrorPopup("Couldn't save profile", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 

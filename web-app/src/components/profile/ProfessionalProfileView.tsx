@@ -9,6 +9,7 @@ import { TagInput } from "@/components/ui/TagInput";
 import { StatCard } from "@/components/ui/StatCard";
 import { DiscoverProjectCard } from "@/components/project/DiscoverProjectCard";
 import { updateProfessionalProfile } from "@/lib/actions/profile";
+import { showErrorPopup } from "@/lib/popup";
 import type { Profile, Project } from "@/lib/types";
 
 export function ProfessionalProfileView({
@@ -34,19 +35,23 @@ export function ProfessionalProfileView({
 
   function save() {
     startTransition(async () => {
-      await updateProfessionalProfile({
-        name,
-        title,
-        company,
-        location,
-        bio,
-        areasOfInterest: interests,
-        skills,
-        linkedinUrl,
-        portfolioUrl,
-      });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      try {
+        await updateProfessionalProfile({
+          name,
+          title,
+          company,
+          location,
+          bio,
+          areasOfInterest: interests,
+          skills,
+          linkedinUrl,
+          portfolioUrl,
+        });
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } catch (err) {
+        showErrorPopup("Couldn't save profile", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 

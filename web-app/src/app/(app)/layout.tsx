@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Unbounded, Space_Mono, Space_Grotesk } from "next/font/google";
+import { PopupHost } from "@/components/ui/PopupHost";
 import "../globals.css";
 
 const unbounded = Unbounded({
@@ -31,6 +32,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       className={`${unbounded.variable} ${spaceMono.variable} ${spaceGrotesk.variable} min-h-full flex flex-col bg-white antialiased`}
     >
       {children}
+      <PopupHost />
     </div>
   );
 }

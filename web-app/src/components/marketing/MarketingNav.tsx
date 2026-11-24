@@ -74,19 +74,29 @@ export async function MarketingNav() {
           padding: "18px 32px",
         }}
       >
-        <Link
-          href="/"
-          style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/provah-logo.png"
-            alt="Provah"
-            width={152}
-            height={36}
-            style={{ height: 36, width: "auto" }}
-          />
-        </Link>
+        {profile ? (
+          <a href="/discover" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/provah-logo.png"
+              alt="Provah"
+              width={152}
+              height={36}
+              style={{ height: 36, width: "auto" }}
+            />
+          </a>
+        ) : (
+          <Link href="/" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/provah-logo.png"
+              alt="Provah"
+              width={152}
+              height={36}
+              style={{ height: 36, width: "auto" }}
+            />
+          </Link>
+        )}
         <nav
           style={{
             display: "flex",

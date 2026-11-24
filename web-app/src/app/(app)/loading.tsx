@@ -1,5 +1,5 @@
-import { FullscreenSpinner } from "@/components/ui/Spinner";
+import { FullScreenLoadingOverlay } from "@/components/ui/Spinner";
 
 export default function Loading() {
-  return <FullscreenSpinner />;
+  return <FullScreenLoadingOverlay />;
 }

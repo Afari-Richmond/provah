@@ -77,3 +77,50 @@ select:disabled,
 [aria-disabled="true"] {
   cursor: not-allowed;
 }
+
+/* Full-screen route-transition spinner: a purple ring orbiting the Provah
+   mark, centered over a near-opaque white overlay covering the whole
+   viewport (not just the content area). */
+@keyframes provah-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes provah-logo-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.provah-spinner {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.provah-spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, transparent 0%, var(--color-primary) 32%, transparent 58%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  animation: provah-spin 1.15s linear infinite;
+}
+.provah-spinner-logo {
+  position: relative;
+  z-index: 1;
+  animation: provah-logo-pulse 2.1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .provah-spinner-ring,
+  .provah-spinner-logo {
+    animation: none;
+  }
+}

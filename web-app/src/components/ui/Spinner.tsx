@@ -26,3 +26,35 @@ export function FullscreenSpinner() {
     </div>
   );
 }
+
+/**
+ * Plain `position: fixed` div, not a portal — fixed elements anchor to the
+ * viewport regardless of where they sit in the DOM, so this covers the
+ * whole window (nav included) even though it renders inside a route's own
+ * tree. Deliberately not a client component either: a portal/client overlay
+ * needs `document` and JS hydration, so it would render nothing for the
+ * entire server-side delay this exists to cover.
+ */
+export function FullScreenLoadingOverlay({ label }: { label?: string }) {
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/90 backdrop-blur-[2px]">
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="provah-spinner">
+          <div className="provah-spinner-ring" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/icon.png"
+            alt=""
+            className="provah-spinner-logo"
+            style={{ width: 44, height: 44 }}
+          />
+        </div>
+        {label && (
+          <p className="font-(family-name:--font-space-grotesk) text-sm font-medium text-black/60">
+            {label}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
