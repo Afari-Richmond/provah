@@ -62,13 +62,6 @@ export function HomeFixes() {
         box-shadow: 6px 6px 0 #161616;
         pointer-events: none;
       }
-      .framer-1l0zlq1 {
-        display: none !important;
-      }
-      .framer-z7tt1d-container a.framer-W36AH {
-        background: #FFA800 !important;
-        box-shadow: 6px 6px 0 #161616 !important;
-      }
       .framer-e9ndc6 img {
         display: none !important;
       }

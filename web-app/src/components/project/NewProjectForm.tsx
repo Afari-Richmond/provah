@@ -231,7 +231,7 @@ export function NewProjectForm() {
                   Add documents after creating the project
                 </span>
                 <span className="font-(family-name:--font-space-grotesk) text-xs text-black/40">
-                  Images, PDF write-ups, or a short demo video — from the edit page
+                  Images, PDF write-ups, or a short demo video. Add them from the edit page
                 </span>
               </div>
             </div>

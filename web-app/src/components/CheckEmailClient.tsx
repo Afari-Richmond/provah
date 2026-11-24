@@ -34,7 +34,7 @@ export function CheckEmailClient({ email }: { email: string }) {
 
         {state.sent && (
           <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-success)]">
-            Confirmation email resent — check your inbox.
+            Confirmation email resent. Check your inbox.
           </p>
         )}
         {state.error && (

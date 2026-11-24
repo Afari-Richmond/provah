@@ -40,7 +40,7 @@ export function AvatarUpload({
         onClick={() => inputRef.current?.click()}
         className="pv-border absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs"
         aria-label="Change photo"
-        title="Photo isn't saved yet — no backend to store it"
+        title="Photo isn't saved yet, no backend to store it"
       >
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.5">
           <path d="M3 7h3l2-2h8l2 2h3v12H3z" />

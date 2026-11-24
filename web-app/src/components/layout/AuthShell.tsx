@@ -39,7 +39,7 @@ export function AuthShell({
           <p className="mt-4 max-w-sm font-(family-name:--font-space-grotesk) text-[15px] leading-7 text-white/80">
             Provah connects student innovators with the industry
             professionals, mentors, and investors who can take their work
-            further — free, always.
+            further, free, always.
           </p>
         </div>
       </div>
