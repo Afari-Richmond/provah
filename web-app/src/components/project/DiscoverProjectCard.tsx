@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Project } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
+import { Avatar } from "@/components/ui/Avatar";
 import { ProjectThumbnail } from "@/components/project/ProjectThumbnail";
 
 const fieldDot: Record<Project["field"], string> = {
@@ -47,7 +48,10 @@ export function DiscoverProjectCard({ project }: { project: Project }) {
         </div>
 
         <div className="flex items-center justify-between border-t border-dashed border-black/15 pt-4 font-(family-name:--font-space-grotesk) text-xs text-black/50">
-          <span>{project.studentName}</span>
+          <span className="flex items-center gap-2">
+            <Avatar name={project.studentName} seed={project.studentId} imageUrl={project.studentAvatar} size={22} />
+            {project.studentName}
+          </span>
           <span>{project.university}</span>
         </div>
       </Card>

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { AppNavBar } from "@/components/layout/AppNavBar";
 import { Eyebrow } from "@/components/ui/Badge";
 import { DiscoverProjectCard } from "@/components/project/DiscoverProjectCard";
@@ -7,7 +6,6 @@ import { getBookmarkedProjects } from "@/lib/data/projects";
 
 export default async function SavedPage() {
   const profile = await requireProfile();
-  if (profile.role !== "professional") redirect("/dashboard");
 
   const saved = await getBookmarkedProjects(profile.id);
 

@@ -15,7 +15,7 @@ export default async function ConversationPage({
 
   const conversationRow = await getConversationById(id);
   if (!conversationRow) notFound();
-  if (conversationRow.student_id !== profile.id && conversationRow.professional_id !== profile.id) {
+  if (conversationRow.participant_a_id !== profile.id && conversationRow.participant_b_id !== profile.id) {
     notFound();
   }
 

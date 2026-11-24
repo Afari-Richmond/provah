@@ -15,6 +15,7 @@ type ProjectFormInput = {
   team: string[];
   githubUrl?: string;
   demoUrl?: string;
+  imageUrl?: string | null;
   submitForReview?: boolean;
 };
 
@@ -45,6 +46,7 @@ export async function createProject(input: ProjectFormInput) {
       tech_stack: input.techStack,
       github_url: input.githubUrl || null,
       demo_url: input.demoUrl || null,
+      image_url: input.imageUrl || null,
       university: profile.university ?? null,
       status: input.submitForReview ? "pending_review" : "draft",
     })
@@ -84,6 +86,7 @@ export async function updateProject(projectId: string, input: ProjectFormInput) 
       tech_stack: input.techStack,
       github_url: input.githubUrl || null,
       demo_url: input.demoUrl || null,
+      image_url: input.imageUrl || null,
       status: nextStatus,
       rejection_reason: nextStatus === "pending_review" ? null : undefined,
       updated_at: new Date().toISOString(),
@@ -128,7 +131,7 @@ export async function deleteProject(projectId: string) {
 }
 
 export async function toggleBookmark(projectId: string) {
-  const profile = await requireRole("professional");
+  const profile = await requireProfile();
   const supabase = await createClient();
 
   const { data: existing } = await supabase
@@ -174,4 +177,51 @@ export async function moderateProject(
   if (error) throw new Error(error.message);
   revalidatePath("/admin/review-queue");
   revalidatePath("/discover");
+}
+
+export async function addProjectDocument(
+  projectId: string,
+  input: { label: string; kind: "pdf" | "video" | "image"; url: string },
+) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("student_id")
+    .eq("id", projectId)
+    .single();
+  if (!project || project.student_id !== profile.id) {
+    throw new Error("You can only edit your own projects");
+  }
+
+  const { data, error } = await supabase
+    .from("project_documents")
+    .insert({ project_id: projectId, label: input.label, kind: input.kind, url: input.url })
+    .select("id")
+    .single();
+
+  if (error || !data) throw new Error(error?.message ?? "Failed to add document");
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath(`/projects/${projectId}/edit`);
+  return { id: data.id };
+}
+
+export async function deleteProjectDocument(documentId: string, projectId: string) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("student_id")
+    .eq("id", projectId)
+    .single();
+  if (!project || project.student_id !== profile.id) {
+    throw new Error("You can only edit your own projects");
+  }
+
+  const { error } = await supabase.from("project_documents").delete().eq("id", documentId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath(`/projects/${projectId}/edit`);
 }

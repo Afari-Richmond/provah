@@ -20,6 +20,10 @@ export function mapProfile(row: ProfileRow): Profile {
     company: row.company,
     location: row.location,
     areasOfInterest: row.areas_of_interest ?? [],
+    coverImageUrl: row.cover_image_url,
+    skills: row.skills ?? [],
+    linkedinUrl: row.linkedin_url,
+    portfolioUrl: row.portfolio_url,
     createdAt: row.created_at,
   };
 }

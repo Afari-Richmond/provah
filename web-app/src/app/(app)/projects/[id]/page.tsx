@@ -20,7 +20,7 @@ export default async function ProjectDetailPage({
 
   const [allPublished, bookmarkedIds] = await Promise.all([
     getPublishedProjects(),
-    viewer.role === "professional" ? getBookmarkedProjectIds(viewer.id) : Promise.resolve(new Set<string>()),
+    getBookmarkedProjectIds(viewer.id),
   ]);
 
   const similarProjects = allPublished

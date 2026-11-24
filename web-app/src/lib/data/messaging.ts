@@ -9,21 +9,21 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
     .from("conversations")
     .select(
       `
-      id, project_id, student_id, professional_id, last_message, last_message_at,
+      id, project_id, participant_a_id, participant_b_id, last_message, last_message_at,
       projects ( title ),
-      student:student_id ( name, avatar_url ),
-      professional:professional_id ( name, avatar_url ),
+      a:participant_a_id ( name, avatar_url, role ),
+      b:participant_b_id ( name, avatar_url, role ),
       conversation_reads ( user_id, last_read_at )
     `,
     )
-    .or(`student_id.eq.${userId},professional_id.eq.${userId}`)
+    .or(`participant_a_id.eq.${userId},participant_b_id.eq.${userId}`)
     .order("last_message_at", { ascending: false, nullsFirst: false });
 
   if (error || !data) return [];
 
   return data.map((row) => {
-    const isStudent = row.student_id === userId;
-    const counterpart = isStudent ? row.professional : row.student;
+    const isA = row.participant_a_id === userId;
+    const counterpart = isA ? row.b : row.a;
     const myRead = row.conversation_reads?.find((r) => r.user_id === userId);
     const unread = Boolean(
       row.last_message_at && (!myRead || new Date(myRead.last_read_at) < new Date(row.last_message_at)),
@@ -31,11 +31,11 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
 
     return {
       id: row.id,
-      projectId: row.project_id,
+      projectId: row.project_id ?? undefined,
       projectTitle: row.projects?.title ?? "",
-      counterpartId: isStudent ? row.professional_id : row.student_id,
+      counterpartId: isA ? row.participant_b_id : row.participant_a_id,
       counterpartName: counterpart?.name ?? "Unknown",
-      counterpartRole: isStudent ? "professional" : "student",
+      counterpartRole: (counterpart?.role as Conversation["counterpartRole"]) ?? "student",
       counterpartAvatar: counterpart?.avatar_url ?? undefined,
       lastMessage: row.last_message ?? "",
       lastMessageAt: row.last_message_at ?? "",
@@ -50,10 +50,10 @@ export async function getConversationById(id: string) {
     .from("conversations")
     .select(
       `
-      id, project_id, student_id, professional_id,
+      id, project_id, participant_a_id, participant_b_id,
       projects ( title ),
-      student:student_id ( name, avatar_url ),
-      professional:professional_id ( name, avatar_url )
+      a:participant_a_id ( name, avatar_url ),
+      b:participant_b_id ( name, avatar_url )
     `,
     )
     .eq("id", id)

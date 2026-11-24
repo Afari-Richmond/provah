@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { getCurrentProfile } from "@/lib/auth";
+import { Avatar } from "@/components/ui/Avatar";
+import { LogoutLink } from "@/components/marketing/LogoutLink";
 
 const NAV_LINKS = [
   { href: "/showcase", label: "PROJECTS" },
@@ -38,7 +41,9 @@ const CTA_STYLE: React.CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-export function MarketingNav() {
+export async function MarketingNav() {
+  const profile = await getCurrentProfile();
+
   return (
     <div
       style={{
@@ -106,12 +111,30 @@ export function MarketingNav() {
             rowGap: 10,
           }}
         >
-          <Link href="/login" style={NAV_LINK_STYLE}>
-            LOG IN
-          </Link>
-          <Link href="/signup" style={CTA_STYLE}>
-            Sign Up Free
-          </Link>
+          {profile ? (
+            <>
+              <LogoutLink style={NAV_LINK_STYLE} />
+              <Link
+                href="/profile"
+                style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
+                aria-label="My profile"
+              >
+                <Avatar name={profile.name} seed={profile.id} imageUrl={profile.avatarUrl ?? undefined} size={36} />
+              </Link>
+              <Link href="/dashboard" style={CTA_STYLE}>
+                Dashboard
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" style={NAV_LINK_STYLE}>
+                LOG IN
+              </Link>
+              <Link href="/signup" style={CTA_STYLE}>
+                Sign Up Free
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -75,6 +75,48 @@ export type Database = {
           },
         ]
       }
+      connections: {
+        Row: {
+          created_at: string
+          id: string
+          recipient_id: string
+          requester_id: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipient_id: string
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipient_id?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connections_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connections_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_reads: {
         Row: {
           conversation_id: string
@@ -114,32 +156,32 @@ export type Database = {
           id: string
           last_message: string | null
           last_message_at: string | null
-          professional_id: string
-          project_id: string
-          student_id: string
+          participant_a_id: string
+          participant_b_id: string
+          project_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           last_message?: string | null
           last_message_at?: string | null
-          professional_id: string
-          project_id: string
-          student_id: string
+          participant_a_id: string
+          participant_b_id: string
+          project_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           last_message?: string | null
           last_message_at?: string | null
-          professional_id?: string
-          project_id?: string
-          student_id?: string
+          participant_a_id?: string
+          participant_b_id?: string
+          project_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "conversations_professional_id_fkey"
-            columns: ["professional_id"]
+            columns: ["participant_b_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -153,7 +195,7 @@ export type Database = {
           },
           {
             foreignKeyName: "conversations_student_id_fkey"
-            columns: ["student_id"]
+            columns: ["participant_a_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -222,6 +264,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          link: string | null
           read: boolean
           title: string
           type: string
@@ -231,6 +274,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          link?: string | null
           read?: boolean
           title: string
           type: string
@@ -240,6 +284,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          link?: string | null
           read?: boolean
           title?: string
           type?: string
@@ -255,6 +300,120 @@ export type Database = {
           },
         ]
       }
+      post_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          image_url: string | null
+          project_id: string | null
+        }
+        Insert: {
+          author_id: string
+          body?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          project_id?: string | null
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          project_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           areas_of_interest: string[]
@@ -262,12 +421,16 @@ export type Database = {
           badges: string[]
           bio: string | null
           company: string | null
+          cover_image_url: string | null
           created_at: string
           field_of_study: string | null
           id: string
+          linkedin_url: string | null
           location: string | null
           name: string
+          portfolio_url: string | null
           role: string
+          skills: string[]
           suspended: boolean
           title: string | null
           university: string | null
@@ -280,12 +443,16 @@ export type Database = {
           badges?: string[]
           bio?: string | null
           company?: string | null
+          cover_image_url?: string | null
           created_at?: string
           field_of_study?: string | null
           id: string
+          linkedin_url?: string | null
           location?: string | null
           name: string
+          portfolio_url?: string | null
           role: string
+          skills?: string[]
           suspended?: boolean
           title?: string | null
           university?: string | null
@@ -298,12 +465,16 @@ export type Database = {
           badges?: string[]
           bio?: string | null
           company?: string | null
+          cover_image_url?: string | null
           created_at?: string
           field_of_study?: string | null
           id?: string
+          linkedin_url?: string | null
           location?: string | null
           name?: string
+          portfolio_url?: string | null
           role?: string
+          skills?: string[]
           suspended?: boolean
           title?: string | null
           university?: string | null

@@ -19,6 +19,7 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
     description: row.description ?? "",
     createdAt: row.created_at,
     read: row.read,
+    link: row.link,
   }));
 }
 

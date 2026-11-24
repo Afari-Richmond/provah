@@ -39,7 +39,9 @@ export function ProjectDetailView({
   const [isPending, startTransition] = useTransition();
 
   const isOwner = viewer.id === project.studentId;
-  const canMessage = viewer.role === "professional" && viewer.verified;
+  const canMessage = viewer.role !== "professional" || viewer.verified;
+  const images = project.documents.filter((d) => d.kind === "image");
+  const otherDocs = project.documents.filter((d) => d.kind !== "image");
 
   useEffect(() => {
     if (!isOwner) incrementProjectViews(project.id);
@@ -110,17 +112,28 @@ export function ProjectDetailView({
         ))}
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
-        <Avatar name={project.studentName} seed={project.studentId} />
+      <Link href={`/profile/${project.studentId}`} className="mt-5 flex w-fit items-center gap-3">
+        <Avatar name={project.studentName} seed={project.studentId} imageUrl={project.studentAvatar} />
         <div>
-          <div className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
+          <div className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)] hover:underline">
             {project.studentName}
           </div>
           <div className="font-(family-name:--font-space-grotesk) text-xs text-black/50">
             {project.university}
           </div>
         </div>
-      </div>
+      </Link>
+
+      {(project.imageUrl || images.length > 0) && (
+        <div className="mt-6 overflow-hidden rounded-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={project.imageUrl || images[0]?.url}
+            alt={project.title}
+            className="pv-border aspect-video w-full rounded-2xl object-cover"
+          />
+        </div>
+      )}
 
       <div className="mt-8 grid gap-6 sm:grid-cols-[1fr_280px]">
         <div className="flex flex-col gap-6">
@@ -155,6 +168,47 @@ export function ProjectDetailView({
                       {m.name}
                     </span>
                   </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {images.length > 0 && (
+            <Card className="p-6" shadow="dark">
+              <h2 className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-black/40">
+                Gallery
+              </h2>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {images.map((img) => (
+                  <a key={img.id} href={img.url} target="_blank" rel="noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img.url}
+                      alt={img.label}
+                      className="pv-border aspect-square w-full rounded-xl object-cover"
+                    />
+                  </a>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {otherDocs.length > 0 && (
+            <Card className="p-6" shadow="dark">
+              <h2 className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-black/40">
+                Documents &amp; media
+              </h2>
+              <div className="mt-3 flex flex-col gap-2">
+                {otherDocs.map((doc) => (
+                  <a
+                    key={doc.id}
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-primary)] hover:underline"
+                  >
+                    {doc.kind === "pdf" ? "📄" : "🎬"} {doc.label}
+                  </a>
                 ))}
               </div>
             </Card>
@@ -209,7 +263,7 @@ export function ProjectDetailView({
                 Edit project
               </Button>
             </Link>
-          ) : viewer.role === "professional" ? (
+          ) : (
             <div title={!canMessage ? "Verification pending, complete it in your profile first" : undefined}>
               <Button
                 variant="dark"
@@ -221,9 +275,9 @@ export function ProjectDetailView({
                 {canMessage ? "Message student" : "Verification pending"}
               </Button>
             </div>
-          ) : null}
+          )}
 
-          {!isOwner && viewer.role === "professional" && (
+          {!isOwner && (
             <Button variant="secondary" className="w-full" onClick={handleBookmark} loading={isPending}>
               {bookmarked ? "★ Saved" : "☆ Save for later"}
             </Button>

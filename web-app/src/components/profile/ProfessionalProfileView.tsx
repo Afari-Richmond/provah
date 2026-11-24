@@ -26,6 +26,9 @@ export function ProfessionalProfileView({
   const [location, setLocation] = useState(profile.location ?? "");
   const [bio, setBio] = useState(profile.bio);
   const [interests, setInterests] = useState<string[]>(profile.areasOfInterest);
+  const [skills, setSkills] = useState(profile.skills);
+  const [linkedinUrl, setLinkedinUrl] = useState(profile.linkedinUrl ?? "");
+  const [portfolioUrl, setPortfolioUrl] = useState(profile.portfolioUrl ?? "");
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
 
@@ -38,6 +41,9 @@ export function ProfessionalProfileView({
         location,
         bio,
         areasOfInterest: interests,
+        skills,
+        linkedinUrl,
+        portfolioUrl,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -63,7 +69,7 @@ export function ProfessionalProfileView({
       <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_260px]">
         <Card className="flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
           <div className="flex items-center gap-4">
-            <AvatarUpload name={name} seed={profile.id} size={64} />
+            <AvatarUpload name={name} seed={profile.id} imageUrl={profile.avatarUrl} size={64} />
             <div>
               <p className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]">
                 Professional {profile.verified && "· Verified"}
@@ -81,6 +87,27 @@ export function ProfessionalProfileView({
             hint="Press enter to add"
             tags={interests}
             onChange={setInterests}
+          />
+          <TagInput
+            label="Skills"
+            hint="Press enter to add"
+            tags={skills}
+            onChange={setSkills}
+            placeholder="e.g. Product Strategy, Fundraising"
+          />
+          <TextField
+            label="LinkedIn"
+            hint="Optional"
+            placeholder="https://linkedin.com/in/you"
+            value={linkedinUrl}
+            onChange={(e) => setLinkedinUrl(e.target.value)}
+          />
+          <TextField
+            label="Portfolio"
+            hint="Optional"
+            placeholder="https://your-site.com"
+            value={portfolioUrl}
+            onChange={(e) => setPortfolioUrl(e.target.value)}
           />
 
           <div className="flex items-center gap-3">

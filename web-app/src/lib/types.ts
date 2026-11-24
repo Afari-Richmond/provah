@@ -63,16 +63,22 @@ export type Profile = {
   company?: string | null;
   location?: string | null;
   areasOfInterest: string[];
+  coverImageUrl?: string | null;
+  skills: string[];
+  linkedinUrl?: string | null;
+  portfolioUrl?: string | null;
   createdAt: string;
 };
 
+export type ConnectionStatus = "none" | "pending_sent" | "pending_received" | "accepted" | "declined";
+
 export type Conversation = {
   id: string;
-  projectId: string;
+  projectId?: string;
   projectTitle: string;
   counterpartId: string;
   counterpartName: string;
-  counterpartRole: "student" | "professional";
+  counterpartRole: "student" | "professional" | "admin";
   counterpartAvatar?: string;
   lastMessage: string;
   lastMessageAt: string;
@@ -100,4 +106,29 @@ export type Notification = {
   description: string;
   createdAt: string;
   read: boolean;
+  link: string | null;
+};
+
+export type PostComment = {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string | null;
+  body: string;
+  createdAt: string;
+};
+
+export type Post = {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string | null;
+  authorRole: Role;
+  body: string;
+  imageUrl?: string | null;
+  project?: { id: string; title: string; field: ProjectField } | null;
+  createdAt: string;
+  likeCount: number;
+  likedByMe: boolean;
+  comments: PostComment[];
 };

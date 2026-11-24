@@ -78,6 +78,7 @@ async function withCounts(supabase: Awaited<ReturnType<typeof createClient>>, ro
   }
   const messageCounts = new Map<string, number>();
   for (const c of convoRows ?? []) {
+    if (!c.project_id) continue;
     messageCounts.set(
       c.project_id,
       (messageCounts.get(c.project_id) ?? 0) + (messageCountByConvo.get(c.id) ?? 0),

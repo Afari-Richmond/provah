@@ -9,12 +9,15 @@ import { logOut } from "@/lib/actions/auth";
 import type { Profile } from "@/lib/types";
 
 const studentLinks = [
+  { href: "/feed", label: "Feed" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/discover", label: "Discover" },
+  { href: "/saved", label: "Saved" },
   { href: "/messages", label: "Messages" },
 ];
 
 const professionalLinks = [
+  { href: "/feed", label: "Feed" },
   { href: "/discover", label: "Discover" },
   { href: "/saved", label: "Saved" },
   { href: "/messages", label: "Messages" },
@@ -57,6 +60,21 @@ export function AppNav({
         </div>
 
         <div className="flex items-center gap-3">
+          <form action="/search" method="GET" className="hidden md:block">
+            <input
+              type="search"
+              name="q"
+              placeholder="Search people..."
+              className="w-40 rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-4 py-2 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:w-56 focus:border-[var(--color-primary)]"
+            />
+          </form>
+          <Link
+            href="/search"
+            className="pv-border flex h-10 w-10 items-center justify-center rounded-full bg-white md:hidden"
+            aria-label="Search"
+          >
+            <SearchIcon />
+          </Link>
           <Link
             href="/notifications"
             className="pv-border relative flex h-10 w-10 items-center justify-center rounded-full bg-white"
@@ -72,6 +90,16 @@ export function AppNav({
           <Link href="/profile" aria-label="Profile">
             <Avatar name={profile.name} seed={profile.id} size={40} />
           </Link>
+          <form action={logOut} className="hidden md:block">
+            <button
+              type="submit"
+              className="pv-border flex h-10 w-10 items-center justify-center rounded-full bg-white text-black/50 hover:text-[var(--color-danger)]"
+              aria-label="Log out"
+              title="Log out"
+            >
+              <LogoutIcon />
+            </button>
+          </form>
           {isStudent && (
             <Link
               href="/projects/new"
@@ -140,6 +168,15 @@ export function AppNav({
   );
 }
 
+function SearchIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function BellIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -153,6 +190,16 @@ function MenuIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function LogoutIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M21 12H9" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

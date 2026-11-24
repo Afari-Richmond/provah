@@ -53,6 +53,8 @@ export function PublicProjectDetail({
   const thesis = project.documents.find(
     (d) => d.label.toLowerCase().includes("thesis") || d.kind === "pdf",
   );
+  const images = project.documents.filter((d) => d.kind === "image");
+  const heroImage = project.imageUrl || images[0]?.url;
 
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: "48px 32px 100px" }}>
@@ -130,7 +132,17 @@ export function PublicProjectDetail({
         </div>
       )}
 
-      <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 12 }}>
+      <Link
+        href={`/profile/${project.studentId}`}
+        style={{
+          marginTop: 20,
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          width: "fit-content",
+          textDecoration: "none",
+        }}
+      >
         <MiniAvatar name={project.studentName} seed={project.studentId} size={40} />
         <div>
           <div
@@ -153,7 +165,14 @@ export function PublicProjectDetail({
             {project.university}
           </div>
         </div>
-      </div>
+      </Link>
+
+      {heroImage && (
+        <div style={{ marginTop: 24, borderRadius: 16, overflow: "hidden", border: "2px solid #161216" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={heroImage} alt={project.title} style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover" }} />
+        </div>
+      )}
 
       <div
         style={{
@@ -186,6 +205,35 @@ export function PublicProjectDetail({
                       {m.name}
                     </span>
                   </div>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+
+          {images.length > 1 && (
+            <SectionCard title="Gallery">
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+                  gap: 10,
+                }}
+              >
+                {images.map((img) => (
+                  <a key={img.id} href={img.url} target="_blank" rel="noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img.url}
+                      alt={img.label}
+                      style={{
+                        width: "100%",
+                        aspectRatio: "1/1",
+                        objectFit: "cover",
+                        borderRadius: 10,
+                        border: "1.5px solid rgba(22,18,22,0.12)",
+                      }}
+                    />
+                  </a>
                 ))}
               </div>
             </SectionCard>

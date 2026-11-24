@@ -12,6 +12,9 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       <style>{`
         .framer-jhrwe5-container { display: none !important; }
         #__framer-badge-container { display: none !important; }
+        a, button, [role="button"], summary, select, label {
+          cursor: pointer;
+        }
       `}</style>
       <MarketingNav />
       {children}

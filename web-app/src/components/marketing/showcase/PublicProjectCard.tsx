@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { Project } from "@/lib/types";
 import { FIELD_COLORS as fieldColor } from "@/lib/fields";
+import { MiniAvatar } from "@/components/marketing/showcase/MiniAvatar";
 
-export function PublicProjectCard({ project }: { project: Project }) {
+export function PublicProjectCard({ project, basePath = "/showcase" }: { project: Project; basePath?: string }) {
   return (
     <Link
-      href={`/showcase/${project.id}`}
+      href={`${basePath}/${project.id}`}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -127,7 +128,10 @@ export function PublicProjectCard({ project }: { project: Project }) {
           color: "rgba(22,18,22,0.5)",
         }}
       >
-        <span>{project.studentName}</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <MiniAvatar name={project.studentName} seed={project.studentId} size={22} />
+          {project.studentName}
+        </span>
         <span>{project.university}</span>
       </div>
     </Link>

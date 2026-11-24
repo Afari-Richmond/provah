@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { PublicProjectDetail } from "@/components/marketing/showcase/PublicProjectDetail";
 import { getProjectById, getPublishedProjects } from "@/lib/data/projects";
+import { getCurrentProfile } from "@/lib/auth";
 
 export async function generateMetadata({
   params,
@@ -23,6 +24,9 @@ export default async function PublicProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const viewer = await getCurrentProfile();
+  if (viewer) redirect(`/projects/${id}`);
+
   const project = await getProjectById(id);
 
   if (!project || project.status !== "published") notFound();

@@ -1,14 +1,21 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { Eyebrow, StatusPill } from "@/components/ui/Badge";
 import { TextField, TextAreaField, SelectField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
-import { updateProject, deleteProject } from "@/lib/actions/projects";
-import type { Project, ProjectField } from "@/lib/types";
+import {
+  updateProject,
+  deleteProject,
+  addProjectDocument,
+  deleteProjectDocument,
+} from "@/lib/actions/projects";
+import { uploadToBucket } from "@/lib/uploads";
+import type { Project, ProjectDocument, ProjectField } from "@/lib/types";
 import { PROJECT_FIELDS } from "@/lib/fields";
 
 export function EditProjectForm({ project }: { project: Project }) {
@@ -21,8 +28,46 @@ export function EditProjectForm({ project }: { project: Project }) {
   const [team, setTeam] = useState<string[]>(project.team.map((t) => t.name));
   const [githubUrl, setGithubUrl] = useState(project.githubUrl ?? "");
   const [demoUrl, setDemoUrl] = useState(project.demoUrl ?? "");
+  const [imageUrl, setImageUrl] = useState(project.imageUrl ?? null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [uploadingGalleryItem, setUploadingGalleryItem] = useState(false);
+  const [documents, setDocuments] = useState<ProjectDocument[]>(project.documents);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleThumbnailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingThumbnail(true);
+    try {
+      const url = await uploadToBucket("project-media", project.studentId, file);
+      setImageUrl(url);
+    } finally {
+      setUploadingThumbnail(false);
+    }
+  }
+
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingGalleryItem(true);
+    try {
+      const url = await uploadToBucket("project-media", project.studentId, file);
+      const kind = file.type.startsWith("video/") ? "video" : file.type === "application/pdf" ? "pdf" : "image";
+      const { id } = await addProjectDocument(project.id, { label: file.name, kind, url });
+      setDocuments((docs) => [...docs, { id, label: file.name, kind, url }]);
+    } finally {
+      setUploadingGalleryItem(false);
+    }
+  }
+
+  function removeDocument(docId: string) {
+    setDocuments((docs) => docs.filter((d) => d.id !== docId));
+    startTransition(async () => {
+      await deleteProjectDocument(docId, project.id);
+    });
+  }
 
   function save() {
     startTransition(async () => {
@@ -35,6 +80,7 @@ export function EditProjectForm({ project }: { project: Project }) {
         team,
         githubUrl,
         demoUrl,
+        imageUrl,
       });
     });
   }
@@ -67,6 +113,41 @@ export function EditProjectForm({ project }: { project: Project }) {
       )}
 
       <Card className="mt-6 flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
+        <div>
+          <div className="mb-2 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-ink)]">
+            Thumbnail
+          </div>
+          {imageUrl ? (
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imageUrl} alt="" className="pv-border aspect-video w-full rounded-2xl object-cover" />
+              <button
+                type="button"
+                onClick={() => setImageUrl(null)}
+                className="pv-border absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-xs font-bold"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <label className="pv-border flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-dashed bg-[var(--color-surface)] text-center">
+              {uploadingThumbnail ? (
+                <Spinner size={24} />
+              ) : (
+                <>
+                  <span className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]">
+                    Upload a thumbnail
+                  </span>
+                  <span className="font-(family-name:--font-space-grotesk) text-xs text-black/40">
+                    Optional, shows a Provah placeholder if skipped
+                  </span>
+                </>
+              )}
+              <input type="file" accept="image/*" onChange={handleThumbnailChange} className="hidden" />
+            </label>
+          )}
+        </div>
+
         <TextField label="Project title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <SelectField label="Field" value={field} onChange={(e) => setField(e.target.value as ProjectField)}>
           {PROJECT_FIELDS.map((f) => (
@@ -81,6 +162,62 @@ export function EditProjectForm({ project }: { project: Project }) {
         <TagInput label="Team members" tags={team} onChange={setTeam} />
         <TextField label="GitHub link" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} />
         <TextField label="Live demo link" hint="Optional" value={demoUrl} onChange={(e) => setDemoUrl(e.target.value)} />
+      </Card>
+
+      <Card className="mt-6 flex flex-col gap-4 p-6 sm:p-8" shadow="dark">
+        <div className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-ink)]">
+          Gallery &amp; documents
+        </div>
+        <p className="font-(family-name:--font-space-grotesk) text-xs text-black/40">
+          Extra screenshots, a PDF write-up, or a short demo video. Shown on your project's detail page.
+        </p>
+
+        {documents.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {documents.map((doc) => (
+              <div key={doc.id} className="relative">
+                {doc.kind === "image" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={doc.url} alt={doc.label} className="pv-border aspect-square w-full rounded-xl object-cover" />
+                ) : (
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="pv-border flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-xl bg-[var(--color-surface)] px-2 text-center"
+                  >
+                    <span className="text-2xl">{doc.kind === "pdf" ? "📄" : "🎬"}</span>
+                    <span className="line-clamp-2 font-(family-name:--font-space-grotesk) text-xs text-black/60">
+                      {doc.label}
+                    </span>
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeDocument(doc.id)}
+                  className="pv-border absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => galleryInputRef.current?.click()}
+          className="pv-border flex items-center justify-center gap-2 rounded-2xl border-dashed bg-[var(--color-surface)] py-4 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]"
+        >
+          {uploadingGalleryItem ? <Spinner size={16} /> : "+ Add image, PDF, or video"}
+        </button>
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/*,application/pdf,video/*"
+          onChange={handleGalleryUpload}
+          className="hidden"
+        />
       </Card>
 
       <div className="mt-6 flex items-center justify-between">

@@ -49,3 +49,31 @@ body {
 .pv-shadow-white {
   box-shadow: 7px 7px 0 #ffffff;
 }
+
+/* Every clickable element gets the hand cursor, everywhere in the app. */
+a,
+button,
+label,
+summary,
+select,
+[role="button"],
+[role="link"],
+[role="tab"],
+[role="checkbox"],
+[role="radio"],
+[onclick],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+a:disabled,
+button:disabled,
+input:disabled,
+select:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}

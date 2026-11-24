@@ -1,6 +1,8 @@
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { ShowcaseClient } from "@/components/marketing/showcase/ShowcaseClient";
 import { getPublishedProjects } from "@/lib/data/projects";
+import { getCurrentProfile } from "@/lib/auth";
 import type { ProjectField } from "@/lib/types";
 import { PROJECT_FIELDS } from "@/lib/fields";
 
@@ -18,6 +20,9 @@ export default async function ShowcasePage({
   searchParams: Promise<{ field?: string }>;
 }) {
   const { field } = await searchParams;
+  const viewer = await getCurrentProfile();
+  if (viewer) redirect(field ? `/discover?field=${encodeURIComponent(field)}` : "/discover");
+
   const initialField = VALID_FIELDS.includes(field as ProjectField) ? (field as ProjectField) : null;
   const projects = await getPublishedProjects();
 

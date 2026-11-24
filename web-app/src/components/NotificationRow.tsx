@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { markNotificationRead } from "@/lib/actions/notifications";
 import { timeAgo } from "@/lib/format";
@@ -14,6 +15,7 @@ const iconMap: Record<NotificationType, string> = {
 };
 
 export function NotificationRow({ notification }: { notification: Notification }) {
+  const router = useRouter();
   const [, startTransition] = useTransition();
 
   return (
@@ -21,6 +23,7 @@ export function NotificationRow({ notification }: { notification: Notification }
       type="button"
       onClick={() => {
         if (!notification.read) startTransition(() => markNotificationRead(notification.id));
+        if (notification.link) router.push(notification.link);
       }}
       className="text-left"
     >

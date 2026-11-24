@@ -8,6 +8,8 @@ import { Eyebrow } from "@/components/ui/Badge";
 import { TextField, TextAreaField, SelectField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
 import { createProject } from "@/lib/actions/projects";
+import { uploadToBucket } from "@/lib/uploads";
+import { Spinner } from "@/components/ui/Spinner";
 import type { ProjectField } from "@/lib/types";
 import { PROJECT_FIELDS } from "@/lib/fields";
 
@@ -20,6 +22,7 @@ type FormState = {
   team: string[];
   githubUrl: string;
   demoUrl: string;
+  imageUrl: string | null;
 };
 
 const initialForm: FormState = {
@@ -31,17 +34,31 @@ const initialForm: FormState = {
   team: [],
   githubUrl: "",
   demoUrl: "",
+  imageUrl: null,
 };
 
 const DRAFT_KEY = "provah:draft:new-project";
 
-export function NewProjectForm() {
+export function NewProjectForm({ userId }: { userId: string }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormState>(initialForm);
   const [restoreAvailable, setRestoreAvailable] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [uploading, setUploading] = useState(false);
   const hasInteracted = useRef(false);
+
+  async function handleThumbnailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadToBucket("project-media", userId, file);
+      update("imageUrl", url);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   // offer to restore a previously-autosaved draft, if one exists —
   // reading localStorage on mount, not available during SSR
@@ -102,6 +119,7 @@ export function NewProjectForm() {
         team: form.team,
         githubUrl: form.githubUrl,
         demoUrl: form.demoUrl,
+        imageUrl: form.imageUrl,
         submitForReview: !asDraft,
       });
       window.localStorage.removeItem(DRAFT_KEY);
@@ -169,6 +187,45 @@ export function NewProjectForm() {
                 </option>
               ))}
             </SelectField>
+
+            <div>
+              <div className="mb-2 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-ink)]">
+                Thumbnail
+              </div>
+              {form.imageUrl ? (
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={form.imageUrl}
+                    alt=""
+                    className="pv-border aspect-video w-full rounded-2xl object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => update("imageUrl", null)}
+                    className="pv-border absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-xs font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <label className="pv-border flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-dashed bg-[var(--color-surface)] text-center">
+                  {uploading ? (
+                    <Spinner size={24} />
+                  ) : (
+                    <>
+                      <span className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]">
+                        Upload a thumbnail
+                      </span>
+                      <span className="font-(family-name:--font-space-grotesk) text-xs text-black/40">
+                        Optional, shows a Provah placeholder if skipped
+                      </span>
+                    </>
+                  )}
+                  <input type="file" accept="image/*" onChange={handleThumbnailChange} className="hidden" />
+                </label>
+              )}
+            </div>
           </div>
         )}
 

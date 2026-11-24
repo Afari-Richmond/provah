@@ -9,6 +9,9 @@ export async function updateStudentProfile(input: {
   university: string;
   fieldOfStudy: string;
   bio: string;
+  skills: string[];
+  linkedinUrl: string;
+  portfolioUrl: string;
 }) {
   const profile = await requireProfile();
   const supabase = await createClient();
@@ -20,12 +23,16 @@ export async function updateStudentProfile(input: {
       university: input.university,
       field_of_study: input.fieldOfStudy,
       bio: input.bio,
+      skills: input.skills,
+      linkedin_url: input.linkedinUrl || null,
+      portfolio_url: input.portfolioUrl || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", profile.id);
 
   if (error) throw new Error(error.message);
   revalidatePath("/profile");
+  revalidatePath(`/profile/${profile.id}`);
 }
 
 export async function updateProfessionalProfile(input: {
@@ -35,6 +42,9 @@ export async function updateProfessionalProfile(input: {
   location: string;
   bio: string;
   areasOfInterest: string[];
+  skills: string[];
+  linkedinUrl: string;
+  portfolioUrl: string;
 }) {
   const profile = await requireProfile();
   const supabase = await createClient();
@@ -48,12 +58,16 @@ export async function updateProfessionalProfile(input: {
       location: input.location,
       bio: input.bio,
       areas_of_interest: input.areasOfInterest,
+      skills: input.skills,
+      linkedin_url: input.linkedinUrl || null,
+      portfolio_url: input.portfolioUrl || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", profile.id);
 
   if (error) throw new Error(error.message);
   revalidatePath("/profile");
+  revalidatePath(`/profile/${profile.id}`);
 }
 
 export async function updateAvatarUrl(url: string) {

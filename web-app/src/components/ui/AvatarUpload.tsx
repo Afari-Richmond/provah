@@ -2,32 +2,47 @@
 
 import { useRef, useState } from "react";
 import { Avatar } from "./Avatar";
+import { Spinner } from "./Spinner";
+import { uploadToBucket } from "@/lib/uploads";
+import { updateAvatarUrl } from "@/lib/actions/profile";
 
 export function AvatarUpload({
   name,
   seed,
+  imageUrl,
   size = 64,
 }: {
   name: string;
-  seed?: string;
+  seed: string;
+  imageUrl?: string | null;
   size?: number;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+    setUploading(true);
+    try {
+      const url = await uploadToBucket("avatars", seed, file);
+      await updateAvatarUrl(url);
+    } finally {
+      setUploading(false);
+    }
   }
+
+  const src = previewUrl || imageUrl;
 
   return (
     <div className="relative inline-block">
-      {previewUrl ? (
+      {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={previewUrl}
+          src={src}
           alt={name}
           className="pv-border rounded-full object-cover"
           style={{ width: size, height: size }}
@@ -35,12 +50,19 @@ export function AvatarUpload({
       ) : (
         <Avatar name={name} seed={seed} size={size} />
       )}
+      {uploading && (
+        <div
+          className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40"
+          style={{ width: size, height: size }}
+        >
+          <Spinner size={size * 0.4} />
+        </div>
+      )}
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
         className="pv-border absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs"
         aria-label="Change photo"
-        title="Photo isn't saved yet, no backend to store it"
       >
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.5">
           <path d="M3 7h3l2-2h8l2 2h3v12H3z" />
