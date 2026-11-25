@@ -78,9 +78,10 @@ select:disabled,
   cursor: not-allowed;
 }
 
-/* Full-screen route-transition spinner: a purple ring orbiting the Provah
-   mark, centered over a near-opaque white overlay covering the whole
-   viewport (not just the content area). */
+/* Full-screen route-transition spinner: a ring made of the same five brand
+   colors as the top decor stripe (TopDecor.tsx), in turn, orbiting the
+   Provah mark — centered over a near-opaque white overlay covering the
+   whole viewport (not just the content area). */
 @keyframes provah-spin {
   to {
     transform: rotate(360deg);
@@ -108,10 +109,16 @@ select:disabled,
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  background: conic-gradient(from 0deg, transparent 0%, var(--color-primary) 32%, transparent 58%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  animation: provah-spin 1.15s linear infinite;
+  background: conic-gradient(
+    #6c4ce0 0% 20%,
+    #ff7a30 20% 40%,
+    #161221 40% 60%,
+    #9b80ec 60% 80%,
+    #ffb380 80% 100%
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 8px));
+  animation: provah-spin 1.6s linear infinite;
 }
 .provah-spinner-logo {
   position: relative;
@@ -122,5 +129,25 @@ select:disabled,
   .provah-spinner-ring,
   .provah-spinner-logo {
     animation: none;
+  }
+}
+
+/* Mobile nav dropdown: animates open/closed via a 0fr -> 1fr grid-row
+   transition instead of an instant mount/unmount — this is the standard
+   CSS-only way to transition to/from `height: auto` smoothly. */
+.pv-mobile-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms ease;
+}
+.pv-mobile-panel.pv-open {
+  grid-template-rows: 1fr;
+}
+.pv-mobile-panel > div {
+  min-height: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-mobile-panel {
+    transition: none;
   }
 }

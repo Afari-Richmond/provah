@@ -157,13 +157,22 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
         </button>
       </div>
 
-      {open && (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateRows: open ? "1fr" : "0fr",
+          transition: "grid-template-rows 240ms ease",
+        }}
+      >
         <div
           style={{
-            borderTop: "1px solid #ddd",
+            minHeight: 0,
+            overflow: "hidden",
+            borderTop: open ? "1px solid #ddd" : "1px solid transparent",
             padding: "8px 32px 20px",
             display: "flex",
             flexDirection: "column",
+            transition: "border-color 240ms ease",
           }}
         >
           {NAV_LINKS.map((link) => (
@@ -210,7 +219,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
             )}
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 }

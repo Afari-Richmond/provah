@@ -2,6 +2,7 @@
 
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthFormState = { error: string | null };
@@ -88,5 +89,24 @@ export async function confirmEmail(formData: FormData) {
 export async function logOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+
+  // signOut() only clears the auth cookie under the currently-configured
+  // domain (.provah.live in production). A session started before the
+  // app.provah.live/provah.live split rolled out is host-scoped instead
+  // (app.provah.live only) and survives that clear as a separate cookie —
+  // explicitly expire both scopes so no stale session lingers.
+  const cookieStore = await cookies();
+  for (const { name } of cookieStore.getAll()) {
+    if (!name.startsWith("sb-")) continue;
+    cookieStore.set(name, "", { expires: new Date(0), path: "/" });
+    if (process.env.NEXT_PUBLIC_COOKIE_DOMAIN) {
+      cookieStore.set(name, "", {
+        expires: new Date(0),
+        path: "/",
+        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+      });
+    }
+  }
+
   redirect("/login");
 }

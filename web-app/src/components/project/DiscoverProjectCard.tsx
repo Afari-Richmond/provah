@@ -6,13 +6,17 @@ import { ProjectThumbnail } from "@/components/project/ProjectThumbnail";
 
 const fieldDot: Record<Project["field"], string> = {
   "Engineering & Technology": "bg-[#FF7A30]",
-  "Health & Medicine": "bg-[#6C4CE0]",
-  "Finance & Technology": "bg-[#161221]",
-  "Agriculture & Agritech": "bg-[#1E9E5A]",
+  "Artificial Intelligence": "bg-[#6C4CE0]",
+  Cybersecurity: "bg-[#161221]",
+  "Health & Medicine": "bg-[#D64545]",
+  "Finance & Accounting": "bg-[#1E9E5A]",
+  "Business & Management": "bg-[#4C6FE0]",
+  "Agriculture & Environment": "bg-[#8BA888]",
+  "Climate Science": "bg-[#2F8F7A]",
   "Energy & Sustainability": "bg-[#FFB380]",
-  "Education & EdTech": "bg-[#9B80EC]",
-  "Creative & Media": "bg-[#D64545]",
-  "Business & Social Impact": "bg-[#4C6FE0]",
+  Education: "bg-[#9B80EC]",
+  "Creative & Media": "bg-[#E0548C]",
+  "Social Sciences & Humanities": "bg-[#C98A3D]",
 };
 
 export function DiscoverProjectCard({ project }: { project: Project }) {

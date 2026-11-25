@@ -58,35 +58,6 @@ function FilterButton({
   );
 }
 
-function FilterChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        borderRadius: 999,
-        border: active ? "none" : "1.5px solid rgba(22,18,22,0.15)",
-        background: active ? "#6C4CE0" : "transparent",
-        color: active ? "#fff" : "rgba(22,18,22,0.6)",
-        padding: "6px 12px",
-        fontFamily: "'Space Grotesk', sans-serif",
-        fontSize: 12,
-        cursor: "pointer",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
 export function ShowcaseClient({
   projects,
   initialField,
@@ -98,7 +69,6 @@ export function ShowcaseClient({
 }) {
   const [query, setQuery] = useState("");
   const [activeField, setActiveField] = useState<ProjectField | null>(initialField);
-  const [activeTech, setActiveTech] = useState<string | null>(null);
   const [activeUniversity, setActiveUniversity] = useState<string | null>(null);
   const [sort, setSort] = useState<SortOrder>("newest");
 
@@ -107,12 +77,6 @@ export function ShowcaseClient({
     for (const f of FIELDS) m.set(f, 0);
     for (const p of projects) m.set(p.field, (m.get(p.field) ?? 0) + 1);
     return m;
-  }, [projects]);
-
-  const topTech = useMemo(() => {
-    const m = new Map<string, number>();
-    for (const p of projects) for (const t of p.techStack) m.set(t, (m.get(t) ?? 0) + 1);
-    return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([t]) => t);
   }, [projects]);
 
   const universities = useMemo(() => {
@@ -125,7 +89,6 @@ export function ShowcaseClient({
     const q = query.trim().toLowerCase();
     const matches = projects.filter((p) => {
       const matchesField = !activeField || p.field === activeField;
-      const matchesTech = !activeTech || p.techStack.includes(activeTech);
       const matchesUniversity = !activeUniversity || p.university === activeUniversity;
       const matchesQuery =
         !q ||
@@ -133,7 +96,7 @@ export function ShowcaseClient({
         p.university.toLowerCase().includes(q) ||
         p.techStack.some((t) => t.toLowerCase().includes(q)) ||
         p.tags.some((t) => t.toLowerCase().includes(q));
-      return matchesField && matchesTech && matchesUniversity && matchesQuery;
+      return matchesField && matchesUniversity && matchesQuery;
     });
 
     return [...matches].sort((a, b) => {
@@ -142,7 +105,7 @@ export function ShowcaseClient({
       const bTime = new Date(b.createdAt).getTime();
       return sort === "oldest" ? aTime - bTime : bTime - aTime;
     });
-  }, [projects, query, activeField, activeTech, activeUniversity, sort]);
+  }, [projects, query, activeField, activeUniversity, sort]);
 
   return (
     <main
@@ -158,6 +121,7 @@ export function ShowcaseClient({
       className="pv-showcase-grid"
     >
       <aside
+        className="pv-showcase-aside"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -210,7 +174,11 @@ export function ShowcaseClient({
           >
             Field
           </span>
-          <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+
+          <div
+            className="pv-field-buttons"
+            style={{ marginTop: 8, flexDirection: "column", gap: 4 }}
+          >
             <FilterButton active={activeField === null} onClick={() => setActiveField(null)}>
               All fields ({projects.length})
             </FilterButton>
@@ -225,31 +193,32 @@ export function ShowcaseClient({
               </FilterButton>
             ))}
           </div>
-        </div>
 
-        {topTech.length > 0 && (
-          <div>
-            <span
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 11,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "rgba(22,18,22,0.4)",
-              }}
-            >
-              Tech stack
-            </span>
-            <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {topTech.map((t) => (
-                <FilterChip key={t} active={activeTech === t} onClick={() => setActiveTech((v) => (v === t ? null : t))}>
-                  {t}
-                </FilterChip>
-              ))}
-            </div>
-          </div>
-        )}
+          <select
+            className="pv-field-select"
+            value={activeField ?? ""}
+            onChange={(e) => setActiveField((e.target.value || null) as ProjectField | null)}
+            style={{
+              marginTop: 8,
+              width: "100%",
+              borderRadius: 999,
+              border: "2px solid rgba(22,18,22,0.15)",
+              padding: "10px 16px",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: 14,
+              outline: "none",
+              boxSizing: "border-box",
+              background: "#fff",
+            }}
+          >
+            <option value="">All fields ({projects.length})</option>
+            {FIELDS.map((f) => (
+              <option key={f} value={f}>
+                {f} ({counts.get(f) ?? 0})
+              </option>
+            ))}
+          </select>
+        </div>
 
         {universities.length > 0 && (
           <div>
@@ -377,10 +346,18 @@ export function ShowcaseClient({
       </section>
 
       <style>{`
+        .pv-field-buttons { display: flex; }
+        .pv-field-select { display: none; }
         @media (max-width: 760px) {
           .pv-showcase-grid {
             grid-template-columns: 1fr !important;
           }
+          .pv-showcase-aside {
+            position: static !important;
+            top: auto !important;
+          }
+          .pv-field-buttons { display: none; }
+          .pv-field-select { display: block; }
         }
       `}</style>
     </main>

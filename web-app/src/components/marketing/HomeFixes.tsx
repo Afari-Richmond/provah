@@ -17,7 +17,7 @@ const REDIRECT_ONLY_SELECTOR = ".framer-akfuzt-container";
 const FIELD_CARD_TARGETS: Record<string, string> = {
   "framer-csenny-container": "/showcase?field=Engineering%20%26%20Technology",
   "framer-gblpw7-container": "/showcase?field=Health%20%26%20Medicine",
-  "framer-1pd932a-container": "/showcase?field=Finance%20%26%20Technology",
+  "framer-1pd932a-container": "/showcase?field=Finance%20%26%20Accounting",
 };
 
 export function HomeFixes() {

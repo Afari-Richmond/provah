@@ -119,8 +119,12 @@ export function AppNav({
         </div>
       </div>
 
-      {menuOpen && (
-        <div className="border-b border-[var(--color-border)] bg-white px-6 py-4 md:hidden">
+      <div className={`pv-mobile-panel md:hidden ${menuOpen ? "pv-open" : ""}`}>
+        <div
+          className={`overflow-hidden border-b bg-white px-6 py-4 transition-colors duration-200 ${
+            menuOpen ? "border-[var(--color-border)]" : "border-transparent"
+          }`}
+        >
           <nav className="flex flex-col gap-1">
             {links.map((l) => (
               <Link
@@ -160,7 +164,7 @@ export function AppNav({
             </LogoutButton>
           </nav>
         </div>
-      )}
+      </div>
     </header>
   );
 }
