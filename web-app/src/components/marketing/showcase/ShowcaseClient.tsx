@@ -70,6 +70,7 @@ export function ShowcaseClient({
   const [query, setQuery] = useState("");
   const [activeField, setActiveField] = useState<ProjectField | null>(initialField);
   const [activeUniversity, setActiveUniversity] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
   const [sort, setSort] = useState<SortOrder>("newest");
 
   const counts = useMemo(() => {
@@ -85,18 +86,25 @@ export function ShowcaseClient({
     return [...set].sort();
   }, [projects]);
 
+  const tools = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of projects) for (const t of p.techStack) m.set(t, (m.get(t) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
+  }, [projects]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const matches = projects.filter((p) => {
       const matchesField = !activeField || p.field === activeField;
       const matchesUniversity = !activeUniversity || p.university === activeUniversity;
+      const matchesTool = !activeTool || p.techStack.includes(activeTool);
       const matchesQuery =
         !q ||
         p.title.toLowerCase().includes(q) ||
         p.university.toLowerCase().includes(q) ||
         p.techStack.some((t) => t.toLowerCase().includes(q)) ||
         p.tags.some((t) => t.toLowerCase().includes(q));
-      return matchesField && matchesUniversity && matchesQuery;
+      return matchesField && matchesUniversity && matchesTool && matchesQuery;
     });
 
     return [...matches].sort((a, b) => {
@@ -105,7 +113,7 @@ export function ShowcaseClient({
       const bTime = new Date(b.createdAt).getTime();
       return sort === "oldest" ? aTime - bTime : bTime - aTime;
     });
-  }, [projects, query, activeField, activeUniversity, sort]);
+  }, [projects, query, activeField, activeUniversity, activeTool, sort]);
 
   return (
     <main
@@ -128,6 +136,8 @@ export function ShowcaseClient({
           gap: 24,
           position: "sticky",
           top: 24,
+          maxHeight: "calc(100vh - 48px)",
+          overflowY: "auto",
         }}
       >
         <div>
@@ -259,6 +269,46 @@ export function ShowcaseClient({
             </select>
           </div>
         )}
+
+        {tools.length > 0 && (
+          <div>
+            <span
+              style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 11,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "rgba(22,18,22,0.4)",
+              }}
+            >
+              Tools
+            </span>
+            <select
+              value={activeTool ?? ""}
+              onChange={(e) => setActiveTool(e.target.value || null)}
+              style={{
+                marginTop: 8,
+                width: "100%",
+                borderRadius: 999,
+                border: "2px solid rgba(22,18,22,0.15)",
+                padding: "10px 16px",
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 14,
+                outline: "none",
+                boxSizing: "border-box",
+                background: "#fff",
+              }}
+            >
+              <option value="">All tools</option>
+              {tools.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </aside>
 
       <section>
@@ -355,6 +405,8 @@ export function ShowcaseClient({
           .pv-showcase-aside {
             position: static !important;
             top: auto !important;
+            max-height: none !important;
+            overflow-y: visible !important;
           }
           .pv-field-buttons { display: none; }
           .pv-field-select { display: block; }

@@ -107,6 +107,20 @@ export async function getPublishedProjects(): Promise<Project[]> {
   return withCounts(supabase, data as unknown as ProjectRow[]);
 }
 
+export async function searchProjects(query: string): Promise<Project[]> {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const published = await getPublishedProjects();
+  return published.filter(
+    (p) =>
+      p.title.toLowerCase().includes(q) ||
+      p.university.toLowerCase().includes(q) ||
+      p.field.toLowerCase().includes(q) ||
+      p.techStack.some((t) => t.toLowerCase().includes(q)) ||
+      p.tags.some((t) => t.toLowerCase().includes(q)),
+  );
+}
+
 export async function getProjectsByStudent(studentId: string): Promise<Project[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

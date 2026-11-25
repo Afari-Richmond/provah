@@ -70,7 +70,7 @@ export function AppNav({
             <input
               type="search"
               name="q"
-              placeholder="Search people..."
+              placeholder="Search people & projects..."
               className="w-40 rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-4 py-2 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:w-56 focus:border-[var(--color-primary)]"
             />
           </form>
