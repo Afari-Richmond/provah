@@ -15,19 +15,21 @@ export const PROJECT_FIELDS: ProjectField[] = [
   "Social Sciences & Humanities",
 ];
 
+// Just the two primary brand colors, alternating — a 12-color rainbow of
+// field dots read as noisy clutter rather than a meaningful signal.
 export const FIELD_COLORS: Record<ProjectField, string> = {
-  "Engineering & Technology": "#FF7A30",
-  "Artificial Intelligence": "#6C4CE0",
-  Cybersecurity: "#161221",
-  "Health & Medicine": "#D64545",
-  "Finance & Accounting": "#1E9E5A",
-  "Business & Management": "#4C6FE0",
-  "Agriculture & Environment": "#8BA888",
-  "Climate Science": "#2F8F7A",
-  "Energy & Sustainability": "#FFB380",
-  Education: "#9B80EC",
-  "Creative & Media": "#E0548C",
-  "Social Sciences & Humanities": "#C98A3D",
+  "Engineering & Technology": "#6C4CE0",
+  "Artificial Intelligence": "#FF7A30",
+  Cybersecurity: "#6C4CE0",
+  "Health & Medicine": "#FF7A30",
+  "Finance & Accounting": "#6C4CE0",
+  "Business & Management": "#FF7A30",
+  "Agriculture & Environment": "#6C4CE0",
+  "Climate Science": "#FF7A30",
+  "Energy & Sustainability": "#6C4CE0",
+  Education: "#FF7A30",
+  "Creative & Media": "#6C4CE0",
+  "Social Sciences & Humanities": "#FF7A30",
 };
 
 export const FIELD_BLURBS: Record<ProjectField, string> = {

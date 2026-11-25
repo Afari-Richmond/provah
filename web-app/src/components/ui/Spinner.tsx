@@ -37,7 +37,7 @@ export function FullscreenSpinner() {
  */
 export function FullScreenLoadingOverlay({ label }: { label?: string }) {
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/90 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/55 backdrop-blur-[1px]">
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="provah-spinner">
           <div className="provah-spinner-ring" />

@@ -33,11 +33,13 @@ export type Project = {
   status: ProjectStatus;
   problem: string;
   solution: string;
+  longDescription?: string;
   techStack: string[];
   tags: string[];
   team: TeamMember[];
   githubUrl?: string;
   demoUrl?: string;
+  thesisUrl?: string;
   documents: ProjectDocument[];
   imageUrl?: string;
   views: number;
@@ -71,6 +73,7 @@ export type Profile = {
   skills: string[];
   linkedinUrl?: string | null;
   portfolioUrl?: string | null;
+  emailNotifications: boolean;
   createdAt: string;
 };
 

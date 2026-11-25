@@ -423,6 +423,7 @@ export type Database = {
           company: string | null
           cover_image_url: string | null
           created_at: string
+          email_notifications: boolean
           field_of_study: string | null
           id: string
           linkedin_url: string | null
@@ -445,6 +446,7 @@ export type Database = {
           company?: string | null
           cover_image_url?: string | null
           created_at?: string
+          email_notifications?: boolean
           field_of_study?: string | null
           id: string
           linkedin_url?: string | null
@@ -467,6 +469,7 @@ export type Database = {
           company?: string | null
           cover_image_url?: string | null
           created_at?: string
+          email_notifications?: boolean
           field_of_study?: string | null
           id?: string
           linkedin_url?: string | null
@@ -552,6 +555,7 @@ export type Database = {
           github_url: string | null
           id: string
           image_url: string | null
+          long_description: string | null
           problem: string | null
           rejection_reason: string | null
           solution: string | null
@@ -559,6 +563,7 @@ export type Database = {
           student_id: string
           tags: string[]
           tech_stack: string[]
+          thesis_url: string | null
           title: string
           university: string | null
           updated_at: string
@@ -571,6 +576,7 @@ export type Database = {
           github_url?: string | null
           id?: string
           image_url?: string | null
+          long_description?: string | null
           problem?: string | null
           rejection_reason?: string | null
           solution?: string | null
@@ -578,6 +584,7 @@ export type Database = {
           student_id: string
           tags?: string[]
           tech_stack?: string[]
+          thesis_url?: string | null
           title: string
           university?: string | null
           updated_at?: string
@@ -590,6 +597,7 @@ export type Database = {
           github_url?: string | null
           id?: string
           image_url?: string | null
+          long_description?: string | null
           problem?: string | null
           rejection_reason?: string | null
           solution?: string | null
@@ -597,6 +605,7 @@ export type Database = {
           student_id?: string
           tags?: string[]
           tech_stack?: string[]
+          thesis_url?: string | null
           title?: string
           university?: string | null
           updated_at?: string

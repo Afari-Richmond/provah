@@ -18,10 +18,12 @@ type FormState = {
   field: ProjectField | "";
   problem: string;
   solution: string;
+  longDescription: string;
   techStack: string[];
   team: string[];
   githubUrl: string;
   demoUrl: string;
+  thesisUrl: string;
   imageUrl: string | null;
 };
 
@@ -30,10 +32,12 @@ const initialForm: FormState = {
   field: "",
   problem: "",
   solution: "",
+  longDescription: "",
   techStack: [],
   team: [],
   githubUrl: "",
   demoUrl: "",
+  thesisUrl: "",
   imageUrl: null,
 };
 
@@ -115,10 +119,12 @@ export function NewProjectForm({ userId }: { userId: string }) {
         field: form.field as ProjectField,
         problem: form.problem,
         solution: form.solution,
+        longDescription: form.longDescription,
         techStack: form.techStack,
         team: form.team,
         githubUrl: form.githubUrl,
         demoUrl: form.demoUrl,
+        thesisUrl: form.thesisUrl,
         imageUrl: form.imageUrl,
         submitForReview: !asDraft,
       });
@@ -245,13 +251,20 @@ export function NewProjectForm({ userId }: { userId: string }) {
               value={form.solution}
               onChange={(e) => update("solution", e.target.value)}
             />
+            <TextAreaField
+              label="Long description"
+              hint="Optional — go deeper: approach, architecture, challenges, results"
+              placeholder="Add more detail for readers who want the full story..."
+              value={form.longDescription}
+              onChange={(e) => update("longDescription", e.target.value)}
+            />
           </div>
         )}
 
         {step === 3 && (
           <div className="flex flex-col gap-5">
             <TagInput
-              label="Tech stack"
+              label="Tools"
               hint="Press enter to add"
               tags={form.techStack}
               onChange={(v) => update("techStack", v)}
@@ -281,6 +294,13 @@ export function NewProjectForm({ userId }: { userId: string }) {
               placeholder="https://your-demo.vercel.app"
               value={form.demoUrl}
               onChange={(e) => update("demoUrl", e.target.value)}
+            />
+            <TextField
+              label="Thesis link"
+              hint="Optional"
+              placeholder="https://drive.google.com/your-thesis"
+              value={form.thesisUrl}
+              onChange={(e) => update("thesisUrl", e.target.value)}
             />
             <div>
               <div className="mb-2 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-[var(--color-ink)]">
@@ -318,7 +338,7 @@ export function NewProjectForm({ userId }: { userId: string }) {
             </div>
             <div>
               <div className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-black/40">
-                Tech stack
+                Tools
               </div>
               <div className="mt-2 flex flex-wrap gap-2">
                 {form.techStack.length > 0 ? (

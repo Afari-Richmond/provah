@@ -27,11 +27,13 @@ function mapProject(
     status: row.status as Project["status"],
     problem: row.problem ?? "",
     solution: row.solution ?? "",
+    longDescription: row.long_description ?? undefined,
     techStack: row.tech_stack ?? [],
     tags: row.tags ?? [],
     team: row.project_team_members ?? [],
     githubUrl: row.github_url ?? undefined,
     demoUrl: row.demo_url ?? undefined,
+    thesisUrl: row.thesis_url ?? undefined,
     documents: (row.project_documents ?? []).map((d) => ({
       id: d.id,
       label: d.label,

@@ -4,6 +4,21 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { searchProfiles } from "@/lib/data/users";
+
+// Powers the "new message" compose search — a thin client-callable wrapper
+// around the server-only searchProfiles(), scoped to exclude yourself.
+export async function searchUsersToMessage(query: string) {
+  const profile = await requireProfile();
+  const results = await searchProfiles(query, profile.id);
+  return results.map((p) => ({
+    id: p.id,
+    name: p.name,
+    avatarUrl: p.avatarUrl ?? null,
+    role: p.role,
+    subtitle: p.role === "student" ? p.university : p.company,
+  }));
+}
 
 export async function sendMessage(conversationId: string, body: string) {
   const profile = await requireProfile();

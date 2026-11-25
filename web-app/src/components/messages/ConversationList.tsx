@@ -41,9 +41,11 @@ export function ConversationList({ conversations }: { conversations: Conversatio
                   </span>
                 )}
               </div>
-              <p className="truncate font-(family-name:--font-space-grotesk) text-xs text-black/50">
-                {c.projectTitle}
-              </p>
+              {c.projectTitle && (
+                <p className="truncate font-(family-name:--font-space-grotesk) text-xs text-black/50">
+                  {c.projectTitle}
+                </p>
+              )}
               <p
                 className={`mt-1 truncate font-(family-name:--font-space-grotesk) text-sm ${
                   c.unread ? "font-semibold text-[var(--color-ink)]" : "text-black/50"

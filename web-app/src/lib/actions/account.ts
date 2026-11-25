@@ -22,6 +22,16 @@ export async function updateAccount(
   return { error: null, success: true };
 }
 
+export async function updateEmailNotifications(enabled: boolean) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ email_notifications: enabled })
+    .eq("id", profile.id);
+  if (error) throw new Error(error.message);
+}
+
 export async function deleteAccount() {
   const profile = await requireProfile();
   const supabase = await createClient();

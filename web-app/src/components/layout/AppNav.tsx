@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { TopDecor } from "./TopDecor";
 import { Logo } from "./Logo";
-import { Avatar } from "@/components/ui/Avatar";
 import { LogoutButton } from "@/components/ui/LogoutButton";
-import type { Profile } from "@/lib/types";
+import { NotificationsDropdown } from "@/components/notifications/NotificationsDropdown";
+import type { Notification, Profile } from "@/lib/types";
 
 const studentLinks = [
   { href: "/feed", label: "Feed" },
@@ -14,6 +14,7 @@ const studentLinks = [
   { href: "/discover", label: "Discover" },
   { href: "/saved", label: "Saved" },
   { href: "/messages", label: "Messages" },
+  { href: "/profile", label: "Profile" },
 ];
 
 const professionalLinks = [
@@ -21,16 +22,21 @@ const professionalLinks = [
   { href: "/discover", label: "Discover" },
   { href: "/saved", label: "Saved" },
   { href: "/messages", label: "Messages" },
+  { href: "/profile", label: "Profile" },
 ];
 
 export function AppNav({
   active,
   profile,
   unreadCount,
+  unreadMessageCount,
+  notifications,
 }: {
   active?: string;
   profile: Profile;
   unreadCount: number;
+  unreadMessageCount: number;
+  notifications: Notification[];
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const isStudent = profile.role === "student";
@@ -75,20 +81,18 @@ export function AppNav({
           >
             <SearchIcon />
           </Link>
+          <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} />
           <Link
-            href="/notifications"
+            href="/messages"
             className="pv-border relative flex h-10 w-10 items-center justify-center rounded-full bg-white"
-            aria-label="Notifications"
+            aria-label="Messages"
           >
-            <BellIcon />
-            {unreadCount > 0 && (
+            <MessageIcon />
+            {unreadMessageCount > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-accent)] font-(family-name:--font-space-mono) text-[10px] font-bold text-white">
-                {unreadCount}
+                {unreadMessageCount}
               </span>
             )}
-          </Link>
-          <Link href="/profile" aria-label="Profile">
-            <Avatar name={profile.name} seed={profile.id} size={40} />
           </Link>
           <div className="hidden md:block">
             <LogoutButton
@@ -178,11 +182,14 @@ function SearchIcon() {
   );
 }
 
-function BellIcon() {
+function MessageIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      <path
+        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

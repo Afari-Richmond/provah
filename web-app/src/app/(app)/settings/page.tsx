@@ -3,17 +3,21 @@ import { Eyebrow } from "@/components/ui/Badge";
 import { SettingsClient } from "@/components/SettingsClient";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { getConnections } from "@/lib/data/connections";
 
 export default async function SettingsPage() {
-  await requireProfile();
+  const profile = await requireProfile();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [
+    {
+      data: { user },
+    },
+    connections,
+  ] = await Promise.all([supabase.auth.getUser(), getConnections(profile.id)]);
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavBar />
+      <AppNavBar active="/settings" />
 
       <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
         <Eyebrow>Settings</Eyebrow>
@@ -21,7 +25,11 @@ export default async function SettingsPage() {
           Account settings
         </h1>
 
-        <SettingsClient email={user?.email ?? ""} />
+        <SettingsClient
+          email={user?.email ?? ""}
+          emailNotifications={profile.emailNotifications}
+          connections={connections}
+        />
       </main>
     </div>
   );

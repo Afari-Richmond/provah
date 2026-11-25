@@ -11,18 +11,18 @@ import { startConversation } from "@/lib/actions/messaging";
 import type { Profile, Project } from "@/lib/types";
 
 const fieldDot: Record<string, string> = {
-  "Engineering & Technology": "bg-[#FF7A30]",
-  "Artificial Intelligence": "bg-[#6C4CE0]",
-  Cybersecurity: "bg-[#161221]",
-  "Health & Medicine": "bg-[#D64545]",
-  "Finance & Accounting": "bg-[#1E9E5A]",
-  "Business & Management": "bg-[#4C6FE0]",
-  "Agriculture & Environment": "bg-[#8BA888]",
-  "Climate Science": "bg-[#2F8F7A]",
-  "Energy & Sustainability": "bg-[#FFB380]",
-  Education: "bg-[#9B80EC]",
-  "Creative & Media": "bg-[#E0548C]",
-  "Social Sciences & Humanities": "bg-[#C98A3D]",
+  "Engineering & Technology": "bg-[#6C4CE0]",
+  "Artificial Intelligence": "bg-[#FF7A30]",
+  Cybersecurity: "bg-[#6C4CE0]",
+  "Health & Medicine": "bg-[#FF7A30]",
+  "Finance & Accounting": "bg-[#6C4CE0]",
+  "Business & Management": "bg-[#FF7A30]",
+  "Agriculture & Environment": "bg-[#6C4CE0]",
+  "Climate Science": "bg-[#FF7A30]",
+  "Energy & Sustainability": "bg-[#6C4CE0]",
+  Education: "bg-[#FF7A30]",
+  "Creative & Media": "bg-[#6C4CE0]",
+  "Social Sciences & Humanities": "bg-[#FF7A30]",
 };
 
 export function ProjectDetailView({
@@ -159,6 +159,17 @@ export function ProjectDetailView({
             </p>
           </Card>
 
+          {project.longDescription && (
+            <Card className="p-6" shadow="dark">
+              <h2 className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-black/40">
+                More about this project
+              </h2>
+              <p className="mt-3 whitespace-pre-line font-(family-name:--font-space-grotesk) text-[15px] leading-7 text-black/70">
+                {project.longDescription}
+              </p>
+            </Card>
+          )}
+
           {project.team.length > 0 && (
             <Card className="p-6" shadow="dark">
               <h2 className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-black/40">
@@ -222,7 +233,7 @@ export function ProjectDetailView({
         <div className="flex flex-col gap-4">
           <Card className="p-5" shadow="dark">
             <h2 className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] text-black/40">
-              Tech stack
+              Tools
             </h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {project.techStack.map((t) => (
@@ -235,7 +246,7 @@ export function ProjectDetailView({
               ))}
             </div>
 
-            {(project.githubUrl || project.demoUrl) && (
+            {(project.githubUrl || project.demoUrl || project.thesisUrl) && (
               <div className="mt-5 flex flex-col gap-2 border-t border-dashed border-black/15 pt-4">
                 {project.githubUrl && (
                   <a
@@ -255,6 +266,16 @@ export function ProjectDetailView({
                     className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]"
                   >
                     View live demo →
+                  </a>
+                )}
+                {project.thesisUrl && (
+                  <a
+                    href={project.thesisUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] text-[var(--color-primary)]"
+                  >
+                    View thesis →
                   </a>
                 )}
               </div>

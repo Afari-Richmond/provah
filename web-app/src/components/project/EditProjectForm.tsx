@@ -24,10 +24,12 @@ export function EditProjectForm({ project }: { project: Project }) {
   const [field, setField] = useState<ProjectField>(project.field);
   const [problem, setProblem] = useState(project.problem);
   const [solution, setSolution] = useState(project.solution);
+  const [longDescription, setLongDescription] = useState(project.longDescription ?? "");
   const [techStack, setTechStack] = useState<string[]>(project.techStack);
   const [team, setTeam] = useState<string[]>(project.team.map((t) => t.name));
   const [githubUrl, setGithubUrl] = useState(project.githubUrl ?? "");
   const [demoUrl, setDemoUrl] = useState(project.demoUrl ?? "");
+  const [thesisUrl, setThesisUrl] = useState(project.thesisUrl ?? "");
   const [imageUrl, setImageUrl] = useState(project.imageUrl ?? null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [uploadingGalleryItem, setUploadingGalleryItem] = useState(false);
@@ -76,10 +78,12 @@ export function EditProjectForm({ project }: { project: Project }) {
         field,
         problem,
         solution,
+        longDescription,
         techStack,
         team,
         githubUrl,
         demoUrl,
+        thesisUrl,
         imageUrl,
       });
     });
@@ -158,10 +162,17 @@ export function EditProjectForm({ project }: { project: Project }) {
         </SelectField>
         <TextAreaField label="The problem" value={problem} onChange={(e) => setProblem(e.target.value)} />
         <TextAreaField label="Your solution" value={solution} onChange={(e) => setSolution(e.target.value)} />
-        <TagInput label="Tech stack" tags={techStack} onChange={setTechStack} />
+        <TextAreaField
+          label="Long description"
+          hint="Optional — go deeper: approach, architecture, challenges, results"
+          value={longDescription}
+          onChange={(e) => setLongDescription(e.target.value)}
+        />
+        <TagInput label="Tools" tags={techStack} onChange={setTechStack} />
         <TagInput label="Team members" tags={team} onChange={setTeam} />
         <TextField label="GitHub link" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} />
         <TextField label="Live demo link" hint="Optional" value={demoUrl} onChange={(e) => setDemoUrl(e.target.value)} />
+        <TextField label="Thesis link" hint="Optional" value={thesisUrl} onChange={(e) => setThesisUrl(e.target.value)} />
       </Card>
 
       <Card className="mt-6 flex flex-col gap-4 p-6 sm:p-8" shadow="dark">

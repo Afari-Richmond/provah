@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { MessageThread } from "@/components/messages/MessageThread";
 import { requireProfile } from "@/lib/auth";
 import { getConversations, getMessages, getConversationById } from "@/lib/data/messaging";
-import { getUnreadNotificationCount } from "@/lib/data/notifications";
+import { getNotifications, getUnreadNotificationCount } from "@/lib/data/notifications";
 import { markConversationRead } from "@/lib/actions/messaging";
 
 export default async function ConversationPage({
@@ -19,14 +19,17 @@ export default async function ConversationPage({
     notFound();
   }
 
-  const [conversations, messages, unreadCount] = await Promise.all([
+  const [conversations, messages, unreadCount, notifications] = await Promise.all([
     getConversations(profile.id),
     getMessages(id, profile.id),
     getUnreadNotificationCount(profile.id),
+    getNotifications(profile.id),
   ]);
 
   const conversation = conversations.find((c) => c.id === id);
   if (!conversation) notFound();
+
+  const unreadMessageCount = conversations.filter((c) => c.unread && c.id !== id).length;
 
   await markConversationRead(id);
 
@@ -37,6 +40,8 @@ export default async function ConversationPage({
       initialMessages={messages}
       profile={profile}
       unreadCount={unreadCount}
+      unreadMessageCount={unreadMessageCount}
+      notifications={notifications.slice(0, 8)}
     />
   );
 }

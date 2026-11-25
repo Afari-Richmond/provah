@@ -50,9 +50,10 @@ export function PublicProjectDetail({
   project: Project;
   similarProjects: Project[];
 }) {
-  const thesis = project.documents.find(
+  const inferredThesis = project.documents.find(
     (d) => d.label.toLowerCase().includes("thesis") || d.kind === "pdf",
   );
+  const thesisHref = project.thesisUrl || inferredThesis?.url;
   const images = project.documents.filter((d) => d.kind === "image");
   const heroImage = project.imageUrl || images[0]?.url;
 
@@ -189,6 +190,12 @@ export function PublicProjectDetail({
             {project.solution || "No write-up provided yet."}
           </SectionCard>
 
+          {project.longDescription && (
+            <SectionCard title="More about this project">
+              <span style={{ whiteSpace: "pre-line" }}>{project.longDescription}</span>
+            </SectionCard>
+          )}
+
           {project.team.length > 0 && (
             <SectionCard title="Team">
               <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 0 }}>
@@ -261,7 +268,7 @@ export function PublicProjectDetail({
                 margin: 0,
               }}
             >
-              Tech stack
+              Tools
             </h2>
             <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
               {project.techStack.map((t) => (
@@ -281,7 +288,7 @@ export function PublicProjectDetail({
               ))}
             </div>
 
-            {(project.githubUrl || project.demoUrl || thesis) && (
+            {(project.githubUrl || project.demoUrl || thesisHref) && (
               <div
                 style={{
                   marginTop: 18,
@@ -328,9 +335,9 @@ export function PublicProjectDetail({
                     View live demo →
                   </a>
                 )}
-                {thesis && (
+                {thesisHref && (
                   <a
-                    href={thesis.url}
+                    href={thesisHref}
                     target="_blank"
                     rel="noreferrer"
                     style={{
@@ -343,7 +350,7 @@ export function PublicProjectDetail({
                       textDecoration: "none",
                     }}
                   >
-                    {thesis.label || "View thesis"} →
+                    View thesis →
                   </a>
                 )}
               </div>

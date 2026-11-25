@@ -11,10 +11,12 @@ type ProjectFormInput = {
   field: ProjectField;
   problem: string;
   solution: string;
+  longDescription?: string;
   techStack: string[];
   team: string[];
   githubUrl?: string;
   demoUrl?: string;
+  thesisUrl?: string;
   imageUrl?: string | null;
   submitForReview?: boolean;
 };
@@ -43,9 +45,11 @@ export async function createProject(input: ProjectFormInput) {
       field: input.field,
       problem: input.problem,
       solution: input.solution,
+      long_description: input.longDescription || null,
       tech_stack: input.techStack,
       github_url: input.githubUrl || null,
       demo_url: input.demoUrl || null,
+      thesis_url: input.thesisUrl || null,
       image_url: input.imageUrl || null,
       university: profile.university ?? null,
       status: input.submitForReview ? "pending_review" : "draft",
@@ -83,9 +87,11 @@ export async function updateProject(projectId: string, input: ProjectFormInput) 
       field: input.field,
       problem: input.problem,
       solution: input.solution,
+      long_description: input.longDescription || null,
       tech_stack: input.techStack,
       github_url: input.githubUrl || null,
       demo_url: input.demoUrl || null,
+      thesis_url: input.thesisUrl || null,
       image_url: input.imageUrl || null,
       status: nextStatus,
       rejection_reason: nextStatus === "pending_review" ? null : undefined,

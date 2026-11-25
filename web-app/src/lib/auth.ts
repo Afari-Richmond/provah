@@ -24,6 +24,7 @@ export function mapProfile(row: ProfileRow): Profile {
     skills: row.skills ?? [],
     linkedinUrl: row.linkedin_url,
     portfolioUrl: row.portfolio_url,
+    emailNotifications: row.email_notifications,
     createdAt: row.created_at,
   };
 }

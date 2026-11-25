@@ -44,6 +44,11 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
   });
 }
 
+export async function getUnreadConversationCount(userId: string): Promise<number> {
+  const conversations = await getConversations(userId);
+  return conversations.filter((c) => c.unread).length;
+}
+
 export async function getConversationById(id: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
