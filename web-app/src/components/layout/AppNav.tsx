@@ -44,19 +44,26 @@ export function AppNav({
 
   return (
     <header className="sticky top-0 z-20 bg-white">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-[var(--color-ink)] focus:px-4 focus:py-2 focus:font-(family-name:--font-space-mono) focus:text-xs focus:font-bold focus:uppercase focus:text-white"
+      >
+        Skip to content
+      </a>
       <TopDecor />
       <div className="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4 sm:px-10">
         <div className="flex items-center gap-10">
           <Logo />
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
+                aria-current={active === l.href ? "page" : undefined}
                 className={`font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] transition-colors ${
                   active === l.href
                     ? "text-[var(--color-ink)]"
-                    : "text-black/40 hover:text-[var(--color-ink)]"
+                    : "text-black/60 hover:text-[var(--color-ink)]"
                 }`}
               >
                 {l.label}
@@ -71,7 +78,7 @@ export function AppNav({
               type="search"
               name="q"
               placeholder="Search people & projects..."
-              className="w-40 rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-4 py-2 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:w-56 focus:border-[var(--color-primary)]"
+              className="w-40 rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-4 py-2 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:w-56 focus:border-[var(--color-primary)]"
             />
           </form>
           <Link
@@ -81,7 +88,7 @@ export function AppNav({
           >
             <SearchIcon />
           </Link>
-          <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} />
+          <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} userId={profile.id} />
           <Link
             href="/messages"
             className="pv-border relative flex h-10 w-10 items-center justify-center rounded-full bg-white"
@@ -117,6 +124,7 @@ export function AppNav({
             onClick={() => setMenuOpen((o) => !o)}
             className="pv-border flex h-10 w-10 items-center justify-center rounded-full bg-white md:hidden"
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
@@ -129,16 +137,17 @@ export function AppNav({
             menuOpen ? "border-[var(--color-border)]" : "border-transparent"
           }`}
         >
-          <nav className="flex flex-col gap-1">
+          <nav aria-label="Mobile" className="flex flex-col gap-1">
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
+                aria-current={active === l.href ? "page" : undefined}
                 className={`rounded-xl px-3 py-3 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.05em] ${
                   active === l.href
                     ? "bg-[var(--color-surface)] text-[var(--color-ink)]"
-                    : "text-black/50"
+                    : "text-black/60"
                 }`}
               >
                 {l.label}

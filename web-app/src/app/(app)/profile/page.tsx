@@ -13,7 +13,7 @@ export default async function ProfilePage() {
     <div className="min-h-screen bg-white">
       <AppNavBar />
 
-      <main className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
         <Eyebrow>Your profile</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[32px] font-bold leading-tight text-[var(--color-ink)] sm:text-[40px]">
           {profile.name}

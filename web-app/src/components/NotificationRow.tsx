@@ -12,6 +12,8 @@ const iconMap: Record<NotificationType, string> = {
   project_rejected: "⚠️",
   new_message: "💬",
   new_interest: "⭐",
+  connection_request: "🤝",
+  connection_accepted: "🎉",
 };
 
 export function NotificationRow({ notification }: { notification: Notification }) {
@@ -40,7 +42,7 @@ export function NotificationRow({ notification }: { notification: Notification }
             {notification.description}
           </p>
         </div>
-        <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/40">
+        <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/60">
           {timeAgo(notification.createdAt)}
         </span>
       </Card>

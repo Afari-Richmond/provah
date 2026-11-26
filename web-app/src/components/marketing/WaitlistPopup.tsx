@@ -23,7 +23,6 @@ export function WaitlistPopup() {
         window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
       if (scrolledToBottom) {
         shown.current = true;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setVisible(true);
       }
     }

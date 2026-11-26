@@ -3,13 +3,18 @@
 import { useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { startConversationWithUser } from "@/lib/actions/messaging";
+import { showErrorPopup } from "@/lib/popup";
 
 export function MessageButton({ otherUserId }: { otherUserId: string }) {
   const [isPending, startTransition] = useTransition();
 
   function send() {
     startTransition(async () => {
-      await startConversationWithUser(otherUserId);
+      try {
+        await startConversationWithUser(otherUserId);
+      } catch (err) {
+        showErrorPopup("Couldn't start conversation", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 

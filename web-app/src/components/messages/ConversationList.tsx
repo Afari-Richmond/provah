@@ -12,7 +12,7 @@ export function ConversationList({ conversations }: { conversations: Conversatio
   if (conversations.length === 0) {
     return (
       <p className="px-4 py-6 font-(family-name:--font-space-grotesk) text-sm text-black/40">
-        No conversations yet.
+        No conversations yet — reach out to someone building on Provah.
       </p>
     );
   }
@@ -36,7 +36,7 @@ export function ConversationList({ conversations }: { conversations: Conversatio
                   {c.counterpartName}
                 </span>
                 {c.lastMessageAt && (
-                  <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/40">
+                  <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/60">
                     {timeAgo(c.lastMessageAt)}
                   </span>
                 )}

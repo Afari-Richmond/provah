@@ -33,12 +33,12 @@ export function CheckEmailClient({ email }: { email: string }) {
         <input type="hidden" name="email" value={email} />
 
         {state.sent && (
-          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-success)]">
+          <p role="status" aria-live="polite" className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-success)]">
             Confirmation email resent. Check your inbox.
           </p>
         )}
         {state.error && (
-          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+          <p role="alert" aria-live="assertive" className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
             {state.error}
           </p>
         )}

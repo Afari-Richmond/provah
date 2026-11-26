@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { getFeedPosts } from "@/lib/data/feed";
+
+export async function loadMoreFeedPosts(offset: number) {
+  const profile = await requireProfile();
+  return getFeedPosts(profile.id, undefined, offset);
+}
 
 export async function createPost(input: { body: string; imageUrl?: string | null; projectId?: string | null }) {
   const profile = await requireProfile();

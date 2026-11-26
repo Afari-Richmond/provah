@@ -8,14 +8,20 @@ const POST_SELECT = `
   projects ( id, title, field )
 `;
 
-export async function getFeedPosts(viewerId: string, limit = 20): Promise<Post[]> {
+export const FEED_PAGE_SIZE = 20;
+
+export async function getFeedPosts(
+  viewerId: string,
+  limit = FEED_PAGE_SIZE,
+  offset = 0,
+): Promise<Post[]> {
   const supabase = await createClient();
 
   const { data: rows, error } = await supabase
     .from("posts")
     .select(POST_SELECT)
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
 
   if (error || !rows || rows.length === 0) return [];
 

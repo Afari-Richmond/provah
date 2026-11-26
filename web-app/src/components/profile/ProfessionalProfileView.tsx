@@ -8,8 +8,11 @@ import { TextField, TextAreaField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
 import { StatCard } from "@/components/ui/StatCard";
 import { DiscoverProjectCard } from "@/components/project/DiscoverProjectCard";
+import Link from "next/link";
 import { updateProfessionalProfile } from "@/lib/actions/profile";
 import { showErrorPopup } from "@/lib/popup";
+import { ProfileCompletenessBanner } from "@/components/profile/ProfileCompletenessBanner";
+import { AvailabilitySelector } from "@/components/profile/AvailabilitySelector";
 import type { Profile, Project } from "@/lib/types";
 
 export function ProfessionalProfileView({
@@ -71,6 +74,10 @@ export function ProfessionalProfileView({
         </div>
       )}
 
+      <div className="mt-6">
+        <ProfileCompletenessBanner profile={profile} />
+      </div>
+
       <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_260px]">
         <Card className="flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
           <div className="flex items-center gap-4">
@@ -81,6 +88,8 @@ export function ProfessionalProfileView({
               </p>
             </div>
           </div>
+
+          <AvailabilitySelector initialStatus={profile.availabilityStatus} />
 
           <TextField label="Full name" value={name} onChange={(e) => setName(e.target.value)} />
           <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -136,11 +145,22 @@ export function ProfessionalProfileView({
       <h2 className="mt-12 font-(family-name:--font-unbounded) text-xl font-bold text-[var(--color-ink)]">
         Saved projects
       </h2>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {savedProjects.map((project) => (
-          <DiscoverProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      {savedProjects.length === 0 ? (
+        <div className="pv-border mt-6 flex flex-col items-center gap-3 rounded-2xl bg-[var(--color-surface)] p-10 text-center">
+          <p className="font-(family-name:--font-space-grotesk) text-sm text-black/50">
+            Nothing saved yet — browse Discover and tap &quot;Save for later&quot; on a project.
+          </p>
+          <Link href="/discover">
+            <Button variant="primary">Browse Discover</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {savedProjects.map((project) => (
+            <DiscoverProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </>
   );
 }

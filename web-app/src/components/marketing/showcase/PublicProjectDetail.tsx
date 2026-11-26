@@ -58,7 +58,7 @@ export function PublicProjectDetail({
   const heroImage = project.imageUrl || images[0]?.url;
 
   return (
-    <main style={{ maxWidth: 960, margin: "0 auto", padding: "48px 32px 100px" }}>
+    <main id="main-content" style={{ maxWidth: 960, margin: "0 auto", padding: "48px 32px 100px" }}>
       <Link
         href="/showcase"
         style={{
@@ -71,7 +71,7 @@ export function PublicProjectDetail({
           textDecoration: "none",
         }}
       >
-        ← Back to Showcase
+        ← Back to Discover
       </Link>
 
       <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 8 }}>

@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { ShowcaseClient } from "@/components/marketing/showcase/ShowcaseClient";
-import { getPublishedProjects } from "@/lib/data/projects";
+import { getPublishedProjects, PUBLISHED_PROJECTS_PAGE_SIZE } from "@/lib/data/projects";
 import { getCurrentProfile } from "@/lib/auth";
 import type { ProjectField } from "@/lib/types";
 import { PROJECT_FIELDS } from "@/lib/fields";
 
 export const metadata: Metadata = {
-  title: "Browse Projects | Provah",
+  title: "Discover Projects | Provah",
   description:
     "Browse real capstone projects from African final-year students, filter by field, and connect with the builders behind them.",
 };
@@ -24,7 +24,7 @@ export default async function ShowcasePage({
   if (viewer) redirect(field ? `/discover?field=${encodeURIComponent(field)}` : "/discover");
 
   const initialField = VALID_FIELDS.includes(field as ProjectField) ? (field as ProjectField) : null;
-  const projects = await getPublishedProjects();
+  const projects = await getPublishedProjects({ limit: PUBLISHED_PROJECTS_PAGE_SIZE });
 
   return (
     <div style={{ background: "#fff", minHeight: "100vh" }}>
@@ -40,7 +40,7 @@ export default async function ShowcasePage({
               color: "#9B80EC",
             }}
           >
-            Free to browse · Africa-wide
+            Discover · Free to browse · Africa-wide
           </span>
           <h1
             style={{
@@ -72,7 +72,11 @@ export default async function ShowcasePage({
         </div>
       </div>
 
-      <ShowcaseClient projects={projects} initialField={initialField} />
+      <ShowcaseClient
+        projects={projects}
+        initialField={initialField}
+        hasMore={projects.length === PUBLISHED_PROJECTS_PAGE_SIZE}
+      />
     </div>
   );
 }

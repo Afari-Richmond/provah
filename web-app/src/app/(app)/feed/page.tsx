@@ -1,7 +1,7 @@
 import { AppNavBar } from "@/components/layout/AppNavBar";
 import { FeedClient } from "@/components/feed/FeedClient";
 import { requireProfile } from "@/lib/auth";
-import { getFeedPosts } from "@/lib/data/feed";
+import { getFeedPosts, FEED_PAGE_SIZE } from "@/lib/data/feed";
 import { getProjectsByStudent } from "@/lib/data/projects";
 
 export default async function FeedPage() {
@@ -15,7 +15,12 @@ export default async function FeedPage() {
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
       <AppNavBar active="/feed" />
-      <FeedClient initialPosts={posts} viewer={profile} myProjects={myProjects} />
+      <FeedClient
+        initialPosts={posts}
+        viewer={profile}
+        myProjects={myProjects}
+        hasMore={posts.length === FEED_PAGE_SIZE}
+      />
     </div>
   );
 }

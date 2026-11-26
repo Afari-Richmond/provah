@@ -1,6 +1,6 @@
 import { AppNavBar } from "@/components/layout/AppNavBar";
 import { ShowcaseClient } from "@/components/marketing/showcase/ShowcaseClient";
-import { getPublishedProjects } from "@/lib/data/projects";
+import { getPublishedProjects, PUBLISHED_PROJECTS_PAGE_SIZE } from "@/lib/data/projects";
 import { PROJECT_FIELDS } from "@/lib/fields";
 import type { ProjectField } from "@/lib/types";
 
@@ -13,7 +13,7 @@ export default async function DiscoverPage({
 }) {
   const { field } = await searchParams;
   const initialField = VALID_FIELDS.includes(field as ProjectField) ? (field as ProjectField) : null;
-  const published = await getPublishedProjects();
+  const published = await getPublishedProjects({ limit: PUBLISHED_PROJECTS_PAGE_SIZE });
 
   return (
     <div className="min-h-screen bg-white">
@@ -62,7 +62,12 @@ export default async function DiscoverPage({
         </div>
       </div>
 
-      <ShowcaseClient projects={published} initialField={initialField} basePath="/projects" />
+      <ShowcaseClient
+        projects={published}
+        initialField={initialField}
+        basePath="/projects"
+        hasMore={published.length === PUBLISHED_PROJECTS_PAGE_SIZE}
+      />
     </div>
   );
 }

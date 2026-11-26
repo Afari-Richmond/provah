@@ -1,6 +1,42 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
+export type AuditLogEntry = {
+  id: string;
+  adminName: string;
+  action: string;
+  targetType: string;
+  targetId: string | null;
+  detail: string | null;
+  createdAt: string;
+};
+
+export const AUDIT_LOG_PAGE_SIZE = 50;
+
+export async function getAuditLog(opts?: { limit?: number; offset?: number }): Promise<AuditLogEntry[]> {
+  const supabase = await createClient();
+  const limit = opts?.limit ?? AUDIT_LOG_PAGE_SIZE;
+  const offset = opts?.offset ?? 0;
+
+  const { data, error } = await supabase
+    .from("admin_audit_log")
+    .select("id, action, target_type, target_id, detail, created_at, admin:admin_id ( name )")
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error || !data) return [];
+
+  return data.map((row) => ({
+    id: row.id,
+    adminName: row.admin?.name ?? "Deleted admin",
+    action: row.action,
+    targetType: row.target_type,
+    targetId: row.target_id,
+    detail: row.detail,
+    createdAt: row.created_at,
+  }));
+}
+
 export type AdminUser = {
   id: string;
   role: "student" | "professional" | "admin";
@@ -11,9 +47,14 @@ export type AdminUser = {
   status: "active" | "suspended";
 };
 
-export async function getAllUsersForAdmin(): Promise<AdminUser[]> {
+export const ADMIN_USERS_PAGE_SIZE = 50;
+
+export async function getAllUsersForAdmin(opts?: { limit?: number; offset?: number }): Promise<AdminUser[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("admin_list_profiles");
+  const { data, error } = await supabase.rpc("admin_list_profiles", {
+    p_limit: opts?.limit,
+    p_offset: opts?.offset ?? 0,
+  });
   if (error || !data) return [];
 
   return data
@@ -35,6 +76,72 @@ export async function getAllUsersForAdmin(): Promise<AdminUser[]> {
 export async function getPendingProfessionals(): Promise<AdminUser[]> {
   const users = await getAllUsersForAdmin();
   return users.filter((u) => u.role === "professional" && !u.verified);
+}
+
+export type ProjectReport = {
+  id: string;
+  projectId: string;
+  projectTitle: string;
+  reporterId: string;
+  reporterName: string;
+  reason: string;
+  createdAt: string;
+};
+
+export async function getOpenProjectReports(): Promise<ProjectReport[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("project_reports")
+    .select(
+      "id, reason, created_at, project_id, reporter_id, projects(title), profiles!project_reports_reporter_id_fkey(name)",
+    )
+    .eq("status", "open")
+    .order("created_at", { ascending: false });
+
+  if (error || !data) return [];
+
+  return data.map((row) => ({
+    id: row.id,
+    projectId: row.project_id,
+    projectTitle: row.projects?.title ?? "Deleted project",
+    reporterId: row.reporter_id,
+    reporterName: row.profiles?.name ?? "Unknown",
+    reason: row.reason,
+    createdAt: row.created_at,
+  }));
+}
+
+export type ProfileReport = {
+  id: string;
+  reportedId: string;
+  reportedName: string;
+  reporterId: string;
+  reporterName: string;
+  reason: string;
+  createdAt: string;
+};
+
+export async function getOpenProfileReports(): Promise<ProfileReport[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profile_reports")
+    .select(
+      "id, reason, created_at, reported_id, reporter_id, reported:profiles!profile_reports_reported_id_fkey(name), reporter:profiles!profile_reports_reporter_id_fkey(name)",
+    )
+    .eq("status", "open")
+    .order("created_at", { ascending: false });
+
+  if (error || !data) return [];
+
+  return data.map((row) => ({
+    id: row.id,
+    reportedId: row.reported_id,
+    reportedName: row.reported?.name ?? "Deleted account",
+    reporterId: row.reporter_id,
+    reporterName: row.reporter?.name ?? "Unknown",
+    reason: row.reason,
+    createdAt: row.created_at,
+  }));
 }
 
 export async function getAdminAnalytics() {

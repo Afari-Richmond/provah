@@ -1,5 +1,7 @@
-import { redirect } from "next/navigation";
+import { FramerPage, buildMarketingMetadata } from "@/components/marketing/FramerPage";
+
+export const metadata = buildMarketingMetadata("categories-fintech");
 
 export default function FintechCategoryPage() {
-  redirect("/showcase?field=Finance%20%26%20Technology");
+  return <FramerPage slug="categories-fintech" />;
 }

@@ -56,7 +56,7 @@ export function TagInput({
             <button
               type="button"
               onClick={() => onChange(tags.filter((t) => t !== tag))}
-              className="text-black/40 hover:text-black/70"
+              className="-m-1.5 p-1.5 text-base leading-none text-black/50 hover:text-black/70"
               aria-label={`Remove ${tag}`}
             >
               ×
@@ -69,7 +69,7 @@ export function TagInput({
           onKeyDown={handleKeyDown}
           onBlur={addTag}
           placeholder={tags.length === 0 ? placeholder : ""}
-          className="min-w-[120px] flex-1 bg-transparent py-1 font-(family-name:--font-space-grotesk) text-[15px] text-[var(--color-ink)] outline-none placeholder:text-black/30"
+          className="min-w-[120px] flex-1 bg-transparent py-1 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30"
         />
       </div>
     </div>

@@ -76,3 +76,15 @@ export async function updateAvatarUrl(url: string) {
   await supabase.from("profiles").update({ avatar_url: url }).eq("id", profile.id);
   revalidatePath("/profile");
 }
+
+export async function updateAvailabilityStatus(status: "open" | "busy" | "unavailable" | null) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ availability_status: status })
+    .eq("id", profile.id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/profile");
+  revalidatePath(`/profile/${profile.id}`);
+}

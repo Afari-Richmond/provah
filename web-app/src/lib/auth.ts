@@ -24,7 +24,15 @@ export function mapProfile(row: ProfileRow): Profile {
     skills: row.skills ?? [],
     linkedinUrl: row.linkedin_url,
     portfolioUrl: row.portfolio_url,
-    emailNotifications: row.email_notifications,
+    notificationPreferences: {
+      messages: Boolean((row.notification_preferences as Record<string, boolean> | null)?.messages ?? true),
+      connections: Boolean((row.notification_preferences as Record<string, boolean> | null)?.connections ?? true),
+      projectUpdates: Boolean(
+        (row.notification_preferences as Record<string, boolean> | null)?.project_updates ?? true,
+      ),
+    },
+    lastSeenAt: row.last_seen_at,
+    availabilityStatus: row.availability_status as Profile["availabilityStatus"],
     createdAt: row.created_at,
   };
 }

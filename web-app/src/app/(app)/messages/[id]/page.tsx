@@ -35,6 +35,7 @@ export default async function ConversationPage({
 
   return (
     <MessageThread
+      key={conversation.id}
       conversations={conversations}
       conversation={conversation}
       initialMessages={messages}

@@ -1,5 +1,7 @@
-import { redirect } from "next/navigation";
+import { FramerPage, buildMarketingMetadata } from "@/components/marketing/FramerPage";
+
+export const metadata = buildMarketingMetadata("categories-health");
 
 export default function HealthCategoryPage() {
-  redirect("/showcase?field=Health%20%26%20Medicine");
+  return <FramerPage slug="categories-health" />;
 }

@@ -13,7 +13,7 @@ export default async function SavedPage() {
     <div className="min-h-screen bg-white">
       <AppNavBar active="/saved" />
 
-      <main className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
         <Eyebrow>Saved</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[32px] font-bold leading-tight text-[var(--color-ink)] sm:text-[40px]">
           Your saved projects
@@ -25,7 +25,7 @@ export default async function SavedPage() {
         {saved.length === 0 ? (
           <div className="pv-border mt-8 rounded-2xl bg-[var(--color-surface)] p-10 text-center">
             <p className="font-(family-name:--font-space-grotesk) text-sm text-black/50">
-              Nothing saved yet. Browse Discover and tap &quot;Save for later&quot; on a project.
+              Nothing saved yet — browse Discover and tap &quot;Save for later&quot; on a project.
             </p>
           </div>
         ) : (

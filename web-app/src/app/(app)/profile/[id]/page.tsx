@@ -6,10 +6,16 @@ import { StatCard } from "@/components/ui/StatCard";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { ConnectButton } from "@/components/profile/ConnectButton";
 import { MessageButton } from "@/components/profile/MessageButton";
+import { BlockButton } from "@/components/profile/BlockButton";
+import { ReportProfileButton } from "@/components/profile/ReportProfileButton";
+import { AvailabilityBadge } from "@/components/profile/AvailabilityBadge";
+import { SkillEndorsements } from "@/components/profile/SkillEndorsements";
 import { requireProfile } from "@/lib/auth";
 import { getProfileById } from "@/lib/data/users";
 import { getProjectsByStudent } from "@/lib/data/projects";
 import { getConnectionStatus, getConnectionCount } from "@/lib/data/connections";
+import { getBlockDirection } from "@/lib/data/blocks";
+import { getSkillEndorsements } from "@/lib/data/endorsements";
 
 export default async function PublicProfilePage({
   params,
@@ -24,18 +30,21 @@ export default async function PublicProfilePage({
   const profile = await getProfileById(id);
   if (!profile) notFound();
 
-  const [allProjects, connectionInfo, connectionCount] = await Promise.all([
+  const [allProjects, connectionInfo, connectionCount, blockDirection, endorsements] = await Promise.all([
     profile.role === "student" ? getProjectsByStudent(profile.id) : Promise.resolve([]),
     getConnectionStatus(viewer.id, profile.id),
     getConnectionCount(profile.id),
+    getBlockDirection(viewer.id, profile.id),
+    getSkillEndorsements(profile.id, viewer.id),
   ]);
+  const canEndorse = connectionInfo.status === "accepted";
   const projects = allProjects.filter((p) => p.status === "published");
 
   return (
     <div className="min-h-screen bg-white">
       <AppNavBar />
 
-      <main className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             <Avatar name={profile.name} seed={profile.id} imageUrl={profile.avatarUrl ?? undefined} size={80} />
@@ -49,16 +58,27 @@ export default async function PublicProfilePage({
                   ? [profile.fieldOfStudy, profile.university].filter(Boolean).join(" · ")
                   : [profile.title, profile.company].filter(Boolean).join(" at ")}
               </p>
+              {profile.availabilityStatus && (
+                <div className="mt-2">
+                  <AvailabilityBadge status={profile.availabilityStatus} />
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <ConnectButton
-              otherUserId={profile.id}
-              initialStatus={connectionInfo.status}
-              initialConnectionId={connectionInfo.connectionId}
-            />
-            <MessageButton otherUserId={profile.id} />
+          <div className="flex items-center gap-3">
+            {blockDirection === "none" && (
+              <>
+                <ConnectButton
+                  otherUserId={profile.id}
+                  initialStatus={connectionInfo.status}
+                  initialConnectionId={connectionInfo.connectionId}
+                />
+                <MessageButton otherUserId={profile.id} />
+              </>
+            )}
+            <BlockButton otherUserId={profile.id} otherName={profile.name} initialDirection={blockDirection} />
+            <ReportProfileButton otherUserId={profile.id} />
           </div>
         </div>
 
@@ -69,15 +89,13 @@ export default async function PublicProfilePage({
         )}
 
         {profile.skills.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-2">
-            {profile.skills.map((skill) => (
-              <span
-                key={skill}
-                className="rounded-full bg-[var(--color-surface)] px-3 py-1 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)]"
-              >
-                {skill}
-              </span>
-            ))}
+          <div className="mt-5">
+            <SkillEndorsements
+              profileId={profile.id}
+              skills={profile.skills}
+              summaries={endorsements}
+              canEndorse={canEndorse}
+            />
           </div>
         )}
 

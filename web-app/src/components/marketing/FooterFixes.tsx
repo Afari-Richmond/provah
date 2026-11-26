@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 const CREDIT_MARKER = "data-provah-footer-credit";
+const LEGAL_MARKER = "data-provah-footer-legal";
 
 export function FooterFixes() {
   useEffect(() => {
@@ -35,12 +36,8 @@ export function FooterFixes() {
       const nodes = Array.from(document.querySelectorAll("p")).filter(
         (p) => p.textContent?.includes("Built by students"),
       );
-      let inserted = 0;
       for (const p of nodes) {
-        if (p.parentElement?.querySelector(`[${CREDIT_MARKER}]`)) {
-          inserted++;
-          continue;
-        }
+        if (p.parentElement?.querySelector(`[${CREDIT_MARKER}]`)) continue;
         const credit = document.createElement("p");
         credit.setAttribute(CREDIT_MARKER, "true");
         credit.style.cssText =
@@ -53,9 +50,28 @@ export function FooterFixes() {
         link.style.textDecoration = "underline";
         credit.append("Designed & powered by ", link);
         p.insertAdjacentElement("afterend", credit);
-        inserted++;
       }
 
+      // The footer never linked to Privacy/Terms — the only path to either
+      // page was starting the signup flow. Add a plain legal-links row
+      // right above the copyright line, once per footer instance.
+      for (const p of nodes) {
+        if (p.parentElement?.querySelector(`[${LEGAL_MARKER}]`)) continue;
+        const legal = document.createElement("p");
+        legal.setAttribute(LEGAL_MARKER, "true");
+        legal.style.cssText =
+          "font-family:'Space Grotesk', sans-serif;font-size:13px;line-height:22px;text-align:center;color:rgba(221,221,221,0.6);margin-bottom:4px;";
+        const privacy = document.createElement("a");
+        privacy.href = "/privacy";
+        privacy.textContent = "Privacy";
+        privacy.style.textDecoration = "underline";
+        const terms = document.createElement("a");
+        terms.href = "/terms";
+        terms.textContent = "Terms";
+        terms.style.textDecoration = "underline";
+        legal.append(privacy, " · ", terms);
+        p.insertAdjacentElement("beforebegin", legal);
+      }
     }
 
     // Framer's own client-side hydration keeps reconciling and replacing

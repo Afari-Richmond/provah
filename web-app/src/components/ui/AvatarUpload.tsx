@@ -61,10 +61,10 @@ export function AvatarUpload({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="pv-border absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs"
+        className="pv-border absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs"
         aria-label="Change photo"
       >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.5">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.5">
           <path d="M3 7h3l2-2h8l2 2h3v12H3z" />
           <circle cx="12" cy="13" r="3.5" />
         </svg>

@@ -30,9 +30,11 @@ export default function SignupPage() {
         </p>
       }
     >
-      <div className="pv-border flex w-full rounded-full bg-white p-1">
+      <div role="radiogroup" aria-label="Account type" className="pv-border flex w-full rounded-full bg-white p-1">
         <button
           type="button"
+          role="radio"
+          aria-checked={role === "student"}
           onClick={() => setRole("student")}
           className={`flex-1 rounded-full px-4 py-2.5 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] transition-colors ${
             role === "student"
@@ -44,6 +46,8 @@ export default function SignupPage() {
         </button>
         <button
           type="button"
+          role="radio"
+          aria-checked={role === "professional"}
           onClick={() => setRole("professional")}
           className={`flex-1 rounded-full px-4 py-2.5 font-(family-name:--font-space-mono) text-xs font-bold uppercase tracking-[0.03em] transition-colors ${
             role === "professional"
@@ -57,11 +61,12 @@ export default function SignupPage() {
 
       <form action={formAction} className="mt-6 flex flex-col gap-5">
         <input type="hidden" name="role" value={role} />
-        <TextField label="Full name" name="name" placeholder="Ama Owusu" required />
+        <TextField label="Full name" name="name" autoComplete="name" placeholder="Ama Owusu" required />
         <TextField
           label="Email"
           name="email"
           type="email"
+          autoComplete="email"
           placeholder="you@university.edu"
           hint={role === "student" ? "University email preferred" : undefined}
           required
@@ -70,6 +75,7 @@ export default function SignupPage() {
           label="Password"
           name="password"
           type="password"
+          autoComplete="new-password"
           placeholder="At least 8 characters"
           minLength={8}
           required
@@ -97,7 +103,7 @@ export default function SignupPage() {
         )}
 
         {state.error && (
-          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+          <p role="alert" aria-live="assertive" className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
             {state.error}
           </p>
         )}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 import { moderateProject } from "@/lib/actions/projects";
 import type { Project } from "@/lib/types";
 
@@ -11,6 +12,7 @@ export function ReviewQueueClient({ initialQueue }: { initialQueue: Project[] })
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [, startTransition] = useTransition();
+  const titleId = useId();
 
   function approve(id: string) {
     setQueue((q) => q.filter((p) => p.id !== id));
@@ -85,32 +87,30 @@ export function ReviewQueueClient({ initialQueue }: { initialQueue: Project[] })
         ))}
       </div>
 
-      {rejectingId && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4">
-          <Card className="w-full max-w-md p-6" shadow="dark">
-            <h3 className="font-(family-name:--font-unbounded) text-lg font-bold text-[var(--color-ink)]">
-              Reject project
-            </h3>
-            <p className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
-              The student will see this reason and can resubmit after fixing it.
-            </p>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="e.g. Please add more detail on your technical approach."
-              className="mt-4 min-h-[100px] w-full rounded-2xl border-2 border-[var(--color-ink)]/15 bg-white px-4 py-3 font-(family-name:--font-space-grotesk) text-[15px] text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
-            />
-            <div className="mt-6 flex justify-end gap-3">
-              <Button variant="secondary" onClick={() => setRejectingId(null)}>
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={confirmReject}>
-                Confirm reject
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
+      <Modal open={Boolean(rejectingId)} onClose={() => setRejectingId(null)} labelledBy={titleId}>
+        <Card className="w-full max-w-md p-6" shadow="dark">
+          <h3 id={titleId} className="font-(family-name:--font-unbounded) text-lg font-bold text-[var(--color-ink)]">
+            Reject project
+          </h3>
+          <p className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
+            The student will see this reason and can resubmit after fixing it.
+          </p>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="e.g. Please add more detail on your technical approach."
+            className="mt-4 min-h-[100px] w-full rounded-2xl border-2 border-[var(--color-ink)]/15 bg-white px-4 py-3 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
+          />
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setRejectingId(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={confirmReject}>
+              Confirm reject
+            </Button>
+          </div>
+        </Card>
+      </Modal>
     </>
   );
 }

@@ -3,7 +3,9 @@ import { Eyebrow } from "@/components/ui/Badge";
 import { SettingsClient } from "@/components/SettingsClient";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
-import { getConnections } from "@/lib/data/connections";
+import { getConnections, getPendingConnectionRequests } from "@/lib/data/connections";
+import { getBlockedUsers } from "@/lib/data/blocks";
+import { listMfaFactors } from "@/lib/actions/mfa";
 
 export default async function SettingsPage() {
   const profile = await requireProfile();
@@ -13,13 +15,22 @@ export default async function SettingsPage() {
       data: { user },
     },
     connections,
-  ] = await Promise.all([supabase.auth.getUser(), getConnections(profile.id)]);
+    pendingRequests,
+    blockedUsers,
+    mfaFactors,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    getConnections(profile.id),
+    getPendingConnectionRequests(profile.id),
+    getBlockedUsers(profile.id),
+    listMfaFactors(),
+  ]);
 
   return (
     <div className="min-h-screen bg-white">
       <AppNavBar active="/settings" />
 
-      <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
         <Eyebrow>Settings</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[32px] font-bold leading-tight text-[var(--color-ink)]">
           Account settings
@@ -27,8 +38,11 @@ export default async function SettingsPage() {
 
         <SettingsClient
           email={user?.email ?? ""}
-          emailNotifications={profile.emailNotifications}
+          notificationPreferences={profile.notificationPreferences}
           connections={connections}
+          pendingRequests={pendingRequests}
+          blockedUsers={blockedUsers}
+          mfaFactors={mfaFactors}
         />
       </main>
     </div>

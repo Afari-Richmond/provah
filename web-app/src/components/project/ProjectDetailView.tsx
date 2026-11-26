@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
+import { Modal } from "@/components/ui/Modal";
 import { DiscoverProjectCard } from "@/components/project/DiscoverProjectCard";
-import { toggleBookmark, incrementProjectViews } from "@/lib/actions/projects";
+import { toggleBookmark, incrementProjectViews, reportProject } from "@/lib/actions/projects";
 import { startConversation } from "@/lib/actions/messaging";
+import { showErrorPopup } from "@/lib/popup";
 import type { Profile, Project } from "@/lib/types";
 
 const fieldDot: Record<string, string> = {
@@ -40,6 +42,9 @@ export function ProjectDetailView({
   const [reportOpen, setReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportSent, setReportSent] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const reportTitleId = useId();
   const [isPending, startTransition] = useTransition();
 
   const isOwner = viewer.id === project.studentId;
@@ -61,21 +66,34 @@ export function ProjectDetailView({
 
   function handleMessage() {
     startTransition(async () => {
-      await startConversation(project.id);
+      try {
+        await startConversation(project.id);
+      } catch (err) {
+        showErrorPopup("Couldn't start conversation", err instanceof Error ? err.message : undefined);
+      }
     });
   }
 
-  function submitReport() {
-    setReportSent(true);
-    setTimeout(() => {
-      setReportOpen(false);
-      setReportSent(false);
-      setReportReason("");
-    }, 1200);
+  async function submitReport() {
+    setReportSubmitting(true);
+    setReportError(null);
+    try {
+      await reportProject(project.id, reportReason);
+      setReportSent(true);
+      setTimeout(() => {
+        setReportOpen(false);
+        setReportSent(false);
+        setReportReason("");
+      }, 1200);
+    } catch (err) {
+      setReportError(err instanceof Error ? err.message : "Couldn't send your report. Try again.");
+    } finally {
+      setReportSubmitting(false);
+    }
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
+    <main id="main-content" className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
       <div className="flex items-center justify-between">
         <Link
           href="/discover"
@@ -328,41 +346,62 @@ export function ProjectDetailView({
         </div>
       )}
 
-      {reportOpen && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4">
+      <Modal
+        open={reportOpen}
+        onClose={() => {
+          setReportOpen(false);
+          setReportError(null);
+        }}
+        labelledBy={reportTitleId}
+      >
           <Card className="w-full max-w-sm p-6" shadow="dark">
             {reportSent ? (
-              <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)]">
+              <p role="status" aria-live="polite" className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)]">
                 Thanks, our team will take a look. ✓
               </p>
             ) : (
               <>
-                <h3 className="font-(family-name:--font-unbounded) text-lg font-bold text-[var(--color-ink)]">
+                <h3 id={reportTitleId} className="font-(family-name:--font-unbounded) text-lg font-bold text-[var(--color-ink)]">
                   Report this project
                 </h3>
                 <p className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
-                  Let us know what&apos;s wrong, plagiarism, spam, inappropriate
+                  Let us know what&apos;s wrong: plagiarism, spam, inappropriate
                   content, or something else.
                 </p>
                 <textarea
                   value={reportReason}
                   onChange={(e) => setReportReason(e.target.value)}
                   placeholder="Tell us what's going on..."
-                  className="mt-4 min-h-[100px] w-full rounded-2xl border-2 border-[var(--color-ink)]/15 bg-white px-4 py-3 font-(family-name:--font-space-grotesk) text-[15px] text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
+                  className="mt-4 min-h-[100px] w-full rounded-2xl border-2 border-[var(--color-ink)]/15 bg-white px-4 py-3 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
                 />
+                {reportError && (
+                  <p role="alert" aria-live="assertive" className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+                    {reportError}
+                  </p>
+                )}
                 <div className="mt-6 flex justify-end gap-3">
-                  <Button variant="secondary" onClick={() => setReportOpen(false)}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setReportOpen(false);
+                      setReportError(null);
+                    }}
+                  >
                     Cancel
                   </Button>
-                  <Button variant="primary" onClick={submitReport} disabled={!reportReason.trim()}>
+                  <Button
+                    variant="primary"
+                    onClick={submitReport}
+                    disabled={!reportReason.trim()}
+                    loading={reportSubmitting}
+                  >
                     Submit report
                   </Button>
                 </div>
               </>
             )}
           </Card>
-        </div>
-      )}
+      </Modal>
     </main>
   );
 }

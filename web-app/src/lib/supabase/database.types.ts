@@ -39,6 +39,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string | null
+          created_at: string
+          detail: string | null
+          id: string
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          admin_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blocked_users: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocked_users_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocked_users_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookmarks: {
         Row: {
           created_at: string
@@ -414,21 +488,68 @@ export type Database = {
           },
         ]
       }
+      profile_reports: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          reported_id: string
+          reporter_id: string
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          reported_id: string
+          reporter_id: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          reported_id?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_reports_reported_id_fkey"
+            columns: ["reported_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           areas_of_interest: string[]
+          availability_status: string | null
           avatar_url: string | null
           badges: string[]
           bio: string | null
           company: string | null
           cover_image_url: string | null
           created_at: string
-          email_notifications: boolean
           field_of_study: string | null
           id: string
+          last_seen_at: string | null
           linkedin_url: string | null
           location: string | null
           name: string
+          notification_preferences: Json
           portfolio_url: string | null
           role: string
           skills: string[]
@@ -440,18 +561,20 @@ export type Database = {
         }
         Insert: {
           areas_of_interest?: string[]
+          availability_status?: string | null
           avatar_url?: string | null
           badges?: string[]
           bio?: string | null
           company?: string | null
           cover_image_url?: string | null
           created_at?: string
-          email_notifications?: boolean
           field_of_study?: string | null
           id: string
+          last_seen_at?: string | null
           linkedin_url?: string | null
           location?: string | null
           name: string
+          notification_preferences?: Json
           portfolio_url?: string | null
           role: string
           skills?: string[]
@@ -463,18 +586,20 @@ export type Database = {
         }
         Update: {
           areas_of_interest?: string[]
+          availability_status?: string | null
           avatar_url?: string | null
           badges?: string[]
           bio?: string | null
           company?: string | null
           cover_image_url?: string | null
           created_at?: string
-          email_notifications?: boolean
           field_of_study?: string | null
           id?: string
+          last_seen_at?: string | null
           linkedin_url?: string | null
           location?: string | null
           name?: string
+          notification_preferences?: Json
           portfolio_url?: string | null
           role?: string
           skills?: string[]
@@ -517,6 +642,51 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_reports: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          reason: string
+          reporter_id: string
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          reason: string
+          reporter_id: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          reason?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -621,13 +791,52 @@ export type Database = {
           },
         ]
       }
+      skill_endorsements: {
+        Row: {
+          created_at: string
+          endorser_id: string
+          id: string
+          profile_id: string
+          skill: string
+        }
+        Insert: {
+          created_at?: string
+          endorser_id: string
+          id?: string
+          profile_id: string
+          skill: string
+        }
+        Update: {
+          created_at?: string
+          endorser_id?: string
+          id?: string
+          profile_id?: string
+          skill?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_endorsements_endorser_id_fkey"
+            columns: ["endorser_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_endorsements_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       admin_list_profiles: {
-        Args: never
+        Args: { p_limit?: number; p_offset?: number }
         Returns: {
           company: string
           created_at: string

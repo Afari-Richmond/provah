@@ -23,7 +23,7 @@ export default async function SearchPage({
     <div className="min-h-screen bg-white">
       <AppNavBar />
 
-      <main className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-3xl px-6 py-10 sm:px-10">
         <Eyebrow>Search</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[28px] font-bold leading-tight text-[var(--color-ink)] sm:text-[34px]">
           {q ? `Results for "${q}"` : "Search people & projects"}
@@ -35,7 +35,7 @@ export default async function SearchPage({
             name="q"
             defaultValue={q}
             placeholder="Search by name, project title, tools, field..."
-            className="w-full rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-5 py-3 font-(family-name:--font-space-grotesk) text-[15px] text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
+            className="w-full rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-5 py-3 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
           />
         </form>
 
@@ -94,7 +94,7 @@ export default async function SearchPage({
 
         {q && totalResults === 0 && (
           <p className="mt-10 text-center font-(family-name:--font-space-grotesk) text-sm text-black/40">
-            Nothing matches that search yet.
+            Nothing matches that search yet — try a different term, or browse Discover instead.
           </p>
         )}
       </main>

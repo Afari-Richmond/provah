@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Unbounded, Space_Mono, Space_Grotesk } from "next/font/google";
 import { PopupHost } from "@/components/ui/PopupHost";
+import { PresenceHeartbeat } from "@/components/PresenceHeartbeat";
 import "../globals.css";
 
 const unbounded = Unbounded({
@@ -33,6 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     >
       {children}
       <PopupHost />
+      <PresenceHeartbeat />
     </div>
   );
 }

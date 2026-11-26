@@ -71,6 +71,12 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
     }
     return { error: "That email/password combination doesn't match an account." };
   }
+
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== aal.nextLevel) {
+    redirect("/login/mfa");
+  }
+
   redirect("/dashboard");
 }
 
@@ -84,6 +90,49 @@ export async function confirmEmail(formData: FormData) {
 
   if (error) redirect("/login?error=confirmation_failed");
   redirect(next);
+}
+
+export type RequestResetState = { sent: boolean; error: string | null };
+
+export async function requestPasswordReset(
+  _prev: RequestResetState,
+  formData: FormData,
+): Promise<RequestResetState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return { sent: false, error: "Enter your email address." };
+
+  const supabase = await createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://app.provah.live";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/confirm?next=/auth/reset-password`,
+  });
+
+  // Supabase returns success even for unknown emails (anti-enumeration);
+  // surface that same ambiguity to the user rather than confirming an account exists.
+  if (error && error.code !== "over_email_send_rate_limit") {
+    return { sent: false, error: error.message };
+  }
+  return { sent: true, error: null };
+}
+
+export type ResetPasswordState = { error: string | null };
+
+export async function resetPassword(
+  _prev: ResetPasswordState,
+  formData: FormData,
+): Promise<ResetPasswordState> {
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 8) return { error: "Password must be at least 8 characters." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "That reset link has expired. Request a new one." };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+  redirect("/dashboard");
 }
 
 export async function logOut() {

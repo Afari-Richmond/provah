@@ -3,10 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { isBlockedEitherWay } from "@/lib/data/blocks";
 
 export async function sendConnectionRequest(recipientId: string) {
   const profile = await requireProfile();
   if (recipientId === profile.id) throw new Error("You can't connect with yourself");
+  if (await isBlockedEitherWay(profile.id, recipientId)) {
+    throw new Error("You can't connect with this person");
+  }
   const supabase = await createClient();
 
   const { error } = await supabase.from("connections").insert({

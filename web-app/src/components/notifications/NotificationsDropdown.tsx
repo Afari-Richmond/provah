@@ -8,23 +8,45 @@ import {
   markAllNotificationsRead,
 } from "@/lib/actions/notifications";
 import { timeAgo } from "@/lib/format";
+import { createClient } from "@/lib/supabase/client";
 import type { Notification, NotificationType } from "@/lib/types";
+import type { Database } from "@/lib/supabase/database.types";
+
+type NotificationRow = Database["public"]["Tables"]["notifications"]["Row"];
+
+function mapRow(row: NotificationRow): Notification {
+  return {
+    id: row.id,
+    type: row.type as NotificationType,
+    title: row.title,
+    description: row.description ?? "",
+    read: row.read,
+    link: row.link ?? null,
+    createdAt: row.created_at,
+  };
+}
 
 const iconMap: Record<NotificationType, string> = {
   project_approved: "✅",
   project_rejected: "⚠️",
   new_message: "💬",
   new_interest: "⭐",
+  connection_request: "🤝",
+  connection_accepted: "🎉",
 };
 
 export function NotificationsDropdown({
-  notifications,
-  unreadCount,
+  notifications: initialNotifications,
+  unreadCount: initialUnreadCount,
+  userId,
 }: {
   notifications: Notification[];
   unreadCount: number;
+  userId: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const router = useRouter();
   const [, startTransition] = useTransition();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -38,14 +60,40 @@ export function NotificationsDropdown({
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, [open]);
 
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        (payload) => {
+          const next = mapRow(payload.new as NotificationRow);
+          setNotifications((list) => [next, ...list].slice(0, 20));
+          setUnreadCount((c) => c + 1);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
+
   function openNotification(n: Notification) {
     setOpen(false);
-    if (!n.read) startTransition(() => markNotificationRead(n.id).then(() => router.refresh()));
+    if (!n.read) {
+      setNotifications((list) => list.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
+      setUnreadCount((c) => Math.max(0, c - 1));
+      startTransition(() => markNotificationRead(n.id));
+    }
     if (n.link) router.push(n.link);
   }
 
   function markAll() {
-    startTransition(() => markAllNotificationsRead().then(() => router.refresh()));
+    setNotifications((list) => list.map((n) => ({ ...n, read: true })));
+    setUnreadCount(0);
+    startTransition(() => markAllNotificationsRead());
   }
 
   return (
@@ -84,7 +132,7 @@ export function NotificationsDropdown({
           <div className="max-h-[22rem] overflow-y-auto">
             {notifications.length === 0 ? (
               <p className="px-4 py-8 text-center font-(family-name:--font-space-grotesk) text-sm text-black/40">
-                Nothing here yet.
+                Nothing yet — we&apos;ll let you know when something happens.
               </p>
             ) : (
               notifications.map((n) => (
@@ -105,7 +153,7 @@ export function NotificationsDropdown({
                       {n.description}
                     </p>
                   </div>
-                  <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/40">
+                  <span className="shrink-0 font-(family-name:--font-space-mono) text-[10px] text-black/60">
                     {timeAgo(n.createdAt)}
                   </span>
                 </button>

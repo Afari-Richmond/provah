@@ -39,7 +39,7 @@ function LoginForm() {
     >
       <form action={formAction} className="flex flex-col gap-5">
         {confirmationFailed && (
-          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+          <p role="alert" className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
             That confirmation link is invalid or expired. Log in to request a new one.
           </p>
         )}
@@ -47,6 +47,7 @@ function LoginForm() {
           label="Email"
           name="email"
           type="email"
+          autoComplete="email"
           placeholder="you@university.edu"
           required
         />
@@ -54,30 +55,24 @@ function LoginForm() {
           label="Password"
           name="password"
           type="password"
+          autoComplete="current-password"
           placeholder="Your password"
           required
         />
 
         {state.error && (
-          <p className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
+          <p role="alert" aria-live="assertive" className="font-(family-name:--font-space-grotesk) text-sm text-[var(--color-danger)]">
             {state.error}
           </p>
         )}
 
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-2 border-[var(--color-ink)]/20 accent-[var(--color-primary)]"
-            />
-            Remember me
-          </label>
-          <a
-            href="#"
+        <div className="flex items-center justify-end">
+          <Link
+            href="/forgot-password"
             className="font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-primary)]"
           >
             Forgot password?
-          </a>
+          </Link>
         </div>
 
         <Button type="submit" variant="primary" className="mt-2 w-full" loading={pending}>

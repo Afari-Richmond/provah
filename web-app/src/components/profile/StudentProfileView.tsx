@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/Button";
 import { AvatarUpload } from "@/components/ui/AvatarUpload";
 import { TextField, TextAreaField } from "@/components/ui/Field";
 import { TagInput } from "@/components/ui/TagInput";
+import Link from "next/link";
 import { StatCard } from "@/components/ui/StatCard";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { updateStudentProfile } from "@/lib/actions/profile";
 import { showErrorPopup } from "@/lib/popup";
+import { ProfileCompletenessBanner } from "@/components/profile/ProfileCompletenessBanner";
+import { AvailabilitySelector } from "@/components/profile/AvailabilitySelector";
 import type { Profile, Project } from "@/lib/types";
 
 export function StudentProfileView({
@@ -43,6 +46,10 @@ export function StudentProfileView({
 
   return (
     <>
+      <div className="mt-8">
+        <ProfileCompletenessBanner profile={profile} />
+      </div>
+
       <div className="mt-8 grid gap-6 sm:grid-cols-[1fr_260px]">
         <Card className="flex flex-col gap-5 p-6 sm:p-8" shadow="dark">
           <div className="flex items-center gap-4">
@@ -53,6 +60,8 @@ export function StudentProfileView({
               </p>
             </div>
           </div>
+
+          <AvailabilitySelector initialStatus={profile.availabilityStatus} />
 
           <TextField label="Full name" value={name} onChange={(e) => setName(e.target.value)} />
           <TextField label="University" value={university} onChange={(e) => setUniversity(e.target.value)} />
@@ -112,11 +121,22 @@ export function StudentProfileView({
       <h2 className="mt-12 font-(family-name:--font-unbounded) text-xl font-bold text-[var(--color-ink)]">
         Your projects
       </h2>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {myProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      {myProjects.length === 0 ? (
+        <div className="pv-border mt-6 flex flex-col items-center gap-3 rounded-2xl bg-[var(--color-surface)] p-10 text-center">
+          <p className="font-(family-name:--font-space-grotesk) text-sm text-black/50">
+            You haven&apos;t submitted a project yet — share what you built and get discovered.
+          </p>
+          <Link href="/projects/new">
+            <Button variant="primary">Submit your first project</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {myProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </>
   );
 }

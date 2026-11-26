@@ -4,7 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile, requireRole } from "@/lib/auth";
+import { getPublishedProjects, PUBLISHED_PROJECTS_PAGE_SIZE } from "@/lib/data/projects";
+import { logAdminAction } from "@/lib/auditLog";
 import type { ProjectField } from "@/lib/types";
+
+export async function loadMoreProjects(offset: number) {
+  return getPublishedProjects({ limit: PUBLISHED_PROJECTS_PAGE_SIZE, offset });
+}
 
 type ProjectFormInput = {
   title: string;
@@ -163,12 +169,26 @@ export async function incrementProjectViews(projectId: string) {
   await supabase.rpc("increment_project_views", { p_project_id: projectId }).throwOnError();
 }
 
+export async function reportProject(projectId: string, reason: string) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("project_reports").insert({
+    project_id: projectId,
+    reporter_id: profile.id,
+    reason,
+  });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/reports");
+}
+
 export async function moderateProject(
   projectId: string,
   action: "approve" | "reject",
   rejectionReason?: string,
 ) {
-  await requireRole("admin");
+  const admin = await requireRole("admin");
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -181,6 +201,14 @@ export async function moderateProject(
     .eq("id", projectId);
 
   if (error) throw new Error(error.message);
+  await logAdminAction(
+    supabase,
+    admin.id,
+    action === "approve" ? "approve_project" : "reject_project",
+    "project",
+    projectId,
+    action === "reject" ? rejectionReason : undefined,
+  );
   revalidatePath("/admin/review-queue");
   revalidatePath("/discover");
 }

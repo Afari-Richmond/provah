@@ -35,7 +35,23 @@ export async function getConnectionCount(userId: string): Promise<number> {
   return count ?? 0;
 }
 
-export async function getPendingConnectionRequests(userId: string) {
+export type PendingConnectionRequest = {
+  id: string;
+  createdAt: string;
+  requester: {
+    id: string;
+    name: string;
+    role: string;
+    avatarUrl: string | null;
+    university: string | null;
+    company: string | null;
+    title: string | null;
+  };
+};
+
+export async function getPendingConnectionRequests(
+  userId: string,
+): Promise<PendingConnectionRequest[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("connections")
@@ -45,7 +61,21 @@ export async function getPendingConnectionRequests(userId: string) {
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];
-  return data;
+  return data
+    .filter((row) => row.requester)
+    .map((row) => ({
+      id: row.id,
+      createdAt: row.created_at,
+      requester: {
+        id: row.requester!.id,
+        name: row.requester!.name,
+        role: row.requester!.role,
+        avatarUrl: row.requester!.avatar_url,
+        university: row.requester!.university,
+        company: row.requester!.company,
+        title: row.requester!.title,
+      },
+    }));
 }
 
 export async function getConnections(userId: string) {

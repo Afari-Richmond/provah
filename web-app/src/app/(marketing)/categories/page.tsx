@@ -26,7 +26,7 @@ export default async function CategoriesPage() {
   for (const p of projects) counts.set(p.field, (counts.get(p.field) ?? 0) + 1);
 
   return (
-    <div style={{ background: "#fff", minHeight: "100vh" }}>
+    <div id="main-content" style={{ background: "#fff", minHeight: "100vh" }}>
       <div style={{ padding: "72px 32px 56px", textAlign: "center" }}>
         <span
           style={{

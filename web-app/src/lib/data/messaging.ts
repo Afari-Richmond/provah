@@ -11,8 +11,8 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
       `
       id, project_id, participant_a_id, participant_b_id, last_message, last_message_at,
       projects ( title ),
-      a:participant_a_id ( name, avatar_url, role ),
-      b:participant_b_id ( name, avatar_url, role ),
+      a:participant_a_id ( name, avatar_url, role, last_seen_at ),
+      b:participant_b_id ( name, avatar_url, role, last_seen_at ),
       conversation_reads ( user_id, last_read_at )
     `,
     )
@@ -24,7 +24,9 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
   return data.map((row) => {
     const isA = row.participant_a_id === userId;
     const counterpart = isA ? row.b : row.a;
+    const counterpartId = isA ? row.participant_b_id : row.participant_a_id;
     const myRead = row.conversation_reads?.find((r) => r.user_id === userId);
+    const counterpartRead = row.conversation_reads?.find((r) => r.user_id === counterpartId);
     const unread = Boolean(
       row.last_message_at && (!myRead || new Date(myRead.last_read_at) < new Date(row.last_message_at)),
     );
@@ -33,10 +35,12 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
       id: row.id,
       projectId: row.project_id ?? undefined,
       projectTitle: row.projects?.title ?? "",
-      counterpartId: isA ? row.participant_b_id : row.participant_a_id,
+      counterpartId,
       counterpartName: counterpart?.name ?? "Unknown",
       counterpartRole: (counterpart?.role as Conversation["counterpartRole"]) ?? "student",
       counterpartAvatar: counterpart?.avatar_url ?? undefined,
+      counterpartLastSeenAt: counterpart?.last_seen_at ?? null,
+      counterpartLastReadAt: counterpartRead?.last_read_at ?? null,
       lastMessage: row.last_message ?? "",
       lastMessageAt: row.last_message_at ?? "",
       unread,

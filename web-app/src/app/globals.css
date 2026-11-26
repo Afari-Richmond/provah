@@ -16,6 +16,15 @@
   --color-border: #eceaf5;
   --color-success: #1e9e5a;
   --color-danger: #d64545;
+
+  /* One shared z-index scale — dropdowns/menus sit above normal content,
+     modals above those, toasts above modals (so a toast fired from inside a
+     modal is still visible), and the full-screen route-loading overlay above
+     everything. */
+  --z-dropdown: 30;
+  --z-modal: 500;
+  --z-toast: 600;
+  --z-overlay: 999;
 }
 
 @theme inline {

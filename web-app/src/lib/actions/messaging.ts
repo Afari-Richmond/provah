@@ -5,25 +5,44 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { searchProfiles } from "@/lib/data/users";
+import { isBlockedEitherWay, getBlockedIds } from "@/lib/data/blocks";
 
 // Powers the "new message" compose search — a thin client-callable wrapper
-// around the server-only searchProfiles(), scoped to exclude yourself.
+// around the server-only searchProfiles(), scoped to exclude yourself and
+// anyone blocked in either direction.
 export async function searchUsersToMessage(query: string) {
   const profile = await requireProfile();
-  const results = await searchProfiles(query, profile.id);
-  return results.map((p) => ({
-    id: p.id,
-    name: p.name,
-    avatarUrl: p.avatarUrl ?? null,
-    role: p.role,
-    subtitle: p.role === "student" ? p.university : p.company,
-  }));
+  const [results, blockedIds] = await Promise.all([
+    searchProfiles(query, profile.id),
+    getBlockedIds(profile.id),
+  ]);
+  return results
+    .filter((p) => !blockedIds.includes(p.id))
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      avatarUrl: p.avatarUrl ?? null,
+      role: p.role,
+      subtitle: p.role === "student" ? p.university : p.company,
+    }));
 }
 
 export async function sendMessage(conversationId: string, body: string) {
   const profile = await requireProfile();
   if (!body.trim()) return;
   const supabase = await createClient();
+
+  const { data: conv } = await supabase
+    .from("conversations")
+    .select("participant_a_id, participant_b_id")
+    .eq("id", conversationId)
+    .maybeSingle();
+  if (conv) {
+    const otherId = conv.participant_a_id === profile.id ? conv.participant_b_id : conv.participant_a_id;
+    if (await isBlockedEitherWay(profile.id, otherId)) {
+      throw new Error("You can't message this person");
+    }
+  }
 
   const { error } = await supabase.from("messages").insert({
     conversation_id: conversationId,
@@ -77,6 +96,9 @@ export async function startConversation(projectId: string) {
 export async function startConversationWithUser(otherUserId: string, projectId?: string) {
   const profile = await requireProfile();
   if (otherUserId === profile.id) throw new Error("You can't message yourself");
+  if (await isBlockedEitherWay(profile.id, otherUserId)) {
+    throw new Error("You can't message this person");
+  }
   const supabase = await createClient();
 
   // participant order is arbitrary; check both orderings for an existing

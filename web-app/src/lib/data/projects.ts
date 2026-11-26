@@ -9,6 +9,8 @@ type ProjectRow = Database["public"]["Tables"]["projects"]["Row"] & {
   project_documents: { id: string; label: string; kind: string; url: string }[];
 };
 
+export const PUBLISHED_PROJECTS_PAGE_SIZE = 60;
+
 const PROJECT_SELECT = `
   *,
   profiles:student_id ( name, avatar_url ),
@@ -95,14 +97,20 @@ async function withCounts(supabase: Awaited<ReturnType<typeof createClient>>, ro
   );
 }
 
-export async function getPublishedProjects(): Promise<Project[]> {
+export async function getPublishedProjects(opts?: { limit?: number; offset?: number }): Promise<Project[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("projects")
     .select(PROJECT_SELECT)
     .eq("status", "published")
     .order("created_at", { ascending: false });
 
+  if (opts?.limit) {
+    const offset = opts.offset ?? 0;
+    query = query.range(offset, offset + opts.limit - 1);
+  }
+
+  const { data, error } = await query;
   if (error || !data) return [];
   return withCounts(supabase, data as unknown as ProjectRow[]);
 }

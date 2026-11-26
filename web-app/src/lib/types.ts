@@ -73,8 +73,18 @@ export type Profile = {
   skills: string[];
   linkedinUrl?: string | null;
   portfolioUrl?: string | null;
-  emailNotifications: boolean;
+  notificationPreferences: NotificationPreferences;
+  lastSeenAt?: string | null;
+  availabilityStatus?: AvailabilityStatus | null;
   createdAt: string;
+};
+
+export type AvailabilityStatus = "open" | "busy" | "unavailable";
+
+export type NotificationPreferences = {
+  messages: boolean;
+  connections: boolean;
+  projectUpdates: boolean;
 };
 
 export type ConnectionStatus = "none" | "pending_sent" | "pending_received" | "accepted" | "declined";
@@ -87,6 +97,8 @@ export type Conversation = {
   counterpartName: string;
   counterpartRole: "student" | "professional" | "admin";
   counterpartAvatar?: string;
+  counterpartLastSeenAt?: string | null;
+  counterpartLastReadAt?: string | null;
   lastMessage: string;
   lastMessageAt: string;
   unread: boolean;
@@ -98,13 +110,16 @@ export type Message = {
   senderId: "me" | "them";
   body: string;
   createdAt: string;
+  status?: "sending" | "sent" | "failed";
 };
 
 export type NotificationType =
   | "project_approved"
   | "project_rejected"
   | "new_message"
-  | "new_interest";
+  | "new_interest"
+  | "connection_request"
+  | "connection_accepted";
 
 export type Notification = {
   id: string;

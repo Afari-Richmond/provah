@@ -3,8 +3,10 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Eyebrow } from "@/components/ui/Badge";
 import { getAdminAnalytics } from "@/lib/data/admin";
+import { requireRole } from "@/lib/auth";
 
 export default async function AdminAnalyticsPage() {
+  await requireRole("admin");
   const { students, professionals, approvalRate, pending, avgTurnaroundDays, signupsByWeek } =
     await getAdminAnalytics();
 
@@ -14,7 +16,7 @@ export default async function AdminAnalyticsPage() {
     <div className="min-h-screen bg-white">
       <AdminNav active="/admin/analytics" />
 
-      <main className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-4xl px-6 py-10 sm:px-10">
         <Eyebrow>Platform analytics</Eyebrow>
         <h1 className="mt-3 font-(family-name:--font-unbounded) text-[32px] font-bold leading-tight text-[var(--color-ink)]">
           How Provah is doing

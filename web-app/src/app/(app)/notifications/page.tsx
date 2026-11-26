@@ -14,7 +14,7 @@ export default async function NotificationsPage() {
     <div className="min-h-screen bg-white">
       <AppNavBar />
 
-      <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
         <div className="flex items-center justify-between">
           <div>
             <Eyebrow>Notifications</Eyebrow>
@@ -37,7 +37,8 @@ export default async function NotificationsPage() {
         <div className="mt-8 flex flex-col gap-3">
           {notifications.length === 0 ? (
             <p className="font-(family-name:--font-space-grotesk) text-sm text-black/50">
-              Nothing here yet.
+              Nothing here yet — new messages, connection requests, and project updates
+              will show up in this list.
             </p>
           ) : (
             notifications.map((n) => <NotificationRow key={n.id} notification={n} />)

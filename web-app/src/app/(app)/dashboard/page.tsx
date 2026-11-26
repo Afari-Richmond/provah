@@ -23,7 +23,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-white">
       <AppNavBar active="/dashboard" />
 
-      <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
+      <main id="main-content" className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <Eyebrow>Welcome back</Eyebrow>

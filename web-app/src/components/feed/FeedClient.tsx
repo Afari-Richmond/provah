@@ -1,31 +1,96 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { PostCard } from "@/components/feed/PostCard";
-import { createPost } from "@/lib/actions/feed";
+import { createPost, loadMoreFeedPosts } from "@/lib/actions/feed";
 import { uploadToBucket } from "@/lib/uploads";
-import type { Post, Profile, Project } from "@/lib/types";
+import { createClient } from "@/lib/supabase/client";
+import type { Post, Profile, Project, ProjectField } from "@/lib/types";
+
+const POST_SELECT = `
+  id, author_id, body, image_url, project_id, created_at,
+  author:author_id ( name, avatar_url, role ),
+  projects ( id, title, field )
+`;
 
 export function FeedClient({
   initialPosts,
   viewer,
   myProjects,
+  hasMore = false,
 }: {
   initialPosts: Post[];
   viewer: Profile;
   myProjects: Project[];
+  hasMore?: boolean;
 }) {
   const [posts, setPosts] = useState(initialPosts);
+  const [canLoadMore, setCanLoadMore] = useState(hasMore);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [projectId, setProjectId] = useState("");
   const [uploading, setUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
+  const offsetRef = useRef(initialPosts.length);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const next = await loadMoreFeedPosts(offsetRef.current);
+      offsetRef.current += next.length;
+      setPosts((p) => [...p, ...next]);
+      if (next.length === 0) setCanLoadMore(false);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("feed-posts")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "posts" },
+        async (payload) => {
+          const newId = payload.new.id as string;
+          const authorId = payload.new.author_id as string;
+          if (authorId === viewer.id) return;
+
+          const { data: row } = await supabase.from("posts").select(POST_SELECT).eq("id", newId).single();
+          if (!row) return;
+
+          const post: Post = {
+            id: row.id,
+            authorId: row.author_id,
+            authorName: row.author?.name ?? "Unknown",
+            authorAvatar: row.author?.avatar_url,
+            authorRole: (row.author?.role as Post["authorRole"]) ?? "student",
+            body: row.body,
+            imageUrl: row.image_url,
+            project: row.projects
+              ? { id: row.projects.id, title: row.projects.title, field: row.projects.field as ProjectField }
+              : null,
+            createdAt: row.created_at,
+            likeCount: 0,
+            likedByMe: false,
+            comments: [],
+          };
+          setPosts((p) => (p.some((existing) => existing.id === post.id) ? p : [post, ...p]));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [viewer.id]);
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -72,7 +137,7 @@ export function FeedClient({
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
       <h1 className="font-(family-name:--font-unbounded) text-[28px] font-bold leading-tight text-[var(--color-ink)]">
         Feed
       </h1>
@@ -92,7 +157,7 @@ export function FeedClient({
                 : "Share advice, an opportunity, or feedback for students..."
             }
             rows={3}
-            className="flex-1 resize-none rounded-2xl border-2 border-[var(--color-ink)]/15 bg-white px-4 py-3 font-(family-name:--font-space-grotesk) text-[15px] text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
+            className="flex-1 resize-none rounded-2xl border-2 border-[var(--color-ink)]/15 bg-white px-4 py-3 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
           />
         </div>
 
@@ -145,10 +210,18 @@ export function FeedClient({
           posts.map((post) => <PostCard key={post.id} post={post} viewer={viewer} />)
         ) : (
           <p className="mt-10 text-center font-(family-name:--font-space-grotesk) text-sm text-black/40">
-            No posts yet. Be the first to share something.
+            No posts yet — be the first to share something.
           </p>
         )}
       </div>
+
+      {canLoadMore && (
+        <div className="mt-6 flex justify-center">
+          <Button variant="secondary" onClick={loadMore} loading={loadingMore}>
+            {loadingMore ? "Loading..." : "Load more"}
+          </Button>
+        </div>
+      )}
     </main>
   );
 }

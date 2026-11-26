@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Spinner } from "@/components/ui/Spinner";
+import { Modal } from "@/components/ui/Modal";
 import { searchUsersToMessage, startConversationWithUser } from "@/lib/actions/messaging";
 
 type SearchResult = Awaited<ReturnType<typeof searchUsersToMessage>>[number];
@@ -19,23 +20,24 @@ export function NewConversationButton({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const titleId = useId();
+
+  const trimmedQuery = query.trim();
 
   useEffect(() => {
-    if (!open) return;
-    const q = query.trim();
-    if (!q) {
-      setResults([]);
-      setSearching(false);
-      return;
-    }
-    setSearching(true);
+    if (!open || !trimmedQuery) return;
     const timeout = setTimeout(async () => {
-      const r = await searchUsersToMessage(q);
+      const r = await searchUsersToMessage(trimmedQuery);
       setResults(r);
       setSearching(false);
     }, 300);
     return () => clearTimeout(timeout);
-  }, [query, open]);
+  }, [trimmedQuery, open]);
+
+  function handleQueryChange(value: string) {
+    setQuery(value);
+    if (value.trim()) setSearching(true);
+  }
 
   function pick(userId: string) {
     startTransition(async () => {
@@ -57,73 +59,65 @@ export function NewConversationButton({
         {children ?? <ComposeIcon />}
       </button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-40 flex items-start justify-center bg-black/40 p-4 pt-20"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="pv-border pv-shadow-sm w-full max-w-md rounded-2xl bg-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4">
-              <span className="font-(family-name:--font-unbounded) text-sm font-bold text-[var(--color-ink)]">
-                New message
-              </span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="text-black/40"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="px-4 pt-4">
-              <input
-                autoFocus
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search people to message..."
-                className="w-full rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-4 py-2.5 font-(family-name:--font-space-grotesk) text-sm text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
-              />
-            </div>
-            <div className="max-h-80 overflow-y-auto px-2 py-3">
-              {searching ? (
-                <div className="flex justify-center py-6">
-                  <Spinner size={22} />
-                </div>
-              ) : results.length > 0 ? (
-                results.map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => pick(r.id)}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-[var(--color-surface)] disabled:opacity-50"
-                  >
-                    <Avatar name={r.name} seed={r.id} imageUrl={r.avatarUrl ?? undefined} size={40} />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
-                        {r.name}
+      <Modal open={open} onClose={() => setOpen(false)} labelledBy={titleId}>
+        <div className="pv-border pv-shadow-sm w-full max-w-md rounded-2xl bg-white">
+          <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4">
+            <span id={titleId} className="font-(family-name:--font-unbounded) text-sm font-bold text-[var(--color-ink)]">
+              New message
+            </span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="text-black/40"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="px-4 pt-4">
+            <input
+              autoFocus
+              value={query}
+              onChange={(e) => handleQueryChange(e.target.value)}
+              placeholder="Search people to message..."
+              className="w-full rounded-full border-2 border-[var(--color-ink)]/15 bg-white px-4 py-2.5 font-(family-name:--font-space-grotesk) text-base text-[var(--color-ink)] outline-none placeholder:text-black/30 focus:border-[var(--color-primary)]"
+            />
+          </div>
+          <div className="max-h-80 overflow-y-auto px-2 py-3">
+            {searching ? (
+              <div className="flex justify-center py-6">
+                <Spinner size={22} />
+              </div>
+            ) : trimmedQuery && results.length > 0 ? (
+              results.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => pick(r.id)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-[var(--color-surface)] disabled:opacity-50"
+                >
+                  <Avatar name={r.name} seed={r.id} imageUrl={r.avatarUrl ?? undefined} size={40} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-(family-name:--font-space-grotesk) text-sm font-semibold text-[var(--color-ink)]">
+                      {r.name}
+                    </p>
+                    {r.subtitle && (
+                      <p className="truncate font-(family-name:--font-space-grotesk) text-xs text-black/50">
+                        {r.subtitle}
                       </p>
-                      {r.subtitle && (
-                        <p className="truncate font-(family-name:--font-space-grotesk) text-xs text-black/50">
-                          {r.subtitle}
-                        </p>
-                      )}
-                    </div>
-                  </button>
-                ))
-              ) : (
-                <p className="px-3 py-6 text-center font-(family-name:--font-space-grotesk) text-sm text-black/40">
-                  {query.trim() ? "No one found." : "Start typing a name, university, or company."}
-                </p>
-              )}
-            </div>
+                    )}
+                  </div>
+                </button>
+              ))
+            ) : (
+              <p className="px-3 py-6 text-center font-(family-name:--font-space-grotesk) text-sm text-black/40">
+                {trimmedQuery ? "No one found." : "Start typing a name, university, or company."}
+              </p>
+            )}
           </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

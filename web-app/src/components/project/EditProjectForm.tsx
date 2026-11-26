@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 import { Spinner } from "@/components/ui/Spinner";
 import { Eyebrow, StatusPill } from "@/components/ui/Badge";
 import { TextField, TextAreaField, SelectField } from "@/components/ui/Field";
@@ -35,6 +36,7 @@ export function EditProjectForm({ project }: { project: Project }) {
   const [uploadingGalleryItem, setUploadingGalleryItem] = useState(false);
   const [documents, setDocuments] = useState<ProjectDocument[]>(project.documents);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deleteTitleId = useId();
   const [isPending, startTransition] = useTransition();
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,7 +98,7 @@ export function EditProjectForm({ project }: { project: Project }) {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
       <div className="flex items-center justify-between">
         <Eyebrow>Manage project</Eyebrow>
         <StatusPill status={project.status} />
@@ -180,7 +182,7 @@ export function EditProjectForm({ project }: { project: Project }) {
           Gallery &amp; documents
         </div>
         <p className="font-(family-name:--font-space-grotesk) text-xs text-black/40">
-          Extra screenshots, a PDF write-up, or a short demo video. Shown on your project's detail page.
+          Extra screenshots, a PDF write-up, or a short demo video. Shown on your project&apos;s detail page.
         </p>
 
         {documents.length > 0 && (
@@ -249,27 +251,25 @@ export function EditProjectForm({ project }: { project: Project }) {
         </div>
       </div>
 
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4">
-          <Card className="w-full max-w-sm p-6" shadow="dark">
-            <h3 className="font-(family-name:--font-unbounded) text-lg font-bold text-[var(--color-ink)]">
-              Delete this project?
-            </h3>
-            <p className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
-              This can&apos;t be undone. The project will be removed from Discover
-              immediately.
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={confirmDelete} className="bg-[var(--color-danger)]" loading={isPending}>
-                Delete
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
+      <Modal open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} labelledBy={deleteTitleId}>
+        <Card className="w-full max-w-sm p-6" shadow="dark">
+          <h3 id={deleteTitleId} className="font-(family-name:--font-unbounded) text-lg font-bold text-[var(--color-ink)]">
+            Delete this project?
+          </h3>
+          <p className="mt-2 font-(family-name:--font-space-grotesk) text-sm text-black/60">
+            This can&apos;t be undone. The project will be removed from Discover
+            immediately.
+          </p>
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={confirmDelete} className="bg-[var(--color-danger)]" loading={isPending}>
+              Delete
+            </Button>
+          </div>
+        </Card>
+      </Modal>
     </main>
   );
 }

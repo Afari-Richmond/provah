@@ -133,7 +133,7 @@ export function NewProjectForm({ userId }: { userId: string }) {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-10 sm:px-10">
       <Eyebrow>New project</Eyebrow>
       <h1 className="mt-3 font-(family-name:--font-unbounded) text-[28px] font-bold leading-tight text-[var(--color-ink)] sm:text-[34px]">
         Tell us what you built

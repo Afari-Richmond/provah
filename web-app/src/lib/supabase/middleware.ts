@@ -98,6 +98,25 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
+    // A verified TOTP factor means this session must clear a 2FA challenge
+    // before it's trusted at aal2 — a password-only sign-in leaves it stuck
+    // at aal1, and every protected route needs to bounce to the challenge
+    // page until that's cleared, not just the page that happened to initiate
+    // sign-in.
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    const mfaPending = Boolean(aal && aal.nextLevel === "aal2" && aal.currentLevel !== aal.nextLevel);
+
+    if (mfaPending && pathname !== "/login/mfa") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login/mfa";
+      return NextResponse.redirect(url);
+    }
+    if (!mfaPending && pathname === "/login/mfa") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+
     if (pathname.startsWith("/admin") && profile?.role !== "admin") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";

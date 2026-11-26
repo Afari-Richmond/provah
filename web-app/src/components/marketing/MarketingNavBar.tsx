@@ -7,7 +7,7 @@ import { LogoutLink } from "@/components/marketing/LogoutLink";
 import type { Profile } from "@/lib/types";
 
 const NAV_LINKS = [
-  { href: "/showcase", label: "PROJECTS" },
+  { href: "/showcase", label: "DISCOVER" },
   { href: "/categories", label: "CATEGORIES" },
   { href: "/how-it-works", label: "HOW IT WORKS" },
   { href: "/about", label: "ABOUT" },
@@ -62,7 +62,29 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
           .pv-marketing-links, .pv-marketing-actions { display: none; }
           .pv-marketing-toggle { display: flex; }
         }
+        .pv-skip-link {
+          position: absolute;
+          left: -9999px;
+          top: 0;
+          z-index: 999;
+          background: #161616;
+          color: #fff;
+          padding: 10px 18px;
+          border-radius: 999px;
+          font-family: 'Space Mono', monospace;
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          text-decoration: none;
+        }
+        .pv-skip-link:focus {
+          left: 16px;
+          top: 16px;
+        }
       `}</style>
+      <a href="#main-content" className="pv-skip-link">
+        Skip to content
+      </a>
       <div
         style={{
           display: "flex",
@@ -97,7 +119,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
           </Link>
         )}
 
-        <nav className="pv-marketing-links" style={{ alignItems: "center", gap: 28 }}>
+        <nav aria-label="Primary" className="pv-marketing-links" style={{ alignItems: "center", gap: 28 }}>
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} style={NAV_LINK_STYLE}>
               {link.label}
@@ -109,7 +131,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
           {profile ? (
             <>
               <LogoutLink style={NAV_LINK_STYLE} />
-              <a
+              <Link
                 href="/profile"
                 style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
                 aria-label="My profile"
@@ -120,7 +142,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
                   imageUrl={profile.avatarUrl ?? undefined}
                   size={36}
                 />
-              </a>
+              </Link>
               <a href="/dashboard" style={CTA_STYLE}>
                 Dashboard
               </a>
@@ -142,6 +164,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
           className="pv-marketing-toggle"
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
+          aria-expanded={open}
           style={{
             alignItems: "center",
             justifyContent: "center",
@@ -189,7 +212,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
           <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
             {profile ? (
               <>
-                <a
+                <Link
                   href="/profile"
                   onClick={() => setOpen(false)}
                   style={{ ...NAV_LINK_STYLE, display: "flex", alignItems: "center", gap: 10 }}
@@ -201,7 +224,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
                     size={32}
                   />
                   My profile
-                </a>
+                </Link>
                 <a href="/dashboard" onClick={() => setOpen(false)} style={CTA_STYLE}>
                   Dashboard
                 </a>

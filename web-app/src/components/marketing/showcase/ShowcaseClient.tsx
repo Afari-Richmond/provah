@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { PublicProjectCard } from "@/components/marketing/showcase/PublicProjectCard";
+import { loadMoreProjects } from "@/lib/actions/projects";
 import type { Project, ProjectField } from "@/lib/types";
 import { PROJECT_FIELDS, FIELD_COLORS } from "@/lib/fields";
 
@@ -62,39 +63,55 @@ export function ShowcaseClient({
   projects,
   initialField,
   basePath = "/showcase",
+  hasMore = false,
 }: {
   projects: Project[];
   initialField: ProjectField | null;
   basePath?: string;
+  hasMore?: boolean;
 }) {
+  const [allProjects, setAllProjects] = useState(projects);
+  const [canLoadMore, setCanLoadMore] = useState(hasMore);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [query, setQuery] = useState("");
   const [activeField, setActiveField] = useState<ProjectField | null>(initialField);
   const [activeUniversity, setActiveUniversity] = useState<string | null>(null);
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [sort, setSort] = useState<SortOrder>("newest");
 
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const next = await loadMoreProjects(allProjects.length);
+      setAllProjects((list) => [...list, ...next]);
+      if (next.length === 0) setCanLoadMore(false);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
   const counts = useMemo(() => {
     const m = new Map<ProjectField, number>();
     for (const f of FIELDS) m.set(f, 0);
-    for (const p of projects) m.set(p.field, (m.get(p.field) ?? 0) + 1);
+    for (const p of allProjects) m.set(p.field, (m.get(p.field) ?? 0) + 1);
     return m;
-  }, [projects]);
+  }, [allProjects]);
 
   const universities = useMemo(() => {
     const set = new Set<string>();
-    for (const p of projects) if (p.university) set.add(p.university);
+    for (const p of allProjects) if (p.university) set.add(p.university);
     return [...set].sort();
-  }, [projects]);
+  }, [allProjects]);
 
   const tools = useMemo(() => {
     const m = new Map<string, number>();
-    for (const p of projects) for (const t of p.techStack) m.set(t, (m.get(t) ?? 0) + 1);
+    for (const p of allProjects) for (const t of p.techStack) m.set(t, (m.get(t) ?? 0) + 1);
     return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
-  }, [projects]);
+  }, [allProjects]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const matches = projects.filter((p) => {
+    const matches = allProjects.filter((p) => {
       const matchesField = !activeField || p.field === activeField;
       const matchesUniversity = !activeUniversity || p.university === activeUniversity;
       const matchesTool = !activeTool || p.techStack.includes(activeTool);
@@ -113,10 +130,11 @@ export function ShowcaseClient({
       const bTime = new Date(b.createdAt).getTime();
       return sort === "oldest" ? aTime - bTime : bTime - aTime;
     });
-  }, [projects, query, activeField, activeUniversity, activeTool, sort]);
+  }, [allProjects, query, activeField, activeUniversity, activeTool, sort]);
 
   return (
     <main
+      id="main-content"
       style={{
         maxWidth: 1200,
         margin: "0 auto",
@@ -190,7 +208,7 @@ export function ShowcaseClient({
             style={{ marginTop: 8, flexDirection: "column", gap: 4 }}
           >
             <FilterButton active={activeField === null} onClick={() => setActiveField(null)}>
-              All fields ({projects.length})
+              All fields ({allProjects.length})
             </FilterButton>
             {FIELDS.map((f) => (
               <FilterButton
@@ -221,7 +239,7 @@ export function ShowcaseClient({
               background: "#fff",
             }}
           >
-            <option value="">All fields ({projects.length})</option>
+            <option value="">All fields ({allProjects.length})</option>
             {FIELDS.map((f) => (
               <option key={f} value={f}>
                 {f} ({counts.get(f) ?? 0})
@@ -369,7 +387,34 @@ export function ShowcaseClient({
               <PublicProjectCard key={p.id} project={p} basePath={basePath} />
             ))}
           </div>
-        ) : (
+        ) : null}
+
+        {canLoadMore && (
+          <div style={{ marginTop: 32, textAlign: "center" }}>
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              style={{
+                borderRadius: 999,
+                border: "2px solid rgba(22,18,22,0.15)",
+                padding: "12px 28px",
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 13,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.03em",
+                background: "#fff",
+                cursor: loadingMore ? "default" : "pointer",
+                opacity: loadingMore ? 0.6 : 1,
+              }}
+            >
+              {loadingMore ? "Loading..." : "Load more"}
+            </button>
+          </div>
+        )}
+
+        {filtered.length === 0 && (
           <div style={{ padding: "80px 0", textAlign: "center" }}>
             <p
               style={{
@@ -389,7 +434,7 @@ export function ShowcaseClient({
                 color: "rgba(22,18,22,0.5)",
               }}
             >
-              Try a different search term or clear the field filter.
+              Try a different search term, or clear your filters.
             </p>
           </div>
         )}
