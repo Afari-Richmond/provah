@@ -113,7 +113,7 @@ export function NotificationsDropdown({
       </button>
 
       {open && (
-        <div className="pv-border pv-shadow-sm absolute right-0 top-12 z-30 w-[22rem] max-w-[calc(100vw-2rem)] rounded-2xl bg-white">
+        <div className="pv-border pv-shadow-sm fixed inset-x-4 top-20 z-[var(--z-dropdown)] rounded-2xl bg-white md:absolute md:inset-x-auto md:right-0 md:top-12 md:w-[22rem] md:max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
             <span className="font-(family-name:--font-unbounded) text-sm font-bold text-[var(--color-ink)]">
               Notifications

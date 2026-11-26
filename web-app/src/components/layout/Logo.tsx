@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export function Logo({ href = "/discover" }: { href?: string }) {
+export function Logo({ href = "/dashboard" }: { href?: string }) {
   return (
     <Link href={href} className="flex items-center">
       <Image

@@ -96,7 +96,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
         }}
       >
         {profile ? (
-          <a href="/discover" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+          <Link href="/dashboard" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/provah-logo.png"
@@ -105,7 +105,7 @@ export function MarketingNavBar({ profile }: { profile: Profile | null }) {
               height={36}
               style={{ height: 36, width: "auto" }}
             />
-          </a>
+          </Link>
         ) : (
           <Link href="/" style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
